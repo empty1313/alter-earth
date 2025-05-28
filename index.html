@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALTER-EARTH | 세계관</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&family=Exo+2:wght@400;600;700&display=swap');
+        
+        :root {
+            --glow-primary: #00e5ff;
+            --glow-secondary: #ff8c42;
+            --accent-color: #f0f8ff; 
+            
+            --bg-darkest: #080A0C; 
+            --bg-dark: #0E1318;
+            --bg-medium: #182028; 
+            --bg-light-accent: rgba(var(--glow-primary-rgb, 0, 229, 255), 0.05); 
+
+            --text-primary: #dce4f0;
+            --text-secondary: #a0aec0;
+
+            /* 헌터 랭크 색상 */
+            --rank-s: #FFD700; 
+            --rank-a: #C0C0C0; 
+            --rank-b: #CD7F32; 
+            --rank-c: #6A93D4; 
+            --rank-d: #77DD77; 
+            --rank-e: #A9A9A9; 
+
+            /* 게이트 등급별 색상 (위험도 강조) */
+            --gate-rank-s: #FF3B3B; 
+            --gate-rank-s-rgb: 255, 59, 59;
+            --gate-rank-a: #FF8C42; 
+            --gate-rank-a-rgb: 255, 140, 66;
+            --gate-rank-b: #FFC93C; 
+            --gate-rank-b-rgb: 255, 201, 60;
+            --gate-rank-c: #3498DB; 
+            --gate-rank-c-rgb: 52, 152, 219;
+            --gate-rank-d: #2ECC71; 
+            --gate-rank-d-rgb: 46, 204, 113;
+            --gate-rank-e: #95A5A6; 
+            --gate-rank-e-rgb: 149, 165, 166;
+
+            --guild-association: #B0BEC5; 
+            --guild-cheonryong: #29B6F6; 
+            --guild-heukan: #AB47BC;   
+            --guild-hyean: #EC407A;     
+            --guild-jeokho: #EF5350;    
+
+            --font-orbitron: 'Orbitron', 'Exo 2', sans-serif;
+            --font-rajdhani: 'Rajdhani', 'Exo 2', sans-serif;
+            --font-body: 'Exo 2', 'Rajdhani', sans-serif;
+
+            --header-height: 70px; 
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--bg-darkest);
+            color: var(--text-primary);
+            line-height: 1.7;
+            font-weight: 400;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        .page-wrapper { 
+            overflow-x: hidden; 
+        }
+        
+        .pv-container { 
+            width: 90%;
+            max-width: 1100px; 
+            margin: 0 auto;
+            padding: 0 20px; 
+            position: relative; 
+            z-index: 2; 
+        }
+        
+        /* Header */
+        .header {
+            background: rgba(var(--bg-darkest-rgb, 8, 10, 12), 0.8); 
+            backdrop-filter: blur(10px);
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(var(--glow-primary-rgb, 0, 229, 255), 0.15);
+            box-shadow: 0 1px 10px rgba(var(--glow-primary-rgb, 0, 229, 255), 0.03);
+            height: var(--header-height); 
+        }
+
+        .nav { display: flex; justify-content: space-between; align-items: center; height: 100%; max-width:1200px; margin:0 auto; padding:0 20px; } 
+        
+        .logo a { 
+            font-family: var(--font-orbitron); font-size: 1.7rem; font-weight: 700;
+            color: var(--accent-color); text-decoration: none; text-transform: uppercase;
+            letter-spacing: 1.5px; text-shadow: 0 0 10px var(--glow-primary);
+        }
+        
+        .nav-links { display: flex; list-style: none; gap: 20px; }
+        .nav-links a {
+            color: var(--text-secondary); text-decoration: none; font-weight: 600;
+            font-family: var(--font-rajdhani); font-size: 0.9rem; letter-spacing: 0.8px;
+            text-transform: uppercase; transition: color 0.3s ease, text-shadow 0.3s ease;
+            position: relative; padding: 5px 0;
+        }
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--accent-color); text-shadow: 0 0 7px var(--glow-primary);
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -2px; left: 0;
+            width: 0; height: 2px; background: var(--glow-primary);
+            transition: width 0.3s ease-in-out;
+        }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        
+        /* Hero Section */
+        .hero { 
+            height: calc(100vh - var(--header-height)); 
+            min-height: 600px; 
+            display: flex; align-items: center;
+            justify-content: center; text-align: center; position: relative;
+            background: linear-gradient(rgba(var(--bg-darkest-rgb,8,10,12),0.6), rgba(var(--bg-darkest-rgb,8,10,12),0.9)),
+                        url('https://images.unsplash.com/photo-1531306728370-e2ebd974def9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=75') no-repeat center center / cover;
+            margin-top: var(--header-height); 
+        }
+        .hero::before { 
+            content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(transparent 80%, rgba(0,0,0,0.05) 80%), 
+                        linear-gradient(90deg, rgba(var(--glow-primary-rgb,0,229,255),0.01) 1px, transparent 1px);
+            background-size: 100% 1.5px, 70px 70px; 
+            opacity: 0.4;
+            animation: scanlines 0.4s linear infinite alternate, subtleGridMove 90s linear infinite alternate;
+            pointer-events: none; z-index: 0; 
+        }
+        @keyframes scanlines { 0% { background-position: 0 0; } 100% { background-position: 0 1.5px; } }
+        @keyframes subtleGridMove { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 0, 70px 70px; } }
+        
+        .hero-content { padding: 20px; position: relative; z-index: 1; } 
+        .hero-title {
+            font-family: var(--font-orbitron); font-size: clamp(2.8rem, 8vw, 5rem); 
+            font-weight: 900; margin-bottom: 20px; color: var(--accent-color);
+            text-transform: uppercase; letter-spacing: 0.07em; 
+            text-shadow: 0 0 10px var(--glow-primary), 0 0 20px var(--glow-primary),
+                         0 0 35px var(--glow-primary), 0 0 60px var(--glow-secondary);
+        }
+        .hero-subtitle {
+            font-family: var(--font-rajdhani); font-size: clamp(1.1rem, 2.5vw, 1.5rem); 
+            margin-bottom: 30px; color: var(--text-primary); 
+            font-weight: 500; letter-spacing: 1px; max-width: 600px; 
+            margin-left: auto; margin-right: auto;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+        }
+        .cta-button {
+            display: inline-block; padding: 14px 35px; 
+            background: linear-gradient(45deg, var(--glow-primary), var(--glow-secondary));
+            color: var(--bg-darkest); text-decoration: none; border-radius: 8px; 
+            font-weight: 700; font-family: var(--font-rajdhani); text-transform: uppercase;
+            letter-spacing: 2px; font-size: 1.05rem; 
+            transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 0.5s ease;
+            box-shadow: 0 4px 18px rgba(var(--glow-primary-rgb,0,229,255),0.25), 0 2px 10px rgba(var(--glow-secondary-rgb,255,130,66),0.18);
+            background-size: 200% auto;
+        }
+        .cta-button:hover {
+            background-position: right center; 
+            transform: translateY(-2px); 
+            box-shadow: 0 7px 25px rgba(var(--glow-primary-rgb,0,229,255),0.35), 0 3px 15px rgba(var(--glow-secondary-rgb,255,130,66),0.28);
+        }
+        
+        /* Section Styling */
+        .section { 
+            padding: 80px 0; 
+            position: relative; 
+            overflow: hidden; 
+        }
+        .section-first { padding-top: 80px; }
+        .section-dark { background-color: var(--bg-dark); }
+        .section-darker { background-color: var(--bg-darkest); }
+        .section-accent-bg { background-color: var(--bg-light-accent); }
+
+        .section-title-container { 
+            background-color: var(--bg-medium); 
+            padding: 25px 0;
+            margin-bottom: 50px;
+            border-top: 2px solid var(--glow-primary);
+            border-bottom: 2px solid var(--glow-primary);
+            box-shadow: 0 0 20px rgba(var(--glow-primary-rgb,0,229,255),0.1);
+        }
+        .section-title-container h2 {
+            font-family: var(--font-orbitron);
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            color: var(--accent-color);
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px var(--glow-primary);
+        }
+
+        .overview-section {
+            padding-top: 80px; /* 헤더 높이만큼 패딩 (hero 다음이므로) */
+            padding-bottom: 80px;
+            background-color: var(--bg-darkest); /* 어두운 배경 */
+            /* 히어로 섹션의 그리드/스캔라인 효과 일부 차용 (선택적) */
+            position: relative;
+        }
+        .overview-section::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(90deg, rgba(var(--glow-primary-rgb,0,229,255),0.01) 1px, transparent 1px);
+            background-size: 80px 80px; /* 그리드 크기 조정 */
+            opacity: 0.15; /* 그리드 투명도 조정 */
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .overview-content {
+            max-width: 800px; /* 텍스트 가독성을 위한 최대 너비 */
+            margin: 0 auto 40px auto; /* 좌우 자동, 하단 여백 */
+            font-size: 1.05rem; /* 기본 폰트 크기 */
+            line-height: 1.8; /* 줄 간격 */
+            color: var(--text-primary);
+            text-align: justify; /* 양쪽 정렬 (선택적) */
+            position: relative; /* ::before 위에 오도록 */
+            z-index: 1;
+        }
+        .overview-content p {
+            margin-bottom: 25px; /* 문단 간 간격 */
+        }
+        .overview-content p:last-child {
+            margin-bottom: 0;
+        }
+        .overview-content strong {
+            color: var(--glow-primary); /* 주요 용어 강조 색상 */
+            font-weight: 600;
+            text-shadow: 0 0 5px rgba(var(--glow-primary-rgb), 0.3);
+        }
+
+        .overview-keywords {
+            text-align: center;
+            margin-top: 50px;
+            position: relative; /* ::before 위에 오도록 */
+            z-index: 1;
+        }
+        .overview-keywords span {
+            display: inline-block;
+            background-color: rgba(var(--glow-secondary-rgb), 0.1); /* 키워드 배경색 */
+            color: var(--glow-secondary); /* 키워드 텍스트색 */
+            padding: 8px 15px;
+            border-radius: 20px; /* 둥근 테두리 */
+            margin: 0 8px 10px 8px; /* 키워드 간 간격 */
+            font-family: var(--font-rajdhani);
+            font-weight: 600;
+            font-size: 0.9rem;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(var(--glow-secondary-rgb), 0.3);
+            box-shadow: 0 2px 8px rgba(var(--glow-secondary-rgb), 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .overview-keywords span:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(var(--glow-secondary-rgb), 0.2);
+        }
+
+        /* 반응형 조정 */
+        @media (max-width: 768px) {
+            .overview-section {
+                padding-top: 60px;
+                padding-bottom: 60px;
+            }
+            .overview-content {
+                font-size: 1rem;
+                padding: 0 15px; /* 모바일 좌우 패딩 */
+            }
+            .overview-keywords span {
+                font-size: 0.85rem;
+                padding: 6px 12px;
+                margin: 0 5px 8px 5px;
+            }
+        }
+
+        /* World Lore Section - Card/Box Layout */
+        .lore-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+        .lore-card {
+            background: var(--bg-medium);
+            border-radius: 10px;
+            padding: 25px;
+            border: 1px solid rgba(var(--glow-primary-rgb,0,229,255),0.15);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex; 
+            flex-direction: column;
+        }
+        .lore-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 8px 25px rgba(var(--glow-primary-rgb,0,229,255),0.2);
+        }
+        .lore-card-icon {
+            font-size: 2.2rem; 
+            color: var(--glow-primary);
+            margin-bottom: 15px;
+            text-align: left; 
+            height: 40px; 
+        }
+         .lore-card h3 {
+            font-family: var(--font-rajdhani);
+            font-size: 1.5rem;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+        .lore-card p {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+            flex-grow: 1; 
+        }
+
+        /* RANK SECTION STYLES (헌터 랭크용) */
+       .ranking-section-maple {
+            padding-bottom: 100px;
+        }
+        .rank-intro-text-maple {
+            text-align: center;
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            margin-bottom: 60px; 
+            max-width: 750px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.8;
+            font-weight: 500;
+        }
+        .rank-intro-text-maple br { display: none; }
+        .rank-tier-group {
+            margin-bottom: 60px;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        .rank-tier-group:last-child { margin-bottom: 0; }
+
+        .rank-card-maple { /* 헌터 랭크 카드 기본 스타일 */
+            background-color: rgba(var(--bg-medium-rgb, 24, 32, 40), 0.8);
+            backdrop-filter: blur(3px);
+            border-radius: 15px; 
+            padding: 30px 35px; 
+            border: 1px solid rgba(var(--_rank-color-rgb, 128,128,128), 0.3);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.3), 
+                        inset 0 0 15px rgba(var(--_rank-color-rgb, 128,128,128), 0.1);
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1), 
+                        box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        /* 헌터 랭크 카드 호버 (게이트 카드 호버와 구분) */
+        .ranking-section-maple .rank-card-maple:not(.carousel-item .rank-card-maple):hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 45px rgba(var(--_rank-color-rgb, 0,0,0), 0.35),
+                        inset 0 0 20px rgba(var(--_rank-color-rgb, 128,128,128), 0.2);
+            border-color: rgba(var(--_rank-color-rgb, 128,128,128), 0.7);
+        }
+
+        .rank-badge { /* 헌터 랭크 뱃지 */
+            font-family: var(--font-orbitron);
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 900;
+            line-height: 1;
+            color: var(--_rank-color);
+            text-shadow: 0 0 10px rgba(var(--_rank-color-rgb), 0.7),
+                         0 0 20px rgba(var(--_rank-color-rgb), 0.5),
+                         -1px -1px 0 rgba(var(--bg-darkest-rgb),0.5),
+                         1px -1px 0 rgba(var(--bg-darkest-rgb),0.5),
+                         -1px 1px 0 rgba(var(--bg-darkest-rgb),0.5),
+                         1px 1px 0 rgba(var(--bg-darkest-rgb),0.5);
+            flex-shrink: 0;
+            width: 80px;
+            text-align: center;
+            align-self: center;
+            position: relative;
+        }
+        .rank-badge::before {
+            content: '';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 120%;
+            padding-bottom: 120%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--_rank-color-rgb), 0.2) 0%, transparent 70%);
+            z-index: -1;
+            opacity: 0.7;
+        }
+        .rank-info { flex-grow: 1; }
+        .rank-info h3 { 
+            font-family: var(--font-orbitron);
+            font-size: clamp(1.5rem, 2.5vw, 2rem); 
+            margin-bottom: 3px;
+            text-transform: uppercase;
+            font-weight: 700; 
+            letter-spacing: 0.5px;
+            color: var(--_rank-color);
+        }
+        .rank-info .rank-subtitle { 
+            font-family: var(--font-rajdhani);
+            font-size: clamp(1rem, 1.8vw, 1.2rem);
+            color: var(--text-secondary);
+            font-weight: 500;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            display: block;
+        }
+        .rank-info p {
+            font-size: 0.92rem;
+            line-height: 1.75;
+            margin-bottom: 10px;
+            color: var(--text-primary); 
+        }
+        .rank-info p:last-child { margin-bottom: 0; }
+        .rank-info strong { 
+            color: var(--_rank-color); 
+            font-weight: 600;
+        }
+
+        /* 헌터 랭크별 CSS 변수 설정 */
+        .rank-s { --_rank-color: var(--rank-s); --_rank-color-rgb: var(--rank-s-rgb-val, 255,215,0); } 
+        .rank-a { --_rank-color: var(--rank-a); --_rank-color-rgb: var(--rank-a-rgb-val, 192,192,192); } 
+        .rank-b { --_rank-color: var(--rank-b); --_rank-color-rgb: var(--rank-b-rgb-val, 205,127,50); }
+        .rank-c { --_rank-color: var(--rank-c); --_rank-color-rgb: var(--rank-c-rgb-val, 106,147,212); }
+        .rank-d { --_rank-color: var(--rank-d); --_rank-color-rgb: var(--rank-d-rgb-val, 119,221,119); }
+        .rank-e { --_rank-color: var(--rank-e); --_rank-color-rgb: var(--rank-e-rgb-val, 169,169,169); }
+
+        /* 헌터 랭크 S급, A급 강조 */
+        .ranking-section-maple .rank-card-maple.rank-s .rank-badge {
+            font-size: clamp(3.5rem, 9vw, 6rem); width: 100px;
+        }
+        .ranking-section-maple .rank-card-maple.rank-s .rank-badge::before {
+            width: 130%; padding-bottom: 130%;
+            background: radial-gradient(circle, rgba(var(--_rank-color-rgb), 0.3) 0%, transparent 65%);
+            opacity: 0.9;
+        }
+        .ranking-section-maple .rank-card-maple.rank-s .rank-info h3 {
+            font-size: clamp(1.8rem, 3vw, 2.4rem);
+        }
+        .ranking-section-maple .rank-card-maple.rank-a .rank-badge {
+            font-size: clamp(3.2rem, 8.5vw, 5.5rem); width: 90px;
+        }
+        
+        /* 게이트 등급 캐러셀 스타일 */
+        .gate-rank-carousel-container {
+            position: relative;
+            width: 100%;
+            max-width: 1000px; /* 전체 컨테이너 너비, 필요시 조정 */
+            margin: 40px auto;
+            padding: 0; 
+            /* perspective: 1000px; /* 3D 효과를 위해 필요하면 활성화 */
+        }
+        .gate-rank-carousel-wrapper {
+            position: relative;
+            width: 100%;
+            height: 480px; 
+            overflow-x: hidden;
+            /* 양옆 마스크 효과로 자연스럽게 사라지는 느낌 */
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, black 20%, black 80%, transparent 100%);
+            user-select: none; 
+        }
+        .gate-rank-carousel-track {
+            display: flex;
+            align-items: center;
+            height: 100%; 
+            will-change: transform;
+            /* transition은 JS에서 제어 */
+        }
+        .carousel-item {
+            flex-shrink: 0;
+            width: 380px; /* 중앙 아이템 가로 길이 살짝 줄임 (간격 확보) */
+            margin: 0 -40px; /* << 중요: 아이템 간 간격을 음수 마진으로 주어 겹치게 함 */
+            /* 예시: width 380px, margin 0 -40px 이면 실제 아이템 중심 간 거리는 300px */
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        opacity 0.6s ease,
+                        filter 0.6s ease;
+            cursor: pointer;
+            position: relative;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+        /* 게이트 카드 전용 _rank-color 변수 설정 */
+        .carousel-item.rank-s { --_rank-color: var(--gate-rank-s); --_rank-color-rgb: var(--gate-rank-s-rgb); }
+        .carousel-item.rank-a { --_rank-color: var(--gate-rank-a); --_rank-color-rgb: var(--gate-rank-a-rgb); }
+        .carousel-item.rank-b { --_rank-color: var(--gate-rank-b); --_rank-color-rgb: var(--gate-rank-b-rgb); }
+        .carousel-item.rank-c { --_rank-color: var(--gate-rank-c); --_rank-color-rgb: var(--gate-rank-c-rgb); }
+        .carousel-item.rank-d { --_rank-color: var(--gate-rank-d); --_rank-color-rgb: var(--gate-rank-d-rgb); }
+        .carousel-item.rank-e { --_rank-color: var(--gate-rank-e); --_rank-color-rgb: var(--gate-rank-e-rgb); }
+
+        /* 게이트 카드 스타일 (rank-card-maple 재활용) */
+        .carousel-item .rank-card-maple {
+            width: 100%;
+            height: 420px; 
+            margin: 0; 
+            padding: 30px 35px;
+            border-radius: 8px;
+            background-color: rgba(10, 12, 15, 0.92); /* 배경 약간 더 불투명하게 */
+            backdrop-filter: blur(5px); /* 블러 살짝 줄임 */
+            border: 1px solid transparent;
+            border-image-slice: 1;
+            border-width: 1px;
+            border-image-source: linear-gradient(145deg, rgba(var(--_rank-color-rgb), 0.3), rgba(var(--_rank-color-rgb), 0.05) 50%, transparent 75%);
+            box-shadow: 0 6px 25px rgba(0,0,0,0.55), 
+                        inset 0 0 12px rgba(0,0,0,0.35),
+                        inset 0 0 25px rgba(var(--_rank-color-rgb), 0.02);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; 
+            overflow: hidden; 
+            position: relative;
+            transition: border-image-source 0.4s ease, box-shadow 0.4s ease, background-color 0.4s ease;
+        }
+         /* 게이트 카드 호버 (캐러셀 아이템 활성화 시와 구분) */
+         .carousel-item:not(.active) .rank-card-maple:hover {
+            /* 호버 효과는 현재 커버플로우와 충돌할 수 있으므로, 중앙 아이템이 아닌 경우의 호버는 최소화하거나 제거하는 것을 권장 */
+            /* transform: scale(1.02);  */
+            box-shadow: 0 10px 35px rgba(var(--_rank-color-rgb,0,0,0),0.65),
+                        inset 0 0 18px rgba(var(--_rank-color-rgb,0,0,0),0.3),
+                        inset 0 0 40px rgba(var(--_rank-color-rgb),0.08);
+            border-image-source: linear-gradient(145deg, rgba(var(--_rank-color-rgb),0.6), rgba(var(--_rank-color-rgb),0.25) 50%, transparent 75%);
+        }
+
+
+        /* 게이트 카드 배경 패턴 */
+        .carousel-item .rank-card-maple::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: repeating-linear-gradient( 45deg, 
+                rgba(var(--_rank-color-rgb), 0.02), rgba(var(--_rank-color-rgb), 0.02) 5px, 
+                transparent 5px, transparent 15px );
+            opacity: 0.35;
+            z-index: 0;
+            pointer-events: none;
+            mix-blend-mode: overlay;
+        }
+        /* 게이트 카드 내용 (패턴 위로) */
+        .carousel-item .rank-card-maple .rank-info {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .carousel-item .rank-card-maple .gate-rank-title {
+            font-family: var(--font-orbitron);
+            font-size: clamp(1.5rem, 2.5vw, 2rem);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            font-weight: 900;
+            letter-spacing: 1.5px;
+            color: var(--_rank-color);
+            text-shadow: 0 0 8px rgba(var(--_rank-color-rgb), 0.5), 0 0 15px rgba(var(--_rank-color-rgb), 0.3);
+            line-height: 1.2;
+        }
+        .carousel-item .rank-card-maple .rank-subtitle { /* .rank-info 내부 .rank-subtitle */
+            font-family: var(--font-rajdhani);
+            font-size: clamp(0.9rem, 1.6vw, 1.1rem);
+            color: var(--text-secondary);
+            font-weight: 600;
+            line-height: 1.3;
+            margin-bottom: 15px;
+            display: block;
+            opacity: 0.9;
+        }
+        .carousel-item .rank-card-maple .rank-info p {
+            font-size: 0.85rem;
+            line-height: 1.6;
+            margin-bottom: 0;
+            color: var(--text-primary);
+            opacity: 0.85;
+            text-align: left;
+            flex-grow: 1;
+            overflow-y: auto; /* 내용 길 경우 스크롤 */
+            max-height: 200px; /* 설명문 최대 높이 (조정 가능) */
+            padding-right: 5px; /* 스크롤바 공간 */
+        }
+        .carousel-item .rank-card-maple .rank-info p::-webkit-scrollbar { width: 6px; }
+        .carousel-item .rank-card-maple .rank-info p::-webkit-scrollbar-thumb {
+            background-color: rgba(var(--glow-primary-rgb), 0.3);
+            border-radius: 3px;
+        }
+        /* 게이트 S, A급 제목 강조 */
+        .carousel-item.rank-s .rank-card-maple .gate-rank-title {
+            font-size: clamp(1.7rem, 2.8vw, 2.2rem); letter-spacing: 2px;
+        }
+        .carousel-item.rank-a .rank-card-maple .gate-rank-title {
+            font-size: clamp(1.6rem, 2.7vw, 2.1rem);
+        }
+
+        /* 커버플로우 아이템 스타일 */
+        .carousel-item.active {
+            transform: scale(1) translateX(0) translateZ(0) rotateY(0deg); /* 명시적 초기화 */
+            opacity: 1; 
+            z-index: 3; 
+            filter: none;
+            margin: 0 10px; /* 활성 아이템은 좌우 마진을 살짝 주어 옆 아이템과 약간의 공간을 둠 */
+        }
+        .carousel-item.active .rank-card-maple {
+             border-image-source: linear-gradient(145deg, rgba(var(--_rank-color-rgb), 0.9), rgba(var(--_rank-color-rgb), 0.45) 50%, transparent 75%);
+             box-shadow: 0 15px 45px rgba(var(--_rank-color-rgb,0,0,0),0.5), /* 활성 아이템 그림자 강화 */
+                        inset 0 0 20px rgba(var(--_rank-color-rgb,0,0,0),0.2),
+                        inset 0 0 40px rgba(var(--_rank-color-rgb),0.1);
+        }
+        .carousel-item.prev-1, 
+        .carousel-item.next-1 {
+            /* translateX 값을 줄여 중앙에 더 가깝게 붙임. rotateY와 translateZ로 깊이감과 겹침 표현 */
+            transform: scale(0.8) translateX(var(--translate-x, 0px)) translateZ(-80px) rotateY(var(--rotate-y, 0deg));
+            opacity: 0.8; /* 이전보다 살짝 더 보이게 */
+            z-index: 2; 
+            filter: grayscale(30%) blur(1px); /* 흐림 효과 강화 */
+        }
+        .carousel-item.prev-1 { --translate-x: -45%; --rotate-y: 35deg; } /* translateX 감소, rotateY 증가 */
+        .carousel-item.next-1 { --translate-x: 45%; --rotate-y: -35deg; }
+
+        /* 중앙에서 두 칸 옆 아이템 (더 흐릿하게, 뒤쪽으로) */
+        .carousel-item.prev-2, 
+        .carousel-item.next-2 {
+            transform: scale(0.65) translateX(var(--translate-x, 0px)) translateZ(-180px) rotateY(var(--rotate-y, 0deg));
+            opacity: 0.25; /* 더 흐릿하게 */
+            z-index: 1; 
+            filter: grayscale(75%) blur(3px); /* 더 강한 필터 */
+        }
+        .carousel-item.prev-2 { --translate-x: -80%; --rotate-y: 45deg; }
+        .carousel-item.next-2 { --translate-x: 80%; --rotate-y: -45deg; }
+
+        /* 그 외 아이템 (거의 안보이게) */
+        .carousel-item:not(.active):not(.prev-1):not(.next-1):not(.prev-2):not(.next-2) {
+            transform: scale(0.5) translateZ(-250px); 
+            opacity: 0; 
+            z-index: 0; 
+            pointer-events: none;
+        }
+
+        /* 모바일 반응형 조정 */
+        @media (max-width: 768px) {
+            .gate-rank-carousel-wrapper {
+                height: 420px; /* 모바일 높이 조정 */
+                -webkit-mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
+            }
+            .carousel-item {
+                width: 260px; /* 모바일 아이템 너비 */
+                margin: 0 -30px; /* 모바일에서의 겹침 정도 조정 */
+            }
+            .carousel-item .rank-card-maple {
+                height: 360px; /* 모바일 카드 높이 */
+                padding: 20px 22px; /* 모바일 패딩 */
+            }
+            .carousel-item.active {
+                 margin: 0 5px; /* 모바일 활성 아이템 마진 */
+            }
+            .carousel-item.prev-1 { --translate-x: -40%; --rotate-y: 25deg; }
+            .carousel-item.next-1 { --translate-x: 40%; --rotate-y: -25deg; }
+            /* 모바일에선 두 칸 옆은 거의 안 보이거나 아예 숨김 처리도 가능 */
+            .carousel-item.prev-2, .carousel-item.next-2 { 
+                opacity: 0.1; filter: grayscale(85%) blur(4px);
+                transform: scale(0.55) translateX(var(--translate-x, 0px)) translateZ(-150px) rotateY(var(--rotate-y, 0deg));
+            }
+             .carousel-item.prev-2 { --translate-x: -70%; --rotate-y: 35deg; }
+             .carousel-item.next-2 { --translate-x: 70%; --rotate-y: -35deg; }
+
+
+            .carousel-item .rank-card-maple .gate-rank-title { font-size: clamp(1.2rem, 3.8vw, 1.7rem); }
+            .carousel-item .rank-card-maple .rank-subtitle { font-size: clamp(0.75rem, 2.8vw, 0.95rem); margin-bottom: 10px; }
+            .carousel-item .rank-card-maple .rank-info p { font-size: 0.75rem; line-height: 1.5; max-height: 170px; }
+        }
+
+        /* GUILD SECTION */
+        .guild-intro-text {
+            text-align: center; font-size: 1.1rem; color: var(--text-secondary);
+            margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto;
+        }
+        .guild-card-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 35px;
+        }
+        .guild-card {
+            background-color: var(--bg-medium); border-radius: 12px; overflow: hidden; 
+            position: relative; border: 1px solid transparent; 
+            box-shadow: 0 5px 20px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+        .guild-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 10px 30px rgba(var(--_guild-glow-rgb, 0,0,0),0.3); 
+            border-color: var(--_guild-glow);
+        }
+        .guild-card-header { padding: 20px 25px; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .guild-card-header h3 {
+            font-family: var(--font-orbitron); font-size: 1.6rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 1.5px; margin: 0;
+            color: var(--_guild-glow); text-shadow: 0 0 8px rgba(var(--_guild-glow-rgb, 0,0,0),0.5);
+        }
+        .guild-card-subtitle {
+            font-family: var(--font-rajdhani); font-size: 0.9rem; color: var(--text-secondary);
+            display: block; margin-top: 5px;
+        }
+        .guild-card-content { padding: 25px; }
+        .guild-card-content p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.8; }
+
+        .guild-card.association { --_guild-glow: var(--guild-association); --_guild-glow-rgb: var(--guild-association-rgb-val); }
+        .guild-card.cheonryong { --_guild-glow: var(--guild-cheonryong); --_guild-glow-rgb: var(--guild-cheonryong-rgb-val); }
+        .guild-card.heukan { --_guild-glow: var(--guild-heukan); --_guild-glow-rgb: var(--guild-heukan-rgb-val); }
+        .guild-card.hyean { --_guild-glow: var(--guild-hyean); --_guild-glow-rgb: var(--guild-hyean-rgb-val); }
+        .guild-card.jeokho { --_guild-glow: var(--guild-jeokho); --_guild-glow-rgb: var(--guild-jeokho-rgb-val); }
+
+        /* About Section */
+        .about-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .info-card {
+            background: var(--bg-medium); padding: 25px; border-radius: 8px;
+            border: 1px solid rgba(var(--glow-primary-rgb,0,229,255),0.08);
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+        .info-card:hover { transform: translateY(-4px); border-color: var(--glow-primary); }
+        .info-card h3 {
+            font-family: var(--font-rajdhani); font-size: 1.3rem; color: var(--glow-primary);
+            margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.8px;
+        }
+        .info-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.65; }
+
+        /* Footer */
+        .footer {
+            padding: 50px 0; background-color: var(--bg-darkest);
+            text-align: center; border-top: 1px solid rgba(var(--glow-primary-rgb,0,229,255),0.08);
+        }
+        .footer p { color: var(--text-secondary); font-size: 0.85rem; font-family: var(--font-rajdhani); letter-spacing: 0.3px; }
+        .footer p a { color: var(--glow-primary); text-decoration: none; }
+        .footer p a:hover { text-decoration: underline; }
+
+        /* Animations */
+        [data-animate] { 
+            opacity: 0; 
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out, filter 0.8s ease-out; 
+        }
+        [data-animate].visible { 
+            opacity: 1; transform: none; filter: none; 
+        } 
+        .animate-fade-in { transform: translateY(40px); } 
+        .animate-slide-left { transform: translateX(-50px); }
+        .animate-slide-right { transform: translateX(50px); }
+        .animate-scale-up { transform: scale(0.9); }
+        .animate-blur-in { filter: blur(5px); transform: scale(0.97); } 
+        [data-animate="animate-blur-in"].visible { filter: blur(0px); }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero { height: auto; min-height: calc(100vh - var(--header-height)); padding-bottom: 50px;} 
+            .nav-links { display: none; } 
+            .hero-title { font-size: clamp(2rem, 10vw, 3.5rem); }
+            .hero-subtitle { font-size: clamp(1rem, 4vw, 1.1rem); }
+            .section { padding: 60px 0; }
+            .section-first { padding-top: 60px; }
+            .section-title-container { padding: 20px 0; margin-bottom: 40px;}
+            .section-title-container h2 { font-size: clamp(1.5rem, 5vw, 2.2rem); }
+            
+            .lore-card-grid { grid-template-columns: 1fr; gap: 25px; }
+            .lore-card { padding: 20px; }
+            .lore-card h3 { font-size: 1.3rem; }
+
+            .rank-tier-group { gap: 25px; }
+            .rank-card-maple { padding: 25px; gap: 20px; }
+            .rank-badge { font-size: clamp(2.5rem, 7vw, 4rem); width: 60px; }
+            .rank-info h3 { font-size: clamp(1.3rem, 2.2vw, 1.8rem); }
+            .rank-info .rank-subtitle { font-size: clamp(0.9rem, 1.6vw, 1.1rem); }
+
+            .guild-card-grid { grid-template-columns: 1fr; gap: 25px; }
+            .guild-card-header { padding: 15px 20px; }
+            .guild-card-header h3 { font-size: 1.4rem; }
+            .guild-card-content { padding: 20px; }
+
+            /* 게이트 캐러셀 모바일 */
+            .gate-rank-carousel-wrapper {
+                height: 440px; /* 모바일 높이 조정 */
+                -webkit-mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+                mask-image: linear-gradient(to right, transparent 0%, black 5%, black 95%, transparent 100%);
+            }
+            .carousel-item {
+                width: 280px; /* 모바일 아이템 너비 */
+                margin: 0 8px;
+            }
+            .carousel-item .rank-card-maple {
+                height: 380px; /* 모바일 카드 높이 */
+                padding: 20px 25px;
+            }
+            .carousel-item.prev-1 { --translate-x: -55%; --rotate-y: 20deg; }
+            .carousel-item.next-1 { --translate-x: 55%; --rotate-y: -20deg; }
+            .carousel-item.prev-2, .carousel-item.next-2 { opacity: 0; pointer-events: none; } /* 모바일에선 2칸 옆은 안보이게 */
+
+            .carousel-item .rank-card-maple .gate-rank-title { font-size: clamp(1.3rem, 4vw, 1.8rem); }
+            .carousel-item .rank-card-maple .rank-subtitle { font-size: clamp(0.8rem, 3vw, 1rem); margin-bottom: 12px; }
+            .carousel-item .rank-card-maple .rank-info p { font-size: 0.8rem; line-height: 1.55; max-height: 180px; }
+        }
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <header class="header">
+        <nav class="nav"> 
+            <div class="logo"><a href="#hero">ALTER-EARTH</a></div>
+            <ul class="nav-links">
+                <li><a href="#hero" class="active">Home</a></li>
+                <li><a href="#overview">개요</a></li>
+                <li><a href="#world">세계관</a></li> 
+                <li><a href="#guilds">소속</a></li>
+                <li><a href="#rankings">랭크</a></li>
+                <li><a href="#gates">게이트</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section id="hero" class="hero">
+        <div class="pv-container">
+            <div class="hero-content">
+                <h1 class="hero-title" data-animate="animate-blur-in" style="transition-delay: 0.2s;">ALTER-EARTH</h1>
+                <p class="hero-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.5s;">차원의 균열이 열리고, 헌터들이 각성한 새로운 세계</p>
+                <a href="#world" class="cta-button" data-animate="animate-fade-in" style="transition-delay: 0.8s;">세계 탐험하기</a>
+            </div>
+        </div>
+    </section>
+
+    <section id="overview" class="section section-darker overview-section">
+        <div class="section-title-container" data-animate="animate-fade-in">
+            <div class="pv-container">
+                <h2>세계관 개요</h2>
+            </div>
+        </div>
+        <div class="pv-container">
+            <div class="overview-content" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                <p>수십 년 전, 세상은 뒤바뀌었다. 하늘에 처음으로 기괴한 균열, <strong>게이트</strong>가 나타난 그날 이후로 인류는 이전과는 전혀 다른 현실에 직면해야 했다. 게이트 너머에서 쏟아져 나온 이계의 존재 <strong>몬스터</strong>는 기존의 상식과 무기로는 상대할 수 없는 재앙이었다. 도시들은 파괴되었고, 문명은 존립의 위협을 받았다.</p>
+                <p>혼란스러운 세상에 혜성같이 등장한 이들은, 스스로를 <strong>헌터</strong>라 칭하는 특별한 능력을 지닌 인간들이었다. 이들은 마나, 혹은 오러라는 불가사의한 힘을 다루며 몬스터와 싸우고 게이트를 공략하며 인류의 방패가 되었다. 시간이 흘러, 파괴되었던 도시는 헌터 인프라를 중심으로 재건되었고, 사람들은 게이트와 헌터가 존재하는 세상에 점차 적응해갔다. 하지만 언제 터질지 모르는 게이트와 그 너머의 위협은 여전히 일상 속에 도사리고 있었다.</p>
+            </div>
+            <div class="overview-keywords" data-animate="animate-fade-in" style="transition-delay: 0.4s;">
+                <span>#현대한국기반</span>
+                <span>#4444</span>
+                <span>#OnlyHL</span>
+            </div>
+        </div>
+    </section>
+
+    <section id="world" class="section section-dark section-first">
+        <div class="section-title-container" data-animate="animate-fade-in">
+            <div class="pv-container">
+                <h2>세계관 설정</h2>
+            </div>
+        </div>
+        <div class="pv-container">
+            <div class="lore-card-grid">
+                <div class="lore-card" data-animate="animate-slide-right" style="transition-delay: 0.1s;">
+                    <div class="lore-card-icon">❖</div>
+                    <h3>헌터 (Hunter)</h3>
+                    <p>어느 날 갑자기 초능력을 각성한 특별한 인간입니다. 이들은 차원 균열인 ‘게이트’ 너머의 던전에서 몬스터를 사냥하며 생계를 유지하며, 활동에 따라 부와 명예를 거머쥐기도 합니다. 일반인과 달리 마나(Mana) 또는 오러(Aura)를 다루며, 일반인에 비해 우월한 신체능력을 보유하고 있습니다. 이들은 현대 사회의 새로운 엘리트 계층으로, 헌터의 활동은 세계 경제와 안보에 큰 영향을 미칩니다.</p>
+                </div>
+                <div class="lore-card" data-animate="animate-slide-right" style="transition-delay: 0.2s;">
+                    <div class="lore-card-icon">❖</div>
+                    <h3>랭크 (Rank)</h3>
+                    <p>헌터 협회가 측정하고 부여하는 공식 등급입니다. 헌터의 잠재 마나량과 전투 능력등을 고려하여 결정합니다. 사회적 지위, 수행 가능 임무, 길드 가입 조건 등에 직접적인 영향을 미치는 핵심 지표입니다. 랭크가 높을수록 더 위험하지만 보상이 큰 게이트에 도전할 자격이 주어집니다. (상세 내용은 '랭크' 탭 참조)</p>
+                </div>
+                <div class="lore-card" data-animate="animate-slide-left" style="transition-delay: 0.3s;">
+                    <div class="lore-card-icon">❖</div>
+                    <h3>게이트 (Gate)</h3>
+                    <p>지구와 다른 차원(던전)을 연결하는 불안정한 공간 균열입니다. 전 세계 곳곳에 무작위로 나타납니다. 등급은 S등급 ~ E등급으로 분류됩니다. 등급이 높을수록 강력한 몬스터가 등장하며, 일주일 이상 방치 시 게이트 브레이크(몬스터 유출 현상)가 발생할 수 있습니다. 일반적으로 던전 내 보스 몬스터를 처치하면 게이트는 소멸합니다. (상세 내용은 '게이트' 탭 참조)</p>
+                </div>
+                <div class="lore-card" data-animate="animate-slide-left" style="transition-delay: 0.4s;">
+                    <div class="lore-card-icon">❖</div>
+                    <h3>헌터 협회</h3>
+                    <p>모든 각성 헌터와 게이트 관련 업무를 총괄하는 정부 산하의 중앙 기관으로, 헌터 등록, 랭크 심사, 게이트 관리, 헌터 지원 및 통제 등 막강한 권한을 가집니다. 헌터 라이선스 발급 및 관리, 게이트 발생 감시 및 통제, 헌터 교육 및 훈련 시설 운영, 몬스터 부산물 연구 및 관리 등을 담당합니다.</p>
+                </div>
+                 <div class="lore-card" data-animate="animate-scale-up" style="transition-delay: 0.5s;"> 
+                    <div class="lore-card-icon">❖</div>
+                    <h3>길드 (Guild)</h3>
+                    <p>헌터들이 자발적으로 결성한 사설 조직입니다. 정부 기관인 헌터 협회와는 별개로 운영되며, 소속 헌터들의 이익과 편의를 도모합니다. 주요 기능으로는 퀘스트 중개, 장비 및 재료 거래 지원, 행정 업무 대행, 정보 공유 등이 있습니다.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="guilds" class="section section-accent-bg">
+        <div class="section-title-container" data-animate="animate-fade-in">
+            <div class="pv-container">
+                 <h2>주요 소속 조직</h2>
+            </div>
+        </div>
+        <div class="pv-container">
+            <p class="guild-intro-text" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                헌터의 소속은 크게 두 가지로 나뉩니다. 하나는 국가 기관인 헌터 협회에 직접 소속되는 것이고,<br>다른 하나는 민간 기업과 유사한 길드에 가입하는 것입니다.
+            </p>
+            <div class="guild-card-grid">
+                <div class="guild-card association" data-animate="animate-scale-up" style="transition-delay: 0.2s;">
+                    <div class="guild-card-header">
+                        <h3>헌터 협회 직속</h3>
+                        <span class="guild-card-subtitle">Hunter Association</span>
+                    </div>
+                    <div class="guild-card-content">
+                        <p>국가 기관인 헌터 협회에 직접 소속되어 공무원과 유사한 역할을 수행합니다. 게이트 관리, 마물 연구, 헌터 행정 등 공익 목적의 임무를 담당하며, 안정적인 보수와 체계적인 시스템의 지원을 받습니다. 협회 내 다양한 전문 부서(관리, 감찰, 특수 임무 등) 중 하나에 소속되어 활동합니다.<br><br><strong>분위기:</strong> 공식적이고 다소 경직된 편입니다. 엄격한 규율과 위계질서를 따라야 하며, 개인의 자율성보다는 조직의 목표와 명령이 우선시됩니다. 공익을 위한 사명감을 강조하는 문화가 있습니다.</p>
+                    </div>
+                </div>
+                <div class="guild-card cheonryong" data-animate="animate-scale-up" style="transition-delay: 0.3s;">
+                    <div class="guild-card-header">
+                        <h3>청룡</h3>
+                        <span class="guild-card-subtitle">Azure Dragon Guild</span>
+                    </div>
+                    <div class="guild-card-content">
+                        <p>가장 오래되고 안정적인 기반을 갖춘 명문 길드. 균형과 조화를 중시하며, 딜러, 탱커, 서포터 등 다양한 역할의 헌터들을 체계적으로 육성하고 관리합니다. 탄탄한 교육 시스템과 풍부한 자원을 바탕으로 꾸준히 우수한 헌터를 배출하며, 협회와의 관계도 가장 원만합니다.<br><br><strong>분위기:</strong> 질서정연하고 전문적인 길드입니다. 길드원들은 엘리트 의식이 강하며, 체계와 규율을 중시합니다. 다소 보수적이고 거리감이 느껴질 수 있지만, 안정성과 예측 가능성을 선호하는 헌터들에게는 최적의 환경입니다.</p>
+                    </div>
+                </div>
+                <div class="guild-card heukan" data-animate="animate-scale-up" style="transition-delay: 0.4s;">
+                    <div class="guild-card-header">
+                        <h3>흑오</h3>
+                        <span class="guild-card-subtitle">Obsidian Crow Guild</span>
+                    </div>
+                    <div class="guild-card-content">
+                        <p>암살, 정보 조작, 잠입 등 그림자 속 활동에 극도로 특화된 길드. 길드원 개개인의 암살 기술과 은밀 기동 능력을 최우선으로 평가하며, 목표 제거, 침투, 정보 탈취 등 어둠 속 임무를 전문으로 수행합니다. 길드의 존재 자체도 베일에 싸여 있으며, 철저한 비밀주의를 원칙으로 합니다.<br><br><strong>분위기:</strong> 길드원은 서로의 정체조차 모르는 경우가 많으며, 오직 실력과 결과로만 말합니다. 임무 성공을 위해서라면 수단과 방법을 가리지 않는 비정함이 특징입니다. 암살자나 비밀 공작원이 되기를 원하는 헌터들이 모입니다.</p>
+                    </div>
+                </div>
+                <div class="guild-card hyean" data-animate="animate-scale-up" style="transition-delay: 0.5s;">
+                    <div class="guild-card-header">
+                        <h3>혜안</h3>
+                        <span class="guild-card-subtitle">Insight Guild</span>
+                    </div>
+                    <div class="guild-card-content">
+                        <p>게이트 정보 수집, 기술 개발, 전략 분석, 물류 지원 등 비전투 분야에 특화된 길드. 뛰어난 서포터, 분석가, 기술자 헌터들이 모여 있으며, 게이트 직접 공략보다는 정보 우위와 기술 지원을 통해 영향력을 행사합니다. 자체 개발한 특수 장비나 정보 네트워크는 타의 추종을 불허합니다.<br><br><strong>분위기:</strong> 조용하고 지적인 탐구 분위기의 길드입니다. 길드원들은 각자의 전문 분야에 몰두하며, 외부와의 교류보다는 내부 연구나 정보 교환에 집중합니다.</p>
+                    </div>
+                </div>
+                <div class="guild-card jeokho" data-animate="animate-scale-up" style="transition-delay: 0.6s;">
+                     <div class="guild-card-header">
+                        <h3>적호</h3>
+                        <span class="guild-card-subtitle">Crimson Tiger Squad</span>
+                    </div>
+                    <div class="guild-card-content">
+                        <p>극한의 실전 경험을 쌓은 베테랑 헌터들이 주축이며, 가장 위험하고 어려운 게이트 공략이나 미개척 지역 탐사를 도맡습니다. 때문에 평시에도 고강도 훈련을 진행하고 있으며, 가장 적응하기 혹독한 길드입니다.<br><br><strong>분위기:</strong> 적응한 길드원들에 한해 분위기는 전우애로 돈독한 편입니다. 길드원 사이의 유대가 강하고 집단적인 움직임을 보입니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="rankings" class="section section-darker ranking-section-maple">
+        <div class="section-title-container" data-animate="animate-fade-in">
+            <div class="pv-container">
+                <h2>헌터 랭크</h2>
+            </div>
+        </div>
+        <div class="pv-container">
+            <p class="rank-intro-text-maple" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                헌터의 랭크는 단순한 전투력의 지표를 넘어, 사회적 인식과 대우, 그리고<br>그들이 짊어지는 책임의 무게를 나타냅니다.
+            </p>
+            <div class="rank-tier-group top-tier">
+                <div class="rank-card-maple rank-s" data-animate="animate-slide-up-maple" style="transition-delay: 0.2s;">
+                    <div class="rank-badge">S</div>
+                    <div class="rank-info">
+                        <h3>S급 (S-Rank)</h3>
+                        <span class="rank-subtitle">정점</span>
+                        <p>인간으로서 도달할 수 있는 극한의 경지에 오른 극소수의 헌터. 전 세계적으로도 수십 명 내외의 희귀한 존재입니다. 이들은 단순한 강자를 넘어 국가 안보의 최후 방어선이자, 가장 위험한 S급 게이트에 맞설 수 있는 사실상 유일한 희망입니다. 이들의 건강 상태나 활동 여부가 국가 안위와 직결될 정도로 중요하게 다뤄집니다.</p>
+                    </div>
+                </div>
+                <div class="rank-card-maple rank-a" data-animate="animate-slide-up-maple" style="transition-delay: 0.3s;">
+                    <div class="rank-badge">A</div>
+                    <div class="rank-info">
+                        <h3>A급 (A-Rank)</h3>
+                        <span class="rank-subtitle">최상위 헌터</span>
+                        <p>국가적으로 매우 중요한 전략 자원. 각성자 중에서도 소수만이 도달하는 경지. A급 게이트를 소수 정예로 공략 가능하며, S급 게이트 공략 시 S급 헌터를 보좌하고 핵심적인 역할을 수행합니다. 이들의 존재 유무가 국가의 대(對)게이트 전략 수립에 큰 영향을 미칩니다.</p>
+                        <p><strong>활동/위상:</strong> A급 게이트 공략, 국가적 위기 상황 해결, 후진 양성 및 전략 자문. 길드 마스터급이거나, 협회 고위 간부, 혹은 그에 준하는 대우를 받습니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="rank-tier-group mid-tier">
+                <div class="rank-card-maple rank-b" data-animate="animate-slide-up-maple" style="transition-delay: 0.4s;">
+                    <div class="rank-badge">B</div>
+                    <div class="rank-info">
+                        <h3>B급 (B-Rank)</h3>
+                        <span class="rank-subtitle">엘리트 헌터, 길드의 기둥</span>
+                        <p>길드의 주력 멤버이자 핵심 전력. B급 게이트를 안정적으로 공략하며, A급 게이트 공략에도 파티원으로 참여합니다. 국가 단위에서도 중요한 인적 자원으로 분류되며, 미디어에 노출되어 대중적 인지도를 얻기도 합니다. 이들이 얼마나 확보되느냐가 길드의 실질적인 경쟁력을 좌우합니다.</p>
+                        <p><strong>활동/위상:</strong> B급 게이트 공략 지휘, A급 게이트 공략 멤버, 신규 유망주 스카우트. 대형 길드에서는 팀장급 위치를 차지하며, 상당한 부와 명예를 누립니다.</p>
+                    </div>
+                </div>
+                <div class="rank-card-maple rank-c" data-animate="animate-slide-up-maple" style="transition-delay: 0.5s;">
+                    <div class="rank-badge">C</div>
+                    <div class="rank-info">
+                        <h3>C급 (C-Rank)</h3>
+                        <span class="rank-subtitle">숙련된 헌터</span>
+                        <p>안정적인 전투력과 경험을 갖춘 헌터. D급 게이트는 쉽게 처리하며, C급 게이트 공략의 주축이 됩니다. B급 헌터와 함께 B급 게이트 공략에 참여하기도 합니다. 이들부터 '헌터'로서 사회적 존중을 받기 시작하며, 중소 길드의 핵심 멤버로 활동합니다.</p>
+                        <p><strong>활동/위상:</strong> C급 게이트 공략 주도, D급 헌터 교육 및 지휘, 지역 방위 임무 수행. 이들은 지역 사회에서 어느 정도 영향력을 행사하며, 안정적인 수입을 얻습니다.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="rank-tier-group entry-tier">
+                <div class="rank-card-maple rank-d" data-animate="animate-slide-up-maple" style="transition-delay: 0.6s;">
+                    <div class="rank-badge">D</div>
+                    <div class="rank-info">
+                        <h3>D급 (D-Rank)</h3>
+                        <span class="rank-subtitle">초보 헌터</span>
+                        <p>정식 헌터로서 최소한의 자격을 갖춘 이들. E급 게이트는 단독으로, D급 게이트는 파티를 이루어 공략할 수 있습니다. 하지만 여전히 위험에 쉽게 노출되며, 사망률도 높은 편입니다.</p>
+                        <p><strong>활동/위상:</strong> E, D급 게이트 공략, C급 게이트 공략 시 후방 지원 및 잡일 담당. 길드에서는 말단 멤버로, 주로 선배 헌터들의 지시에 따라 움직입니다. 성장 가능성에 따라 길드의 투자를 받기도 합니다.</p>
+                    </div>
+                </div>
+                <div class="rank-card-maple rank-e" data-animate="animate-slide-up-maple" style="transition-delay: 0.7s;">
+                    <div class="rank-badge">E</div>
+                    <div class="rank-info">
+                        <h3>E급 (E-Rank)</h3>
+                        <span class="rank-subtitle">막 깨어난 신입</span>
+                        <p>갓 각성했거나 능력이 미미한 헌터. 일반인보다는 강하지만, 제대로 된 몬스터 사냥은 어렵습니다. 사회적으로는 '잠재적 시한폭탄' 혹은 '보호 관찰 대상'으로 여겨지기도 하며, 제대로 된 헌터로 인정받지 못하는 경우가 많습니다.</p>
+                        <p><strong>활동/위상:</strong> 헌터 협회의 기초 훈련 이수, D급 게이트 주변 경비 보조, 저급 몬스터 부산물 채집 등 극히 안전한 임무에 제한적으로 투입됩니다. 길드에서는 견습생 취급이거나, 아예 가입조차 어려운 경우가 많습니다.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="gates" class="section section-darker ranking-section-maple">
+        <div class="section-title-container" data-animate="animate-fade-in">
+            <div class="pv-container">
+                <h2>게이트</h2>
+            </div>
+        </div>
+        <div class="pv-container">
+            <div class="lore-card-grid" style="margin-bottom: 60px;">
+                <div class="lore-card" data-animate="animate-slide-right" style="transition-delay: 0.1s;">
+                    <div class="lore-card-icon">🌀</div>
+                    <h3>게이트 (Gate)</h3>
+                    <p>지구와 다른 차원(던전)을 연결하는 불안정한 공간 균열입니다. 전 세계 곳곳에 무작위로 나타나며, 초기에는 미세한 공간 왜곡이나 아지랑이 등으로 관측됩니다. 실체화되면 등급에 따라 특유의 색을 띤 에너지 소용돌이 형태를 띠며, 크기는 다양합니다. 헌터 협회는 발생 전조를 감지하며, 보스 몬스터 처치 시 소멸합니다. 헌터는 소멸 전 탈출해야 합니다.</p>
+                </div>
+                <div class="lore-card" data-animate="animate-slide-right" style="transition-delay: 0.2s;">
+                    <div class="lore-card-icon">🏞️</div>
+                    <h3>던전 (Dungeon)</h3>
+                    <p>게이트 너머의 이세계로, 지구와 다른 환경, 생태계, 물리 법칙을 가질 수 있습니다. 등급이 높을수록 이질성과 위험성이 증가합니다. 내부에서는 '마정석'을 비롯한 희귀 자원, 고대 유물 및 기술 등이 발견될 수 있어 헌터들의 주요 파밍 대상이 됩니다.</p>
+                </div>
+                <div class="lore-card" data-animate="animate-slide-left" style="transition-delay: 0.3s;">
+                    <div class="lore-card-icon">💥</div>
+                    <h3>게이트 브레이크 <br> (Gate Break)</h3>
+                    <p>게이트가 일정 시간 이상 방치되거나 내부 에너지 불균형 등으로 몬스터가 현실로 유출되는 현상입니다. 게이트 주변 마나 농도 급상승, 물리 법칙 왜곡 등 광범위한 환경 변화를 유발합니다. 헌터 협회는 비상사태를 선포하고 총력 대응합니다.</p>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 20px; position: relative;" data-animate="animate-fade-in" style="transition-delay: 0.4s;">
+                <h3 style="font-family: var(--font-orbitron); font-size: clamp(1.5rem, 3vw, 2.2rem); color: var(--accent-color); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 6px var(--glow-primary); margin-bottom: 30px;">
+                    게이트 등급별 상세
+                </h3>
+            </div>
+
+            <div class="gate-rank-carousel-container" data-animate="animate-fade-in" style="transition-delay: 0.5s;">
+                <div class="gate-rank-carousel-wrapper">
+                    <div class="gate-rank-carousel-track" id="gateRankTrack">
+                        <!-- E급 게이트 -->
+                        <div class="carousel-item rank-e">
+                            <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">E급 게이트</h3>
+                                    <span class="rank-subtitle">경미한 위협</span>
+                                    <p>내부 던전은 작고 단순한 구조(단층 동굴, 작은 숲 등)이며, 약한 고블린, 슬라임, 거대 벌레 등이 출현합니다. 훈련받은 D급 헌터 한 명으로도 공략 가능합니다. 게이트 브레이크 시 작은 몬스터 몇 마리가 유출되는 경미한 수준입니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- D급 게이트 -->
+                        <div class="carousel-item rank-d">
+                            <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">D급 게이트</h3>
+                                    <span class="rank-subtitle">조직적 몬스터 등장</span>
+                                    <p>던전 규모가 커지고(여러 갈래길 동굴, 작은 폐허 마을 등), 오크, 코볼트 무리, 중형 맹수형 몬스터 등 조직적인 움직임을 보이는 몬스터도 나타납니다. D급 헌터 파티 또는 C급 소수 파티가 공략합니다. 게이트 브레이크 시 소규모 몬스터 무리가 유출되어 지역 사회에 피해를 줄 수 있습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- C급 게이트 -->
+                        <div class="carousel-item rank-c">
+                             <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">C급 게이트</h3>
+                                    <span class="rank-subtitle">복잡한 던전</span>
+                                    <p>던전 내부가 복잡해지며(미로형 던전, 중규모 성채 등), 오우거, 트롤, 하피 등 강력한 중간 보스급 몬스터가 출현합니다. C급 헌터 정예 파티 또는 B급 헌터가 포함된 파티가 공략합니다. 게이트 브레이크 발생 시 해당 지역에 상당한 인명 및 재산 피해가 발생하며, 경찰력으로는 감당하기 어렵습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- B급 게이트 -->
+                        <div class="carousel-item rank-b">
+                             <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">B급 게이트</h3>
+                                    <span class="rank-subtitle">소규모 생태계</span>
+                                    <p>던전 내부는 하나의 소규모 생태계를 이루며(고대 유적군, 특정 테마 지역 등), 와이번, 하급 악마, 리치 등 지능이 높고 강력한 보스 몬스터가 존재합니다. B급 헌터로 구성된 공격대 또는 A급 헌터의 지휘가 필요합니다. 게이트 브레이크 발생 시 도시 하나가 마비될 정도의 재앙으로, 군대 투입이 고려됩니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- A급 게이트 -->
+                        <div class="carousel-item rank-a">
+                            <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">A급 게이트</h3>
+                                    <span class="rank-subtitle">독립된 '세계'</span>
+                                    <p>던전 내부는 하나의 독립된 '세계'에 가까우며(부유섬, 이계 도시 등), 고룡, 상급 악마, 신화 속 괴수 등 재앙급 보스 몬스터가 지배합니다. A급 헌터와 최정예 B급 헌터들을 총동원해야 공략을 시도할 수 있으며, S급 헌터 1~2명 개입 시 공략 성공률과 안정성이 비약적으로 상승합니다. 게이트 브레이크는 국가 존립을 위협하는 대재앙으로, 주변 수백 km가 초토화될 수 있습니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- S급 게이트 -->
+                        <div class="carousel-item rank-s">
+                             <div class="rank-card-maple">
+                                <div class="rank-info">
+                                    <h3 class="gate-rank-title">S급 게이트</h3>
+                                    <span class="rank-subtitle">차원</span>
+                                    <p>내부는 상상조차 할 수 없는 미지의 공간, 혹은 하나의 작은 차원 그 자체입니다. 등장 몬스터는 '신화 속 재앙'에 필적하며, 일반 몬스터조차 A급 게이트 보스급의 위력을 지닙니다. S급 헌터의 지휘 하에 국가의 모든 A급 헌터와 최정예 B급 헌터 연합군이 총력전을 펼쳐야만 공략의 희망을 걸 수 있으며, 막대한 희생이 동반될 수 있습니다. 게이트 브레이크는 세계 멸망급 시나리오입니다.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+</div> 
+
+<script>
+    const root = document.documentElement;
+    root.style.setProperty('--glow-primary-rgb', '0, 229, 255');
+    root.style.setProperty('--glow-secondary-rgb', '255, 130, 66'); 
+    root.style.setProperty('--bg-darkest-rgb', '8, 10, 12'); 
+    root.style.setProperty('--guild-association-rgb-val', '176,190,197');
+    root.style.setProperty('--guild-cheonryong-rgb-val', '41,182,246');
+    root.style.setProperty('--guild-heukan-rgb-val', '171,71,188');
+    root.style.setProperty('--guild-hyean-rgb-val', '236,64,122');
+    root.style.setProperty('--guild-jeokho-rgb-val', '239,83,80');
+    root.style.setProperty('--accent-color-rgb', '240,248,255');
+    
+    // 헌터 랭크 RGB 값 (게이트 랭크와 구분)
+    root.style.setProperty('--rank-s-rgb-val', '255,215,0');
+    root.style.setProperty('--rank-a-rgb-val', '192,192,192');
+    root.style.setProperty('--rank-b-rgb-val', '205,127,50');
+    root.style.setProperty('--rank-c-rgb-val', '106,147,212');
+    root.style.setProperty('--rank-d-rgb-val', '119,221,119');
+    root.style.setProperty('--rank-e-rgb-val', '169,169,169');
+
+    const header = document.querySelector('.header');
+    const headerHeight = parseInt(getComputedStyle(root).getPropertyValue('--header-height')); 
+
+    const sections = Array.from(document.querySelectorAll('section[id]')); 
+    const navLinks = document.querySelectorAll('.nav-links a');
+    
+    function updateActiveNavLink() {
+        let current = 'hero'; 
+        const scrollCenter = window.pageYOffset + window.innerHeight / 2; 
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - headerHeight;
+            const sectionBottom = sectionTop + section.offsetHeight;
+            if (scrollCenter >= sectionTop && scrollCenter < sectionBottom) { 
+                current = section.getAttribute('id');
+            }
+        });
+        if (!document.getElementById(current) && sections.length > 0) {
+            if (window.pageYOffset < (sections[0].offsetTop - headerHeight - 50) ) {
+                current = 'hero'; 
+            } else {
+                let closestSectionId = sections[0].id;
+                let minDistance = Math.abs(window.pageYOffset - (sections[0].offsetTop - headerHeight));
+                sections.forEach(s => {
+                    const distance = Math.abs(window.pageYOffset - (s.offsetTop - headerHeight));
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestSectionId = s.id;
+                    }
+                });
+                current = closestSectionId;
+            }
+        }
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href').substring(1);
+            if (href === current) { link.classList.add('active'); }
+        });
+        if (!document.querySelector('.nav-links a.active') && window.pageYOffset < 50) {
+             navLinks.forEach(l => l.classList.remove('active')); 
+             const homeLink = document.querySelector('.nav-links a[href="#hero"]');
+             if (homeLink) homeLink.classList.add('active');
+             else if (navLinks.length > 0) navLinks[0].classList.add('active');
+        }
+    }
+    
+    window.addEventListener('scroll', updateActiveNavLink);
+    window.addEventListener('load', () => {
+        updateActiveNavLink(); 
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            if (el.getBoundingClientRect().top < window.innerHeight && el.getBoundingClientRect().bottom >= 0) {
+                 el.classList.add('visible'); 
+            }
+        });
+    }); 
+
+    const animationOptions = { threshold: 0.1, rootMargin: "0px 0px -50px 0px" };
+    const observer = new IntersectionObserver((entries, observerInstance) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const el = entry.target;
+                el.classList.add('visible'); 
+                observerInstance.unobserve(el); 
+            }
+        });
+    }, animationOptions);
+    document.querySelectorAll('[data-animate]').forEach(el => {
+        el.classList.add(el.dataset.animate); 
+        observer.observe(el);
+    });
+
+    // Gate Rank Carousel Logic (Infinite Loop Coverflow)
+    const gateRankTrackContainer = document.querySelector('.gate-rank-carousel-wrapper');
+    const gateRankTrack = document.getElementById('gateRankTrack');
+
+    if (gateRankTrackContainer && gateRankTrack) {
+        let gateRankItemsOriginal = Array.from(gateRankTrack.querySelectorAll('.carousel-item'));
+        const originalItemCount = gateRankItemsOriginal.length;
+        let gateRankCurrentDataIndex = 0; 
+        let gateRankDisplayIndex = 0;    
+        
+        const visibleSiblings = 2; 
+        const clonesCount = Math.max(visibleSiblings * 2 + 1, originalItemCount); 
+
+        let isTransitioning = false;
+        let itemWidthWithMargin = 0;
+        let gateRankItemsCloned = []; 
+
+        function calculateItemWidth() {
+            if (gateRankItemsCloned.length > 0) {
+                const firstItem = gateRankItemsCloned[0];
+                const style = window.getComputedStyle(firstItem);
+                // getBoundingClientRect().width가 더 정밀할 수 있음
+                itemWidthWithMargin = firstItem.getBoundingClientRect().width + parseFloat(style.marginLeft) + parseFloat(style.marginRight);
+            }
+        }
+
+        function setupCarousel() {
+            if (originalItemCount === 0) return;
+
+            gateRankTrack.innerHTML = ''; // 기존 아이템 초기화 (복제 전)
+            gateRankItemsOriginal.forEach(item => gateRankTrack.appendChild(item.cloneNode(true))); // 원본 아이템 다시 추가
+            gateRankItemsOriginal = Array.from(gateRankTrack.querySelectorAll('.carousel-item')); // 원본 목록 갱신
+
+
+            for (let i = 0; i < clonesCount; i++) {
+                const cloneEnd = gateRankItemsOriginal[i % originalItemCount].cloneNode(true);
+                gateRankTrack.appendChild(cloneEnd);
+            }
+            for (let i = 0; i < clonesCount; i++) {
+                const cloneStart = gateRankItemsOriginal[originalItemCount - 1 - (i % originalItemCount)].cloneNode(true);
+                gateRankTrack.insertBefore(cloneStart, gateRankTrack.firstChild);
+            }
+            
+            gateRankItemsCloned = Array.from(gateRankTrack.querySelectorAll('.carousel-item'));
+            gateRankDisplayIndex = clonesCount; 
+            
+            calculateItemWidth();
+            positionTrack(false); 
+            updateGateRankCarouselStyles();
+        }
+
+        function positionTrack(withAnimation = true) {
+            if (!itemWidthWithMargin || gateRankItemsCloned.length === 0) return;
+            
+            const containerWidth = gateRankTrackContainer.offsetWidth;
+            const centralItemVisual = gateRankItemsCloned[gateRankDisplayIndex];
+            if(!centralItemVisual) return;
+
+            // centralItemVisual의 실제 시작점(offsetLeft)과 너비(offsetWidth)를 사용
+            const centralItemCenterRelativeToTrack = centralItemVisual.offsetLeft + (centralItemVisual.offsetWidth / 2);
+            let targetOffset = (containerWidth / 2) - centralItemCenterRelativeToTrack;
+            targetOffset = Math.round(targetOffset); // << 중앙 정렬 미세 오차 보정
+
+            if (withAnimation) {
+                gateRankTrack.style.transition = 'transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            } else {
+                gateRankTrack.style.transition = 'none';
+            }
+            gateRankTrack.style.transform = `translateX(${targetOffset}px)`;
+        }
+
+        function updateGateRankCarouselStyles() {
+            gateRankItemsCloned.forEach((item, index) => {
+                item.classList.remove('active', 'prev-1', 'next-1', 'prev-2', 'next-2');
+                const diff = index - gateRankDisplayIndex;
+
+                if (diff === 0) { item.classList.add('active'); }
+                else if (diff > 0 && diff <= visibleSiblings) { item.classList.add(`next-${diff}`); }
+                else if (diff < 0 && diff >= -visibleSiblings) { item.classList.add(`prev-${Math.abs(diff)}`); }
+            });
+        }
+
+        function moveTo(directionOrIndex, isIndex = false) {
+            if (isTransitioning || originalItemCount === 0) return;
+            isTransitioning = true;
+            gateRankTrack.style.pointerEvents = 'none'; // 트랜지션 중 클릭 방지
+
+            let nextDisplayIndex;
+            if (isIndex) { 
+                nextDisplayIndex = directionOrIndex;
+            } else { 
+                nextDisplayIndex = gateRankDisplayIndex + (directionOrIndex === 'next' ? 1 : -1);
+            }
+            
+            gateRankDisplayIndex = nextDisplayIndex;
+            positionTrack(true);
+            updateGateRankCarouselStyles();
+
+            gateRankTrack.addEventListener('transitionend', function handleTransitionEnd() {
+                gateRankTrack.removeEventListener('transitionend', handleTransitionEnd); // 리스너 즉시 제거
+                isTransitioning = false;
+                gateRankTrack.style.pointerEvents = ''; // 클릭 허용 복원
+
+                const currentActualDataIndex = (gateRankDisplayIndex - clonesCount + originalItemCount * 1000) % originalItemCount;
+
+                if (gateRankDisplayIndex < clonesCount || gateRankDisplayIndex >= clonesCount + originalItemCount) {
+                    gateRankTrack.style.transition = 'none';    // 점프 전 트랜지션 제거
+                    gateRankTrack.style.opacity = '0';          // << 블링크 방지: 숨김
+
+                    gateRankDisplayIndex = clonesCount + currentActualDataIndex;
+                    positionTrack(false); 
+
+                    // 강제 리플로우 유도 (브라우저가 opacity:0을 먼저 그리도록)
+                    // void gateRankTrack.offsetWidth; 
+
+                    requestAnimationFrame(() => {
+                        gateRankTrack.style.opacity = '1';      // << 블링크 방지: 보임
+                        updateGateRankCarouselStyles();         // 스타일 즉시 업데이트
+                        // 다음 인터랙션을 위해 CSS 트랜지션 복원은 positionTrack(true)에서 처리됨
+                    });
+                }
+                gateRankCurrentDataIndex = currentActualDataIndex; // 실제 데이터 인덱스 업데이트
+            }/*, { once: true } - 일부 브라우저에서 once가 완벽하지 않을 수 있어 수동 제거 선호 */);
+        }
+
+        gateRankTrack.addEventListener('click', (e) => {
+            const clickedItem = e.target.closest('.carousel-item');
+            if (!clickedItem || isTransitioning) return;
+
+            const clickedItemIndexInClonedArray = gateRankItemsCloned.indexOf(clickedItem);
+            if (clickedItemIndexInClonedArray === -1) return;
+            
+            const diff = clickedItemIndexInClonedArray - gateRankDisplayIndex;
+
+            if (diff === 0) return; 
+
+            if (diff > 0 && diff <= visibleSiblings) { 
+                for(let i=0; i<diff; i++) { 
+                    // moveTo('next')를 diff번 호출하는 대신, 목표 인덱스로 직접 이동
+                    // 단, isTransitioning 플래그 때문에 연속 호출이 막힐 수 있으므로,
+                    // 한 번에 목표로 이동하도록 moveTo 수정 또는 다른 방식 사용 필요
+                }
+                moveTo(gateRankDisplayIndex + diff, true); // 목표 displayIndex로 이동
+            } else if (diff < 0 && diff >= -visibleSiblings) { 
+                 moveTo(gateRankDisplayIndex + diff, true); // 목표 displayIndex로 이동
+            }
+        });
+        
+        let gateTouchStartX = 0;
+        let dragStartTrackX = 0;
+
+        gateRankTrack.addEventListener('touchstart', (e) => {
+            if (isTransitioning) return;
+            gateTouchStartX = e.changedTouches[0].screenX;
+            const currentTransform = window.getComputedStyle(gateRankTrack).transform;
+            dragStartTrackX = (currentTransform && currentTransform !== 'none') ? new DOMMatrix(currentTransform).m41 : 0;
+            gateRankTrack.style.transition = 'none';
+        }, { passive: true });
+
+        gateRankTrack.addEventListener('touchmove', (e) => {
+            if (gateTouchStartX === 0 || isTransitioning) return;
+            const currentX = e.changedTouches[0].screenX;
+            const diffX = currentX - gateTouchStartX;
+            gateRankTrack.style.transform = `translateX(${dragStartTrackX + diffX}px)`;
+        }, { passive: true });
+
+        gateRankTrack.addEventListener('touchend', (e) => {
+            if (gateTouchStartX === 0 || isTransitioning) return;
+            const gateTouchEndX = e.changedTouches[0].screenX;
+            const swipeDistance = gateTouchEndX - gateTouchStartX;
+            gateTouchStartX = 0;
+
+            if (Math.abs(swipeDistance) > 30) { // 스와이프 감지 임계값 살짝 줄임
+                moveTo(swipeDistance < 0 ? 'next' : 'prev');
+            } else {
+                positionTrack(true); 
+            }
+        });
+
+        const resizeObserver = new ResizeObserver(() => {
+            if (originalItemCount > 0) {
+                calculateItemWidth();
+                positionTrack(false);
+                updateGateRankCarouselStyles();
+            }
+        });
+        if (gateRankTrackContainer) {
+            resizeObserver.observe(gateRankTrackContainer);
+        }
+
+        if (originalItemCount > 0) {
+            setupCarousel();
+            setTimeout(() => {
+                isTransitioning = false;
+                positionTrack(true); 
+                updateGateRankCarouselStyles();
+            }, 100); 
+        }
+    }
+</script>
+</body>
+</html>
