@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>혜안 길드 | ALTER-EARTH LORE</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+<body class = "page-hyean">
+<div class="page-wrapper">
+    <header class="header">
+        <nav class="nav"> 
+            <div class="logo"><a href="../index.html">ALTER-EARTH</a></div>
+            <!-- 데스크탑용 네비게이션 -->
+            <ul class="nav-links">
+                <li><a href="../index.html#hero">Home</a></li>
+                <li><a href="../index.html#overview">개요</a></li>
+                <li><a href="../index.html#world">세계관</a></li> 
+                <li><a href="../index.html#guilds">소속</a></li>
+                <li><a href="../index.html#gates">게이트</a></li>
+            </ul>
+
+            <!-- 모바일용 햄버거 버튼 -->
+            <button class="hamburger-btn" aria-label="메뉴 열기">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="mobile-menu">
+        <ul class="nav-links mobile-nav-links">
+            <li><a href="../index.html#hero">Home</a></li>
+            <li><a href="../index.html#overview">개요</a></li>
+            <li><a href="../index.html#world">세계관</a></li>
+            <li><a href="../index.html#guilds">소속</a></li>
+            <li><a href="../index.html#gates">게이트</a></li>
+        </ul>
+    </div>
+
+    <div class="faction-hero">
+        <div class="hero-content">
+            <!-- ### 카테고리 텍스트 ### -->
+            <span class="hero-category" data-animate="animate-fade-in">ORGANIZATION</span>
+            
+            <!-- ### 페이지 제목 (메인 페이지로 돌아가는 링크) ### -->
+            <a href="../index.html" class="hero-title-link" data-animate="animate-blur-in" style="transition-delay: 0.2s;">
+                <h1 class="hero-title">혜안 (慧眼)</h1>
+            </a>
+
+            <!-- ### 슬로건 ### -->
+            <p class="hero-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.4s;">"전장의 승패는 무기가 아니라, 정보가 결정한다."</p>
+        </div>
+    </div>
+
+    <section class="faction-switcher" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+        <div class="pv-container">
+            <div class="switcher-buttons">
+                <a href="association.html" class="switcher-btn association"><span>헌터 협회</span></a>
+                <a href="cheongryong.html" class="switcher-btn cheonryong"><span>청룡</span></a>
+                <!-- 현재 페이지이므로 'current' 클래스 추가 -->                
+                <a href="hyean.html" class="switcher-btn hyean current"><span>혜안</span></a>
+                <a href="jeokho.html" class="switcher-btn jeokho"><span>적호</span></a>
+                <a href="heuko.html" class="switcher-btn heuko"><span>흑오</span></a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content pv-container">
+        <div class="content-grid">
+            <!-- 좌측 메인 콘텐츠 -->
+            <article class="faction-article">
+                <section id="overview" class="content-section">
+                    <p class="lead-paragraph" data-animate="animate-fade-in">
+                        혜안은 최고 수준의 서포터형 헌터와 독보적인 정보 분석 시스템을 결합하여, 전장의 안정성과 작전 성공률을 극대화하는 '종합 서포트 전문 길드'이다. 직접적인 공격보다는, 아군 강화, 적군 약화, 치유, 방어 및 실시간 전장 분석을 통해 전투의 향방을 지배하는 것을 목표로 한다.
+                    </p>
+                </section>
+
+                <section id="capability" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">핵심 역량 및 사업 분야</h2>
+                    <p data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                        혜안의 영향력은 강력한 현장 지원 능력과 독점적인 정보력의 시너지에서 비롯된다. 이들은 단순한 용병 파견이 아닌, 데이터 기반의 종합 솔루션을 제공한다.
+                    </p>
+                    <!-- id="capability" 섹션 내부 -->
+                    <div class="detail-grid">
+                        <!-- 고급 서포트 용역 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.2s;">
+                            <div class="detail-icon"><i class="fa-solid fa-shield-heart"></i></div>
+                            <h3>고급 서포트 용역</h3>
+                            <p>최상급 서포터(힐러, 버퍼, 디버퍼, 실더 등)로 구성된 전문 팀을 타 길드나 기관의 고난도 게이트 공략에 파견한다.</p>
+                        </div>
+                        <!-- 정보 수집 및 분석 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.3s;">
+                            <div class="detail-icon"><i class="fa-solid fa-chart-pie"></i></div>
+                            <h3>정보 수집 및 분석</h3>
+                            <p>실시간 전장 데이터를 수집/분석하여 서포트 팀의 현장 판단력을 극대화하고, 외부 고객에게 유료 정보 상품을 제공한다.</p>
+                        </div>
+                        <!-- 기술 연구 개발 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.4s;">
+                            <div class="detail-icon"><i class="fa-solid fa-gears"></i></div>
+                            <h3>기술 연구 개발 (R&D)</h3>
+                            <p>마나 공학 기반의 차세대 서포트 장비(광역 쉴드 생성기, 마나 회복 장치 등) 및 특수 포션을 개발하고 판매한다.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="organization" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">조직 구성</h2>
+                    <p class="section-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.1s;">혜안은 현장 지원과 후방 분석을 유기적으로 결합한 조직 체계를 갖추고 있다.</p>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>현장지원부 (Field Support Division):</strong> 혜안의 핵심. 대한민국 최고의 서포터형 헌터들이 소속된 정예 부서로, 길드의 주 수입원이다.</li>
+                        <li data-animate="animate-fade-in"><strong>정보분석실 (Information Analysis Dept.):</strong> '아라크네 웹'을 관리하고 수집된 데이터를 분석하는 두뇌. 현장지원부에 실시간 전술적 조언을 제공한다.</li>
+                        <li data-animate="animate-fade-in"><strong>기술개발 연구소 (Tech R&D Center):</strong> 현장지원부의 능력을 극대화하기 위한 신기술 및 장비 연구를 전담한다.</li>
+                        <li data-animate="animate-fade-in"><strong>전략기획팀 (Strategy & Planning Team):</strong> 고객의 의뢰에 맞춰 최적의 서포트 팀과 장비, 전략을 패키지로 구성하여 제안하는 컨설팅 전문 부서이다.</li>
+                    </ul>
+                </section>
+
+                <section id="members" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">소속원의 특징</h2>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>인원 구성:</strong> 길드원의 대다수는 최고 등급의 서포터 계열 헌터와 분석가, 기술자로 양분된다. 직접적인 공격 능력을 갖춘 딜러나 탱커는 거의 없다.</li>
+                        <li data-animate="animate-fade-in"><strong>성향:</strong> '최고의 서포트가 최고의 공격을 만든다'는 신념을 가지고 있다. 전면에 나서기보다, 아군을 강화하고 전장의 판을 짜는 '조력자' 역할에서 강한 자부심과 만족감을 느낀다.</li>
+                        <li data-animate="animate-fade-in"><strong>가치관:</strong> 명예나 이념보다 '작전 성공률', '아군 생존율'과 같은 구체적인 데이터와 효율성을 중시한다.</li>
+                        <li data-animate="animate-fade-in"><strong>위상:</strong> 비록 직접 마물을 처치하지는 않지만, 이들의 서포트 없이는 공략 자체가 불가능한 최고난도 게이트가 많다. 이 때문에 헌터 사회에서 '전장의 필수재'와 같은 독보적인 위상을 차지하고 있다.</li>
+                    </ul>
+                </section>
+            </article>
+
+            <!-- 우측 정보 카드 (위키 스타일) -->
+            <aside class="faction-infobox-wrapper" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="faction-infobox">
+                    <div class="infobox-header hyean-bg">
+                        <h3>혜안 (慧眼)</h3>
+                        <p>Insight Guild</p>
+                    </div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>유형</th>
+                                <td>종합 서포트 전문 길드</td>
+                            </tr>
+                            <tr>
+                                <th>본부</th>
+                                <td>대한민국 판교 테크노밸리</td>
+                            </tr>
+                            <tr>
+                                <th>핵심 가치</th>
+                                <td>데이터, 효율, 안정성</td>
+                            </tr>
+                            <tr>
+                                <th>성향</th>
+                                <td>중립 (Neutral) / 실리주의</td>
+                            </tr>
+                            <tr>
+                                <th>주요 키워드</th>
+                                <td>
+                                    <span class="keyword-tag hyean-tag">#서포트전문</span>
+                                    <span class="keyword-tag hyean-tag">#정보분석</span>
+                                    <span class="keyword-tag hyean-tag">#기술지원</span>
+                                    <span class="keyword-tag hyean-tag">#브레인</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>특이사항</th>
+                                <td>독점 정보망 '아라크네 웹' 운영</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="pv-container">
+            <p>&copy; ALTER-EARTH LORE. All rights reserved. | <a href="../index.html">메인으로 돌아가기</a></p>
+        </div>
+    </footer>
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>

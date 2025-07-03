@@ -1,0 +1,353 @@
+/* --- START OF FILE style.css --- */
+
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Rajdhani:wght@500;700&family=Exo+2:wght@400;600;700&display=swap');
+
+/* --- 1. GLOBAL VARIABLES & RESET --- */
+:root {
+    /* Base Palette */
+    --glow-primary: #00e5ff;
+    --glow-secondary: #ff8c42;
+    --accent-color: #f0f8ff; 
+    
+    --bg-darkest: #080A0C; 
+    --bg-dark: #0E1318;
+    --bg-medium: #182028; 
+    --bg-light-accent: rgba(0, 229, 255, 0.05); 
+
+    --text-primary: #dce4f0;
+    --text-secondary: #a0aec0;
+    --border-color: rgba(255, 255, 255, 0.1);
+
+    /* RGB Values for rgba() */
+    --glow-primary-rgb: 0, 229, 255;
+    --glow-secondary-rgb: 255, 130, 66;
+    --bg-darkest-rgb: 8, 10, 12;
+
+    /* Faction Colors */
+    --guild-association: #B0BEC5; 
+    --guild-association-rgb: 176,190,197;
+    --guild-cheonryong: #29B6F6; 
+    --guild-cheonryong-rgb: 41,182,246;
+    --guild-heuko: #AB47BC;
+    --guild-heuko-rgb: 171,71,188;
+    --guild-hyean: #EC407A;     
+    --guild-hyean-rgb: 236,64,122;
+    --guild-jeokho: #EF5350;    
+    --guild-jeokho-rgb: 239,83,80;
+
+    /* Fonts */
+    --font-orbitron: 'Orbitron', 'Exo 2', sans-serif;
+    --font-rajdhani: 'Rajdhani', 'Exo 2', sans-serif;
+    --font-body: 'Exo 2', 'Rajdhani', sans-serif;
+
+    /* Sizing */
+    --header-height: 70px; 
+
+    /* Page-specific Theme Color (to be overridden by body class) */
+    --theme-color: var(--glow-primary);
+    --theme-color-rgb: var(--glow-primary-rgb);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: var(--font-body);
+    background-color: var(--bg-darkest);
+    color: var(--text-primary);
+    line-height: 1.7;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+.page-wrapper { overflow-x: hidden; }
+.pv-container { 
+    width: 90%;
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 0 20px; 
+    position: relative; 
+    z-index: 2; 
+}
+
+
+/* --- 2. COMMON COMPONENTS (Header, Footer) --- */
+.header {
+    background: rgba(var(--bg-darkest-rgb), 0.8); 
+    backdrop-filter: blur(10px);
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1002;
+    border-bottom: 1px solid rgba(var(--glow-primary-rgb), 0.15);
+    height: var(--header-height); 
+}
+.nav { display: flex; justify-content: space-between; align-items: center; height: 100%; max-width:1200px; margin:0 auto; padding:0 20px; } 
+.logo a { 
+    font-family: var(--font-orbitron); font-size: 1.7rem; font-weight: 700;
+    color: var(--accent-color); text-decoration: none; text-transform: uppercase;
+    letter-spacing: 1.5px; text-shadow: 0 0 10px var(--glow-primary);
+}
+.nav-links { display: flex; list-style: none; gap: 20px; }
+.nav-links a {
+    color: var(--text-secondary); text-decoration: none; font-weight: 600;
+    font-family: var(--font-rajdhani); font-size: 0.9rem; letter-spacing: 0.8px;
+    text-transform: uppercase; transition: color 0.3s ease, text-shadow 0.3s ease;
+    position: relative; padding: 5px 0;
+}
+.nav-links a:hover, .nav-links a.active {
+    color: var(--accent-color); text-shadow: 0 0 7px var(--glow-primary);
+}
+.nav-links a::after {
+    content: ''; position: absolute; bottom: -2px; left: 0;
+    width: 0; height: 2px; background: var(--glow-primary);
+    transition: width 0.3s ease-in-out;
+}
+.nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+.footer {
+    padding: 50px 0; background-color: var(--bg-darkest);
+    text-align: center; border-top: 1px solid rgba(var(--glow-primary-rgb), 0.08);
+}
+.footer p { color: var(--text-secondary); font-size: 0.85rem; }
+.footer p a { color: var(--glow-primary); text-decoration: none; }
+.footer p a:hover { text-decoration: underline; }
+
+
+/* --- 3. MOBILE NAVIGATION --- */
+.hamburger-btn { display: none; background: none; border: none; cursor: pointer; padding: 10px; position: relative; z-index: 1001; }
+.hamburger-btn .line { display: block; width: 25px; height: 2px; background-color: var(--accent-color); margin: 5px 0; transition: transform 0.3s, opacity 0.3s; }
+.mobile-menu { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(var(--bg-darkest-rgb), 0.98); backdrop-filter: blur(10px); z-index: 1000; display: flex; justify-content: center; align-items: center; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1); }
+.mobile-nav-links { list-style: none; text-align: center; padding: 0; display: flex;flex-direction: column;gap: 30px;}
+
+.mobile-nav-links li { /* margin: 30px 0; <- 이 줄이 없어도 됩니다. */}
+.mobile-nav-links a { font-family: var(--font-rajdhani); font-size: 1.8rem; color: var(--text-primary); text-decoration: none; font-weight: 700; letter-spacing: 1px; transition: color 0.3s, text-shadow 0.3s; }
+.mobile-nav-links a:hover { color: var(--glow-primary); text-shadow: 0 0 10px var(--glow-primary); }
+body.mobile-menu-active .mobile-menu { transform: translateX(0); }
+body.mobile-menu-active .hamburger-btn .line:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.mobile-menu-active .hamburger-btn .line:nth-child(2) { opacity: 0; }
+body.mobile-menu-active .hamburger-btn .line:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* --- 4. SHARED SECTION & CARD STYLES --- */
+.section { padding: 80px 0; position: relative; overflow: hidden; }
+.section-dark { background-color: var(--bg-dark); }
+.section-darker { background-color: var(--bg-darkest); }
+.section-accent-bg { background-color: var(--bg-light-accent); }
+.section-title-container { 
+    background-color: var(--bg-medium); 
+    padding: 25px 0;
+    margin-bottom: 50px;
+    border-top: 2px solid var(--glow-primary);
+    border-bottom: 2px solid var(--glow-primary);
+    box-shadow: 0 0 20px rgba(var(--glow-primary-rgb),0.1);
+}
+.section-title-container h2 {
+    font-family: var(--font-orbitron);
+    font-size: clamp(1.8rem, 4vw, 2.8rem);
+    color: var(--accent-color);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 0 0 8px var(--glow-primary);
+}
+.lore-card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 30px;
+}
+.lore-card {
+    background: var(--bg-medium);
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid rgba(var(--glow-primary-rgb),0.15);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; 
+    flex-direction: column;
+}
+.lore-card:hover { transform: translateY(-5px) scale(1.02); box-shadow: 0 8px 25px rgba(var(--glow-primary-rgb),0.2); }
+.lore-card-icon { font-size: 2.2rem; color: var(--glow-primary); margin-bottom: 15px; text-align: left; height: 40px; }
+.lore-card h3 { font-family: var(--font-rajdhani); font-size: 1.5rem; color: var(--accent-color); margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700; }
+.lore-card p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.75; flex-grow: 1; }
+
+
+/* --- 5. INDEX.HTML SPECIFIC STYLES --- */
+.hero { 
+    height: calc(100vh - var(--header-height)); 
+    min-height: 600px; 
+    display: flex; align-items: center; justify-content: center; text-align: center; position: relative;
+    background: linear-gradient(rgba(var(--bg-darkest-rgb),0.6), rgba(var(--bg-darkest-rgb),0.9)),
+                url('https://images.unsplash.com/photo-1531306728370-e2ebd974def9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1920&q=75') no-repeat center center / cover;
+    margin-top: var(--header-height); 
+}
+.hero::before { 
+    content: ""; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(transparent 80%, rgba(0,0,0,0.05) 80%), 
+                linear-gradient(90deg, rgba(var(--glow-primary-rgb),0.01) 1px, transparent 1px);
+    background-size: 100% 1.5px, 70px 70px; 
+    opacity: 0.4;
+    animation: scanlines 0.4s linear infinite alternate, subtleGridMove 90s linear infinite alternate;
+    pointer-events: none; z-index: 0; 
+}
+@keyframes scanlines { 0% { background-position: 0 0; } 100% { background-position: 0 1.5px; } }
+@keyframes subtleGridMove { 0% { background-position: 0 0, 0 0; } 100% { background-position: 0 0, 70px 70px; } }
+.hero-content { padding: 20px; position: relative; z-index: 1; } 
+.hero-title {
+    font-family: var(--font-orbitron); font-size: clamp(2.8rem, 8vw, 5rem); 
+    font-weight: 900; margin-bottom: 20px; color: var(--accent-color);
+    text-transform: uppercase; letter-spacing: 0.07em; 
+    text-shadow: 0 0 10px var(--glow-primary), 0 0 20px var(--glow-primary),
+                 0 0 35px var(--glow-primary), 0 0 60px var(--glow-secondary);
+}
+.hero-subtitle {
+    font-family: var(--font-rajdhani); font-size: clamp(1.1rem, 2.5vw, 1.5rem); 
+    margin-bottom: 30px; color: var(--text-primary); 
+    font-weight: 500; letter-spacing: 1px; max-width: 600px; 
+    margin-left: auto; margin-right: auto;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+}
+.cta-button { display: inline-block; padding: 14px 35px; background: linear-gradient(45deg, var(--glow-primary), var(--glow-secondary)); color: var(--bg-darkest); text-decoration: none; border-radius: 8px; font-weight: 700; font-family: var(--font-rajdhani); text-transform: uppercase; letter-spacing: 2px; font-size: 1.05rem; transition: transform 0.3s ease, box-shadow 0.3s ease, background-position 0.5s ease; box-shadow: 0 4px 18px rgba(var(--glow-primary-rgb),0.25), 0 2px 10px rgba(var(--glow-secondary-rgb),0.18); background-size: 200% auto; }
+.cta-button:hover { background-position: right center; transform: translateY(-2px); box-shadow: 0 7px 25px rgba(var(--glow-primary-rgb),0.35), 0 3px 15px rgba(var(--glow-secondary-rgb),0.28); }
+
+.overview-content { max-width: 800px; margin: 0 auto 40px auto; font-size: 1.05rem; line-height: 1.8; color: var(--text-primary); text-align: justify; position: relative; z-index: 1; }
+.overview-content p { margin-bottom: 25px; }
+.overview-content strong { color: var(--glow-primary); font-weight: 600; text-shadow: 0 0 5px rgba(var(--glow-primary-rgb), 0.3); }
+.overview-keywords { text-align: center; margin-top: 50px; position: relative; z-index: 1; }
+.overview-keywords span { display: inline-block; background-color: rgba(var(--glow-secondary-rgb), 0.1); color: var(--glow-secondary); padding: 8px 15px; border-radius: 20px; margin: 0 8px 10px 8px; font-family: var(--font-rajdhani); font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px; border: 1px solid rgba(var(--glow-secondary-rgb), 0.3); box-shadow: 0 2px 8px rgba(var(--glow-secondary-rgb), 0.1); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.overview-keywords span:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(var(--glow-secondary-rgb), 0.2); }
+
+/* Guild Cards on Index Page */
+.guild-intro-text { text-align: center; font-size: 1.1rem; color: var(--text-secondary); margin-bottom: 40px; max-width: 700px; margin-left: auto; margin-right: auto; }
+.guild-card-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 35px; }
+.guild-card-link { text-decoration: none; color: inherit; display: block; height: 100%; }
+.guild-card { height: 100%; background-color: var(--bg-medium); border-radius: 12px; overflow: hidden; position: relative; border: 1px solid var(--border-color); box-shadow: 0 5px 20px rgba(0,0,0,0.25); transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; display: flex; flex-direction: column; }
+.guild-card-link:hover .guild-card { transform: translateY(-8px) scale(1.03); box-shadow: 0 12px 40px rgba(var(--_guild-glow-rgb, 0,0,0),0.35); border-color: rgba(var(--_guild-glow-rgb, 128,128,128), 0.8); }
+.guild-card-header { padding: 25px; border-bottom: 1px solid var(--border-color); }
+.guild-card-header h3 { font-family: var(--font-orbitron); font-size: 1.6rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; margin: 0; color: var(--_guild-glow); text-shadow: 0 0 8px rgba(var(--_guild-glow-rgb, 0,0,0),0.5); }
+.guild-card-subtitle { font-family: var(--font-rajdhani); font-size: 0.9rem; color: var(--text-secondary); display: block; margin-top: 5px; }
+.guild-card-content { padding: 25px; flex-grow: 1; display: flex; flex-direction: column; }
+.guild-card-content p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.8; margin-bottom: 20px; flex-grow: 1;}
+.guild-keywords { margin-top: auto; padding-top: 20px; border-top: 1px solid rgba(255,255,255, 0.1); }
+.guild-keywords span { display: inline-block; background-color: rgba(var(--_guild-glow-rgb, 128,128,128), 0.15); color: var(--_guild-glow); padding: 6px 12px; border-radius: 5px; margin: 5px 8px 5px 0; font-family: var(--font-rajdhani); font-weight: 600; font-size: 0.85rem; letter-spacing: 0.5px; }
+.guild-card-cta { margin-top: 20px; font-family: var(--font-rajdhani); font-weight: 700; color: var(--text-secondary); display: flex; align-items: center; transition: color 0.3s ease; opacity: 0.7; }
+.guild-card-link:hover .guild-card-cta { color: var(--_guild-glow); opacity: 1; }
+.guild-card-cta i { margin-left: 8px; transition: transform 0.3s ease; }
+.guild-card-link:hover .guild-card-cta i { transform: translateX(5px); }
+.guild-card.association { --_guild-glow: var(--guild-association); --_guild-glow-rgb: var(--guild-association-rgb); }
+.guild-card.cheonryong { --_guild-glow: var(--guild-cheonryong); --_guild-glow-rgb: var(--guild-cheonryong-rgb); }
+.guild-card.heuko { --_guild-glow: var(--guild-heuko); --_guild-glow-rgb: var(--guild-heuko-rgb); }
+.guild-card.hyean { --_guild-glow: var(--guild-hyean); --_guild-glow-rgb: var(--guild-hyean-rgb); }
+.guild-card.jeokho { --_guild-glow: var(--guild-jeokho); --_guild-glow-rgb: var(--guild-jeokho-rgb); }
+
+
+/* --- 6. FACTION DETAIL PAGES --- */
+
+/* Faction Page: Body Class Theme Overrides */
+body.page-association { --theme-color: var(--guild-association); --theme-color-rgb: var(--guild-association-rgb); background-color: var(--bg-dark); }
+body.page-cheonryong { --theme-color: var(--guild-cheonryong); --theme-color-rgb: var(--guild-cheonryong-rgb); background-color: var(--bg-dark); }
+body.page-hyean { --theme-color: var(--guild-hyean); --theme-color-rgb: var(--guild-hyean-rgb); background-color: var(--bg-dark); }
+body.page-jeokho { --theme-color: var(--guild-jeokho); --theme-color-rgb: var(--guild-jeokho-rgb); background-color: var(--bg-dark); }
+body.page-heuko { --theme-color: var(--guild-heuko); --theme-color-rgb: var(--guild-heuko-rgb); background-color: var(--bg-dark); }
+
+/* Faction Page: Hero Section */
+.faction-hero {
+    padding-top: var(--header-height);
+    height: 70vh; min-height: 550px; display: flex; align-items: center; justify-content: center;
+    text-align: center; position: relative; background-size: cover; background-position: center;
+    border-bottom: 1px solid var(--border-color);
+}
+.faction-hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(180deg, rgba(14, 19, 24, 0.4) 0%, var(--bg-dark) 90%); }
+.faction-hero .hero-content { position: relative; z-index: 1; }
+.faction-hero .hero-category { display: block; font-family: var(--font-rajdhani); font-size: 1rem; font-weight: 600; color: var(--theme-color); letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; opacity: 0.8; }
+.faction-hero .hero-title-link { text-decoration: none; display: inline-block; position: relative; }
+.faction-hero .hero-title { font-family: var(--font-orbitron); font-size: clamp(3rem, 9vw, 5.5rem); color: var(--accent-color); text-shadow: 0 0 20px rgba(var(--theme-color-rgb), 0.5); margin: 0; transition: color 0.4s ease; }
+.faction-hero .hero-title-link:hover .hero-title { color: var(--theme-color); }
+.faction-hero .hero-title-link::after { content: '메인으로 돌아가기'; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); font-family: var(--font-rajdhani); font-size: 0.9rem; font-weight: 500; color: var(--text-secondary); opacity: 0; transition: opacity 0.4s ease, bottom 0.4s ease; white-space: nowrap; }
+.faction-hero .hero-title-link:hover::after { opacity: 1; bottom: -20px; }
+.faction-hero .hero-subtitle { font-family: var(--font-rajdhani); font-size: clamp(0.9rem, 2vw, 1.2rem); color: var(--text-secondary); font-weight: 500; max-width: 650px; margin: 25px auto 0 auto; opacity: 0.9; }
+
+/* Faction Page: Hero Background Images */
+/* body.page-association .faction-hero { background-image: url('https://images.unsplash.com/photo-1554481923-a692810f8543?q=80&w=1974&auto=format&fit=crop'); background-position: top; } /* Placeholder, can be changed */
+/* body.page-cheonryong .faction-hero { background-image: url('https://images.unsplash.com/photo-1531306728370-e2ebd974def9?q=80&w=1974&auto=format&fit=crop'); background-position: center; } /* Placeholder */
+/* body.page-hyean .faction-hero { background-image: url('https://images.unsplash.com/photo-1554481923-a692810f8543?q=80&w=1974&auto=format&fit=crop'); background-position: top; }
+/* body.page-jeokho .faction-hero { background-image: url('https://images.unsplash.com/photo-1587825149481-3703525178a9?q=80&w=2070&auto=format&fit=crop'); }
+/* body.page-heuko .faction-hero { background-image: url('https://images.unsplash.com/photo-1505506874110-6a7a69069a08?q=80&w=1974&auto=format&fit=crop'); } /* Placeholder */
+
+
+/* Faction Page: Switcher Tabs */
+.faction-switcher { padding: 20px 0; background-color: var(--bg-dark); border-bottom: 1px solid var(--border-color); }
+.switcher-buttons { display: flex; justify-content: center; align-items: center; flex-wrap: wrap; gap: 20px; }
+.switcher-btn { padding: 10px 20px; background: transparent; text-decoration: none; font-family: var(--font-rajdhani); font-weight: 700; font-size: 1.1rem; letter-spacing: 1px; position: relative; color: var(--text-secondary); transition: color 0.3s ease; }
+.switcher-btn::after { content: ''; position: absolute; bottom: -5px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background-color: currentColor; transition: width 0.4s cubic-bezier(0.19, 1, 0.22, 1); }
+.switcher-btn:hover::after { width: 100%; }
+.switcher-btn:hover { color: var(--_guild-color); }
+.switcher-btn.association:hover { --_guild-color: var(--guild-association); }
+.switcher-btn.cheonryong:hover { --_guild-color: var(--guild-cheonryong); }
+.switcher-btn.hyean:hover { --_guild-color: var(--guild-hyean); }
+.switcher-btn.jeokho:hover { --_guild-color: var(--guild-jeokho); }
+.switcher-btn.heuko:hover { --_guild-color: var(--guild-heuko); }
+.switcher-btn.current { color: var(--theme-color); pointer-events: none; text-shadow: 0 0 10px var(--theme-color); }
+.switcher-btn.current::after { width: 100%; }
+
+/* Faction Page: Main Content Grid */
+.main-content { padding: 60px 20px; }
+.content-grid { display: grid; grid-template-columns: 1fr 320px; gap: 50px; }
+.faction-article { max-width: 100%; }
+.content-section { margin-bottom: 60px; }
+.lead-paragraph { font-size: 1.15rem; color: var(--text-secondary); line-height: 1.8; }
+.section-title { font-family: var(--font-rajdhani); font-size: 2rem; font-weight: 700; color: var(--theme-color); margin-bottom: 25px; padding-bottom: 10px; border-bottom: 2px solid rgba(var(--theme-color-rgb), 0.3); }
+.section-subtitle { font-size: 1.1rem; color: var(--text-secondary); max-width: 700px; margin: -15px 0 25px 0; }
+.content-list { list-style: none; padding-left: 0; }
+.content-list li { padding-left: 25px; position: relative; margin-bottom: 15px; }
+.content-list li::before { content: '❖'; position: absolute; left: 0; color: var(--theme-color); }
+.content-list li strong { color: var(--accent-color); }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-top: 30px; }
+.detail-card { background-color: var(--bg-medium); padding: 25px; border-radius: 8px; border: 1px solid var(--border-color); transition: transform 0.3s ease, box-shadow 0.3s ease; }
+.detail-card:hover { transform: translateY(-5px); box-shadow: 0 5px 15px rgba(0,0,0,0.2); }
+.detail-icon { font-size: 2rem; margin-bottom: 15px; color: var(--theme-color); }
+.detail-card h3 { font-family: var(--font-rajdhani); font-size: 1.3rem; color: var(--accent-color); margin-bottom: 10px; }
+
+/* Faction Page: Infobox (Right Sidebar) */
+.faction-infobox-wrapper { position: sticky; top: calc(var(--header-height) + 40px); height: fit-content; }
+.faction-infobox { background-color: var(--bg-medium); border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; box-shadow: 0 5px 25px rgba(0,0,0,0.3); }
+.infobox-header { padding: 20px; text-align: center; }
+body.page-association .infobox-header { background: linear-gradient(135deg, var(--theme-color), #263238); }
+body.page-cheonryong .infobox-header { background: linear-gradient(135deg, var(--theme-color), #1e3c72); }
+body.page-hyean .infobox-header { background: linear-gradient(135deg, var(--theme-color), #581845); }
+body.page-jeokho .infobox-header { background: linear-gradient(135deg, var(--theme-color), #870000); }
+body.page-heuko .infobox-header { background: linear-gradient(135deg, var(--theme-color), #311B92); }
+.infobox-header h3 { font-family: var(--font-orbitron); font-size: 1.8rem; color: #fff; margin: 0; }
+.infobox-header p { font-family: var(--font-rajdhani); color: rgba(255,255,255,0.8); margin-top: 5px; }
+.faction-infobox table { width: 100%; border-collapse: collapse; }
+.faction-infobox th, .faction-infobox td { padding: 12px 15px; text-align: left; border-bottom: 1px solid var(--border-color); font-size: 0.9rem; }
+.faction-infobox tr:last-child th, .faction-infobox tr:last-child td { border-bottom: none; }
+.faction-infobox th { font-weight: 700; color: var(--accent-color); width: 35%; }
+.faction-infobox td { color: var(--text-secondary); }
+.keyword-tag { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; margin: 2px; background-color: rgba(var(--theme-color-rgb), 0.15); color: var(--theme-color); }
+
+
+/* --- 7. ANIMATIONS & RESPONSIVE --- */
+[data-animate] { opacity: 0; transition: opacity 0.8s ease-out, transform 0.8s ease-out, filter 0.8s ease-out; }
+[data-animate].visible { opacity: 1; transform: none; filter: none; } 
+.animate-fade-in { transform: translateY(40px); } 
+.animate-slide-left { transform: translateX(-50px); }
+.animate-slide-right { transform: translateX(50px); }
+.animate-scale-up { transform: scale(0.9); }
+.animate-blur-in { filter: blur(5px); transform: scale(0.97); } 
+[data-animate="animate-blur-in"].visible { filter: blur(0px); }
+
+@media (max-width: 992px) {
+    .content-grid { grid-template-columns: 1fr; }
+    .faction-infobox-wrapper { position: static; margin-top: 40px; }
+}
+@media (max-width: 768px) {
+    .nav > .nav-links { display: none; } 
+    .hamburger-btn { display: block; } 
+    .hero { height: auto; min-height: calc(100vh - var(--header-height)); padding-bottom: 50px;} 
+    .hero-title { font-size: clamp(2rem, 10vw, 3.5rem); }
+    .hero-subtitle { font-size: clamp(1rem, 4vw, 1.1rem); }
+    .section { padding: 60px 0; }
+    .section-title-container { padding: 20px 0; margin-bottom: 40px;}
+    .section-title-container h2 { font-size: clamp(1.5rem, 5vw, 2.2rem); }
+    .lore-card-grid { grid-template-columns: 1fr; gap: 25px; }
+    .guild-card-grid { grid-template-columns: 1fr; gap: 25px; }
+    .faction-hero .hero-title { font-size: 2.5rem; }
+    .faction-hero .section-title { font-size: 1.8rem; }
+}

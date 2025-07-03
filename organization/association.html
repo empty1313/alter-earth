@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>헌터 협회 | ALTER-EARTH LORE</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="page-association">
+<div class="page-wrapper">
+    <header class="header">
+        <nav class="nav"> 
+            <div class="logo"><a href="../index.html">ALTER-EARTH</a></div>
+            <!-- 데스크탑용 네비게이션 -->
+            <ul class="nav-links">
+                <li><a href="../index.html#hero">Home</a></li>
+                <li><a href="../index.html#overview">개요</a></li>
+                <li><a href="../index.html#world">세계관</a></li> 
+                <li><a href="../index.html#guilds">소속</a></li>
+                <li><a href="../index.html#gates">게이트</a></li>
+            </ul>
+
+            <!-- 모바일용 햄버거 버튼 -->
+            <button class="hamburger-btn" aria-label="메뉴 열기">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="mobile-menu">
+        <ul class="nav-links mobile-nav-links">
+            <li><a href="../index.html#hero">Home</a></li>
+            <li><a href="../index.html#overview">개요</a></li>
+            <li><a href="../index.html#world">세계관</a></li>
+            <li><a href="../index.html#guilds">소속</a></li>
+            <li><a href="../index.html#gates">게이트</a></li>
+        </ul>
+    </div>
+
+    <div class="faction-hero">
+        <div class="hero-content">
+            <!-- ### 카테고리 텍스트 ### -->
+            <span class="hero-category" data-animate="animate-fade-in">ORGANIZATION</span>
+            
+            <!-- ### 페이지 제목 (메인 페이지로 돌아가는 링크) ### -->
+            <a href="../index.html" class="hero-title-link" data-animate="animate-blur-in" style="transition-delay: 0.2s;">
+                <h1 class="hero-title">헌터 협회</h1>
+            </a>
+
+            <!-- ### 슬로건 ### -->
+            <p class="hero-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.4s;">"시스템은 감정에 흔들리지 않는다."</p>
+        </div>
+    </div>
+
+    <section class="faction-switcher" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+        <div class="pv-container">
+            <div class="switcher-buttons">
+                <!-- 현재 페이지이므로 'current' 클래스 추가 -->
+                <a href="association.html" class="switcher-btn association current"><span>헌터 협회</span></a>
+                <a href="cheongryong.html" class="switcher-btn cheonryong"><span>청룡</span></a>
+                <a href="hyean.html" class="switcher-btn hyean"><span>혜안</span></a>
+                <a href="jeokho.html" class="switcher-btn jeokho"><span>적호</span></a>
+                <a href="heuko.html" class="switcher-btn heuko"><span>흑오</span></a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content pv-container">
+        <div class="content-grid">
+            <!-- 좌측 메인 콘텐츠 -->
+            <article class="faction-article">
+                <section id="overview" class="content-section">
+                    <p class="lead-paragraph" data-animate="animate-fade-in">
+                        헌터 협회는 정부 직속 중앙 행정 기관으로, 게이트 및 각성 헌터와 관련된 모든 사안을 총괄 관리합니다. 주요 설립 목적은 이계 존재의 출현으로 인한 사회적 혼란을 수습하고, 헌터 시스템을 국가 안보 체계에 편입시켜 안정적으로 운영하는 것이다.
+                    </p>
+                </section>
+
+                <section id="authority" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">주요 권한 및 업무</h2>
+                    <p data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                        협회는 법률에 따라 다음과 같은 독점적인 권한을 행사하며 관련 업무를 수행한다.
+                    </p>
+                    <!-- id="authority" 섹션 내부 -->
+                    <div class="detail-grid">
+                        <!-- 헌터 관리 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.2s;">
+                            <div class="detail-icon"><i class="fa-solid fa-address-card"></i></div>
+                            <h3>헌터 관리</h3>
+                            <p>헌터의 신규 등록, 랭크 심사 및 갱신, 활동 이력 관리 등 모든 헌터의 인적 자원을 관리한다.</p>
+                        </div>
+                        <!-- 게이트 통제 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.3s;">
+                            <div class="detail-icon"><i class="fa-solid fa-globe"></i></div>
+                            <h3>게이트 통제</h3>
+                            <p>게이트 발생 현황을 실시간 모니터링하고 위험 등급 분류, 출입 통제, 작전 허가 등을 담당한다.</p>
+                        </div>
+                        <!-- 연구 및 지원 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.4s;">
+                            <div class="detail-icon"><i class="fa-solid fa-flask-vial"></i></div>
+                            <h3>연구 및 지원</h3>
+                            <p>게이트 및 마물에 대한 연구, 기술 개발 및 모든 공인 헌터와 길드에 대한 정보 및 행정 지원을 제공한다.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="organization" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">조직 구성</h2>
+                    <p class="section-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.1s;">협회는 기능에 따라 분화된 하위 부서로 구성된 거대한 관료 조직이다.</p>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>관리국 (Management Bureau):</strong> 협회의 모든 행정 업무를 담당하는 핵심 부서. 인사, 재무, 자원 배분 등을 총괄한다.</li>
+                        <li data-animate="animate-fade-in"><strong>감찰국 (Inspection Bureau):</strong> 헌터의 규율 위반, 직권 남용, 불법 행위 등을 감시하고 조사하는 독립 기구. 자체적인 수사권과 기소권을 보유한다.</li>
+                        <li data-animate="animate-fade-in"><strong>마물 연구소 (Monster Research Institute):</strong> 마물의 사체, 마정석 등 게이트 관련 자원을 수집하고 연구하여 데이터베이스를 구축하고, 표준화된 공략 프로토콜을 개발한다.</li>
+                        <li data-animate="animate-fade-in"><strong>특수작전부 (Special Operations Division):</strong> 협회 직속의 특수 임무 수행 부대. 최고 위험 등급(S급 이상)의 게이트나 국가 재난급 사태에 우선적으로 투입된다.</li>
+                    </ul>
+                </section>
+
+                <section id="members" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">소속 인원의 지위와 의무</h2>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>신분:</strong> 협회에 정식으로 소속된 헌터는 '특수직 공무원'에 준하는 법적 지위를 가진다.</li>
+                        <li data-animate="animate-fade-in"><strong>의무:</strong> 안정적인 보수와 신분 보장을 받는 대신, 협회의 명령 체계에 절대적으로 복종해야 할 의무를 지닌다. 개인의 판단에 따른 단독 행동은 엄격히 금지되며, 모든 활동은 공익을 최우선으로 해야 한다.</li>
+                        <li data-animate="animate-fade-in"><strong>특징:</strong> 협회 내부의 분위기는 공식적이며 다소 경직되어 있다. 개인의 자율성보다는 조직의 목표와 규율이 중시되는 문화가 형성되어 있으며, 업무 처리 시 효율성과 합리성을 가장 중요한 가치로 삼는다.</li>
+                    </ul>
+                </section>
+            </article>
+
+            <!-- 우측 정보 카드 (위키 스타일) -->
+            <aside class="faction-infobox-wrapper" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="faction-infobox">
+                    <div class="infobox-header association-bg">
+                        <h3>헌터 협회</h3>
+                        <p>Hunter Association</p>
+                    </div>
+                    
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>유형</th>
+                                <td>정부 직속 중앙 기관</td>
+                            </tr>
+                            <tr>
+                                <th>본부</th>
+                                <td>대한민국 서울 중앙 행정지구</td>
+                            </tr>
+                            <tr>
+                                <th>핵심 가치</th>
+                                <td>시스템, 효율, 통제</td>
+                            </tr>
+                            <tr>
+                                <th>성향</th>
+                                <td>질서 중립 (Lawful Neutral)</td>
+                            </tr>
+                            <tr>
+                                <th>주요 키워드</th>
+                                <td>
+                                    <span class="keyword-tag association-tag">#공권력</span>
+                                    <span class="keyword-tag association-tag">#시스템</span>
+                                    <span class="keyword-tag association-tag">#통제</span>
+                                    <span class="keyword-tag association-tag">#안정</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>특이사항</th>
+                                <td>모든 헌터/게이트 관리 감독권</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="pv-container">
+            <p>&copy; ALTER-EARTH LORE. All rights reserved. | <a href="../index.html">메인으로 돌아가기</a></p>
+        </div>
+    </footer>
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>

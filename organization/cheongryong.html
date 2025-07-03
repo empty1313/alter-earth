@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>청룡 길드 | ALTER-EARTH LORE</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+</head>
+<body class="page-cheonryong">
+<div class="page-wrapper">
+    <header class="header">
+        <nav class="nav"> 
+            <div class="logo"><a href="../index.html">ALTER-EARTH</a></div>
+            <!-- 데스크탑용 네비게이션 -->
+            <ul class="nav-links">
+                <li><a href="../index.html#hero">Home</a></li>
+                <li><a href="../index.html#overview">개요</a></li>
+                <li><a href="../index.html#world">세계관</a></li> 
+                <li><a href="../index.html#guilds">소속</a></li>
+                <li><a href="../index.html#gates">게이트</a></li>
+            </ul>
+
+            <!-- 모바일용 햄버거 버튼 -->
+            <button class="hamburger-btn" aria-label="메뉴 열기">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="mobile-menu">
+        <ul class="nav-links mobile-nav-links">
+            <li><a href="../index.html#hero">Home</a></li>
+            <li><a href="../index.html#overview">개요</a></li>
+            <li><a href="../index.html#world">세계관</a></li>
+            <li><a href="../index.html#guilds">소속</a></li>
+            <li><a href="../index.html#gates">게이트</a></li>
+        </ul>
+    </div>
+
+    <div class="faction-hero">
+        <div class="hero-content">
+            <!-- ### 카테고리 텍스트 ### -->
+            <span class="hero-category" data-animate="animate-fade-in">ORGANIZATION</span>
+            
+            <!-- ### 페이지 제목 (메인 페이지로 돌아가는 링크) ### -->
+            <a href="../index.html" class="hero-title-link" data-animate="animate-blur-in" style="transition-delay: 0.2s;">
+                <h1 class="hero-title">청룡 (靑龍)</h1>
+            </a>
+
+            <!-- ### 슬로건 ### -->
+            <p class="hero-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.4s;">"우리는 인재를 찾는 것이 아니라, 시대를 만든다."</p>
+        </div>
+    </div>
+
+    <section class="faction-switcher" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+        <div class="pv-container">
+            <div class="switcher-buttons">
+                <a href="association.html" class="switcher-btn association"><span>헌터 협회</span></a>
+                <!-- 현재 페이지이므로 'current' 클래스 추가 -->
+                <a href="cheongryong.html" class="switcher-btn cheonryong current"><span>청룡</span></a>
+                <a href="hyean.html" class="switcher-btn hyean"><span>혜안</span></a>
+                <a href="jeokho.html" class="switcher-btn jeokho"><span>적호</span></a>
+                <a href="heuko.html" class="switcher-btn heuko"><span>흑오</span></a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content pv-container">
+        <div class="content-grid">
+            <!-- 좌측 메인 콘텐츠 -->
+            <article class="faction-article">
+                <section id="overview" class="content-section">
+                    <p class="lead-paragraph" data-animate="animate-fade-in">
+                        청룡은 대한민국에 본부를 둔 초대형 민간 길드로, 등록된 헌터 수와 자본 규모 면에서 국내 1위를 기록하고 있다. 헌터 협회와의 긴밀한 공조 체계를 바탕으로 한 사회적 기여와 안정적인 운영 방식으로 높은 평가를 받는다. 단기적 성과보다는 장기적인 안목의 인재 양성을 핵심 운영 방침으로 삼는다.
+                    </p>
+                </section>
+
+                <section id="ideology" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">핵심 이념: 인재 육성 시스템</h2>
+                    <p data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                        청룡의 가장 큰 특징은 외부 인재 영입을 최소화하고, 자체 육성 시스템을 통해 인원을 충원하는 폐쇄적인 구조에 있다. 이는 길드에 대한 높은 충성도와 조직의 안정성을 확보하는 근간이 된다.
+                    </p>
+                    <!-- id="ideology" 섹션 내부 -->
+                    <div class="detail-grid">
+                        <!-- 현룡원 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.2s;">
+                            <div class="detail-icon"><i class="fa-solid fa-graduation-cap"></i></div>
+                            <h3>현룡원 (賢龍院)</h3>
+                            <p>청룡 길드가 직접 설립하고 운영하는 헌터 전문 육성 기관. 매년 극소수의 잠재력 있는 유망주만을 선발하여 '견습 길드원'으로 입학시킨다.</p>
+                        </div>
+                        <!-- 교육 과정 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.3s;">
+                            <div class="detail-icon"><i class="fa-solid fa-sitemap"></i></div>
+                            <h3>체계적 교육 과정</h3>
+                            <p>현룡원 입학생들은 '기수' 단위로 편성되어 수년간 전투 기술, 전략 이론, 팀워크 훈련, 길드 이념 교육 등 다방면에 걸친 체계적인 교육을 받는다.</p>
+                        </div>
+                        <!-- 승천 시험 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.4s;">
+                            <div class="detail-icon"><i class="fa-solid fa-dragon"></i></div>
+                            <h3>승천(昇天) 시험</h3>
+                            <p>모든 교육 과정을 이수한 견습 길드원이 정식 길드원이 되기 위해 치르는 최종 졸업 시험. 이 시험에 통과해야만 정식으로 청룡 길드의 일원이 될 자격을 얻는다.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="organization" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">조직 구성</h2>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>길드 운영진:</strong> 길드의 장기적인 전략과 방향성을 결정하며, 현룡원의 운영을 총괄한다.</li>
+                        <li data-animate="animate-fade-in"><strong>현룡원 교관단:</strong> 각 분야 최고의 실력과 경험을 갖춘 베테랑 헌터들로 구성되어 견습 길드원들의 교육을 전담한다.</li>
+                        <li data-animate="animate-fade-in"><strong>정규 공격대:</strong> 승천 시험을 통과한 정식 길드원들로 구성된 핵심 전력. 현룡원에서부터 다져진 완벽한 팀워크를 바탕으로 고난도 게이트 공략 임무를 수행한다. 공격대는 탱커, 딜러, 힐러, 서포터 등 각 포지션이 균형 있게 배분된 조합을 기본으로 한다.</li>
+                    </ul>
+                </section>
+
+                <section id="members" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">소속원의 특징</h2>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>충성도 및 소속감:</strong> 유소년기부터 함께 훈련받는 기수 문화로 인해, 길드원들은 조직에 대한 높은 충성심과 강한 유대감을 보인다.</li>
+                        <li data-animate="animate-fade-in"><strong>엘리트 의식:</strong> 스스로가 '선택받고 체계적으로 육성된' 최고의 인재라는 자부심이 매우 강하다. 이는 외부 헌터에 대한 미묘한 우월감으로 나타나기도 한다.</li>
+                        <li data-animate="animate-fade-in"><strong>협동 능력:</strong> 장기간의 팀 단위 훈련을 통해, 개인의 돌출 행동보다는 조직적인 팀플레이에 극도로 능숙하다. 이들의 전투 방식은 높은 예측 가능성과 안정성을 특징으로 한다.</li>
+                        <li data-animate="animate-fade-in"><strong>사회적 관계:</strong> 헌터 협회와 가장 긴밀한 협력 관계를 유지하고 있으며, 국가적 재난 상황 발생 시 우선적으로 협조하는 등 사회적 책임을 중요시하는 경향이 있다.</li>
+                    </ul>
+                </section>
+            </article>
+
+            <!-- 우측 정보 카드 (위키 스타일) -->
+            <aside class="faction-infobox-wrapper" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="faction-infobox">
+                    <div class="infobox-header cheonryong-bg">
+                        <h3>청룡 (靑龍)</h3>
+                        <p>Azure Dragon Guild</p>
+                    </div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>유형</th>
+                                <td>민간 길드 (초대형)</td>
+                            </tr>
+                            <tr>
+                                <th>본부</th>
+                                <td>대한민국 서울</td>
+                            </tr>
+                            <tr>
+                                <th>핵심 가치</th>
+                                <td>육성, 균형, 책임</td>
+                            </tr>
+                            <tr>
+                                <th>성향</th>
+                                <td>질서 선 (Lawful Good)</td>
+                            </tr>
+                            <tr>
+                                <th>주요 키워드</th>
+                                <td>
+                                    <span class="keyword-tag cheonryong-tag">#명문길드</span>
+                                    <span class="keyword-tag cheonryong-tag">#정통파</span>
+                                    <span class="keyword-tag cheonryong-tag">#엘리트주의</span>
+                                    <span class="keyword-tag cheonryong-tag">#아카데미</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>특이사항</th>
+                                <td>자체 육성 기관 '현룡원' 운영</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="pv-container">
+            <p>&copy; ALTER-EARTH LORE. All rights reserved. | <a href="../index.html">메인으로 돌아가기</a></p>
+        </div>
+    </footer>
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>

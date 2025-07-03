@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>흑오 길드 | ALTER-EARTH LORE</title>
+    <link rel="stylesheet" href="../style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+</head>
+<body class="page-heuko">
+<div class="page-wrapper">
+    <header class="header">
+        <nav class="nav"> 
+            <div class="logo"><a href="../index.html">ALTER-EARTH</a></div>
+            <!-- 데스크탑용 네비게이션 -->
+            <ul class="nav-links">
+                <li><a href="../index.html#hero">Home</a></li>
+                <li><a href="../index.html#overview">개요</a></li>
+                <li><a href="../index.html#world">세계관</a></li> 
+                <li><a href="../index.html#guilds">소속</a></li>
+                <li><a href="../index.html#gates">게이트</a></li>
+            </ul>
+
+            <!-- 모바일용 햄버거 버튼 -->
+            <button class="hamburger-btn" aria-label="메뉴 열기">
+                <span class="line"></span>
+                <span class="line"></span>
+                <span class="line"></span>
+            </button>
+        </nav>
+    </header>
+
+    <div class="mobile-menu">
+        <ul class="nav-links mobile-nav-links">
+            <li><a href="../index.html#hero">Home</a></li>
+            <li><a href="../index.html#overview">개요</a></li>
+            <li><a href="../index.html#world">세계관</a></li>
+            <li><a href="../index.html#guilds">소속</a></li>
+            <li><a href="../index.html#gates">게이트</a></li>
+        </ul>
+    </div>
+
+
+    <div class="faction-hero">
+        <div class="hero-content">
+            <!-- ### 카테고리 텍스트 ### -->
+            <span class="hero-category" data-animate="animate-fade-in">ORGANIZATION</span>
+            
+            <!-- ### 페이지 제목 (메인 페이지로 돌아가는 링크) ### -->
+            <a href="../index.html" class="hero-title-link" data-animate="animate-blur-in" style="transition-delay: 0.2s;">
+                <h1 class="hero-title">흑오 (黑烏)</h1>
+            </a>
+
+            <!-- ### 슬로건 ### -->
+            <p class="hero-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.4s;">"모든 금기에는, 그것을 다루는 방법이 있다."</p>
+        </div>
+    </div>
+
+     <section class="faction-switcher" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+        <div class="pv-container">
+            <div class="switcher-buttons">
+                <a href="association.html" class="switcher-btn association"><span>헌터 협회</span></a>
+                <a href="cheongryong.html" class="switcher-btn cheonryong"><span>청룡</span></a>              
+                <a href="hyean.html" class="switcher-btn hyean "><span>혜안</span></a>               
+                <a href="jeokho.html" class="switcher-btn jeokho "><span>적호</span></a>
+                <!-- 현재 페이지이므로 'current' 클래스 추가 -->   
+                <a href="heuko.html" class="switcher-btn heuko current"><span>흑오</span></a>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-content pv-container">
+        <div class="content-grid">
+            <!-- 좌측 메인 콘텐츠 -->
+            <article class="faction-article">
+                <section id="overview" class="content-section">
+                    <p class="lead-paragraph" data-animate="animate-fade-in">
+                        흑오는 고위험-고수익(High-risk, High-return)의 원칙에 따라, 일반적인 방법으로는 채굴 및 유통이 불가능한 '특수 이계 자원'을 독점적으로 취급하는 전문 길드이다. 이들의 주 목적은 게이트 공략이 아닌, 고위험 지역에서의 자원 채굴 및 비밀 유통을 통한 수익 창출이다. 헌터 사회의 공식적인 경제 시스템 이면에서 가장 위험하고 값비싼 거래를 주도하는 '그림자 상인' 집단이다.
+                    </p>
+                </section>
+
+                <section id="activity" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">핵심 활동 분야</h2>
+                    <p data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                        흑오 길드의 사업 분야는 '하이 리스크, 하이 리턴'의 원칙에 따라 움직인다.
+                    </p>
+                    <!-- id="activity" 섹션 내부 -->
+                    <div class="detail-grid">
+                        <!-- 특수 자원 채굴 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.2s;">
+                            <div class="detail-icon"><i class="fa-solid fa-gem"></i></div>
+                            <h3>특수 자원 채굴</h3>
+                            <p>저주나 마나 오염으로 접근이 통제된 지역에 진입하여 '저주받은 유물', '변이 마물의 핵' 등 고가치 자원을 채굴한다.</p>
+                        </div>
+                        <!-- 고위험 자산 유통 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.3s;">
+                            <div class="detail-icon"><i class="fa-solid fa-scale-unbalanced-flip"></i></div>
+                            <h3>고위험 자산 유통</h3>
+                            <p>채굴한 특수 자원을 V.I.P. 고객에게 비밀리에 판매한다. 거래 내역 및 고객 정보는 외부에 일절 공개되지 않는다.</p>
+                        </div>
+                        <!-- 리스크 관리 기술 카드 -->
+                        <div class="detail-card" data-animate="animate-scale-up" style="transition-delay: 0.4s;">
+                            <div class="detail-icon"><i class="fa-solid fa-shield-virus"></i></div>
+                            <h3>리스크 관리 기술</h3>
+                            <p>자원 채굴 시 발생하는 환경적 위험(저주, 정신 오염 등)을 일시적으로 무력화하거나 회피하는 독자적인 기술을 운용한다.</p>
+                        </div>
+                    </div>
+                </section>
+                
+                <section id="organization" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">조직 운영 방식</h2>
+                    <p class="section-subtitle" data-animate="animate-fade-in" style="transition-delay: 0.1s;">흑오는 사업의 특성상 철저한 비밀주의와 성과 기반의 분배 시스템을 채택하고 있다.</p>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>길드 마스터 '까마귀 군주(The Crow Lord)':</strong> 길드의 모든 자금 흐름과 최종 거래 승인권을 가진 최고 책임자. 신원은 외부에 알려져 있지 않으며, 대리인을 통해 업무를 지시한다.</li>
+                        <li data-animate="animate-fade-in"><strong>자원 보관소 '둥지(The Nest)':</strong> 채굴한 고위험 자산을 보관하는 특수 격리 시설. 외부 침입 및 내부 자원의 가치 하락을 방지하기 위한 다중 방어 시스템이 구축되어 있다.</li>
+                        <li data-animate="animate-fade-in"><strong>채굴팀 '밤의 날개(Wings of Night)':</strong> 실제 위험 지역에 투입되는 현장 팀. 표준적인 전투 포지션 대신, 결계 해제, 공간 이동, 정신 방어, 은신 등 자원 회수 임무에 특화된 능력을 가진 헌터들로 구성된다.</li>
+                    </ul>
+                </section>
+
+                <section id="members" class="content-section">
+                    <h2 class="section-title" data-animate="animate-fade-in">소속원의 특징</h2>
+                    <ul class="content-list">
+                        <li data-animate="animate-fade-in"><strong>인원 구성:</strong> 출신 배경이나 포지션에 관계없이, 오직 '임무 성공에 필요한 기술과 위험을 감수할 의지'를 기준으로 선발된다.</li>
+                        <li data-animate="animate-fade-in"><strong>가치관:</strong> 모든 활동의 판단 기준은 '수익성'이다. 선악, 명예 등 비물질적 가치보다는 계약 내용과 이익 분배를 더 중요시하는 실리주의적 성향을 보인다.</li>
+                        <li data-animate="animate-fade-in"><strong>대외 관계:</strong> 타 길드와는 경쟁 관계이자 잠재적 고객 관계를 동시에 유지한다. 공략이 끝난 게이트에 진입하여 잔존 가치가 있는 자원을 수거하거나, 특정 길드에 필요한 희귀 자원을 판매하는 등 복합적인 관계를 형성한다.</li>
+                        <li data-animate="animate-fade-in"><strong>직업적 위험성:</strong> 업무 환경의 위험도가 매우 높아 길드원의 사망률이 타 길드에 비해 월등히 높다. 그러나 임무 성공 시의 보상이 이를 상회하기 때문에, 위험을 감수하려는 지원자들이 지속적으로 유입된다.</li>
+                    </ul>
+                </section>
+            </article>
+
+            <!-- 우측 정보 카드 (위키 스타일) -->
+            <aside class="faction-infobox-wrapper" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                <div class="faction-infobox">
+                    <div class="infobox-header heuko-bg">
+                        <h3>흑오 (黑烏)</h3>
+                        <p>Obsidian Crow Guild</p>
+                    </div>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <th>유형</th>
+                                <td>특수 자원 전문 길드 (브로커)</td>
+                            </tr>
+                            <tr>
+                                <th>본부</th>
+                                <td>비공개 (점조직)</td>
+                            </tr>
+                            <tr>
+                                <th>핵심 가치</th>
+                                <td>수익성, 기회, 비밀주의</td>
+                            </tr>
+                            <tr>
+                                <th>성향</th>
+                                <td>진정한 중립 (True Neutral)</td>
+                            </tr>
+                            <tr>
+                                <th>주요 키워드</th>
+                                <td>
+                                    <span class="keyword-tag heuko-tag">#하이리스크</span>
+                                    <span class="keyword-tag heuko-tag">#자원독점</span>
+                                    <span class="keyword-tag heuko-tag">#그림자경제</span>
+                                    <span class="keyword-tag heuko-tag">#비밀주의</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>특이사항</th>
+                                <td>고위험 자산 비밀 경매 주관</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="pv-container">
+            <p>&copy; ALTER-EARTH LORE. All rights reserved. | <a href="../index.html">메인으로 돌아가기</a></p>
+        </div>
+    </footer>
+</div>
+
+<script src="../script.js"></script>
+
+</body>
+</html>
