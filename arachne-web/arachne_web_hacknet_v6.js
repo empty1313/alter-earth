@@ -75,19 +75,18 @@ async function loadAndParseCsvData() {
         { key: 'agents', path: '../database/agents.csv' },
         { key: 'gates', path: '../database/gates.csv' }, { key: 'rooms', path: '../database/rooms.csv' },
         { key: 'connectors', path: '../database/connectors.csv' }, { key: 'details', path: '../database/details.csv' },
-        { key: 'elements', path: '../database/elements.csv' }, { key: 'item', path: '../database/item.csv' }, // DB key is 'item', not 'items'
+        { key: 'elements', path: '../database/elements.csv' }, { key: 'item', path: '../database/item.csv' },
         { key: 'monster', path: '../database/monster.csv' }, { key: 'events_traps', path: '../database/event.csv' }
     ];
-    // We don't print to terminal here as it's not visible yet.
     const promises = filesToLoad.map(fileInfo =>
         fetch(fileInfo.path).then(response => response.ok ? response.text() : Promise.reject(`Failed to load ${fileInfo.path}`))
         .then(csvText => new Promise(resolve => Papa.parse(csvText, {
             header: true, skipEmptyLines: true, dynamicTyping: true,
+            trimHeaders: true, // Crucial for handling BOM or whitespace in headers
             complete: (results) => { database[fileInfo.key] = results.data; resolve(); }
         })))
     );
     await Promise.all(promises);
-    // Aliases for convenience, monster and boss are in the same file.
     database.monsters = database.monster;
     database.items = database.item;
 }
@@ -160,27 +159,15 @@ function setState(newState, callback) {
     state = { ...state, ...newState };
     
     let needsCenterPanelUpdate = false;
-    
+    let needsRightPanelUpdate = false;
+
     if (JSON.stringify(oldState.centerView) !== JSON.stringify(state.centerView)) {
         needsCenterPanelUpdate = true;
     }
 
     if (JSON.stringify(oldState.analysisTarget) !== JSON.stringify(state.analysisTarget)) {
-        renderRightPanel();      
-        if (state.centerView.mode === 'list') {
-            if (oldState.analysisTarget && oldState.analysisTarget.id) {
-                const oldElement = document.getElementById(`list-item-${oldState.analysisTarget.id}`);
-                if (oldElement) {
-                    oldElement.classList.remove('active');
-                }
-            }
-            if (state.analysisTarget && state.analysisTarget.id) {
-                const newElement = document.getElementById(`list-item-${state.analysisTarget.id}`);
-                if (newElement) {
-                    newElement.classList.add('active');
-                }
-            }
-        } else {
+        needsRightPanelUpdate = true;
+        if(state.centerView.mode === 'list') {
             needsCenterPanelUpdate = true;
         }
     }
@@ -188,10 +175,16 @@ function setState(newState, callback) {
     if (needsCenterPanelUpdate) {
         renderCenterPanel();
     }
+    if (needsRightPanelUpdate) {
+        renderRightPanel();
+    }
     
     if (oldState.activeGateId !== state.activeGateId) {
         renderLeftPanel();
         renderHeader();
+        if (state.centerView.type === 'rooms') {
+            renderCenterPanel();
+        }
     }
     
     if (callback) {
@@ -212,9 +205,9 @@ function renderAll() {
 function renderHeader() {
     const gateId = state.activeGateId;
     if (gateId) {
-        const gate = findItemInDatabase('gate', gateId);
-        dom.headerConnectionStatus.innerHTML = `<span class="header-label">ANALYZING: ${gate.name}</span>`;
-        dom.promptIp.textContent = gate.id;
+        const gate = findItemInDatabase(gateId);
+        if(gate) dom.headerConnectionStatus.innerHTML = `<span class="header-label">ANALYZING: ${gate.name}</span>`;
+        dom.promptIp.textContent = gateId;
     } else {
         dom.headerConnectionStatus.innerHTML = `<span class="header-label">SYSTEM STANDBY</span>`;
         dom.promptIp.textContent = 'HOME';
@@ -226,7 +219,7 @@ function renderLeftPanel() {
     const activeGates = database.gates.filter(g => g.isActive);
     
     activeGates.forEach(gate => {
-        const itemEl = createListItem(gate.name, `Rank: ${gate.rank} | ${gate.location}`, gate.id, 'gate');
+        const itemEl = createListItem(gate.name, `Rank: ${gate.rank} | ${gate.location}`, gate.id);
         if (state.activeGateId === gate.id) {
             itemEl.classList.add('active');
         }
@@ -272,10 +265,16 @@ function renderCenterPanel() {
                 <div id="${listContainerId}" class="data-list-container"></div>`;
             const listContainer = content.querySelector(`#${listContainerId}`);
             
-            const items = (database[type] || []).filter(item => 
+            let items = (database[type] || []);
+
+            if (type === 'rooms' && state.activeGateId) {
+                items = items.filter(room => room.GID === state.activeGateId);
+            }
+            
+            items = items.filter(item => 
                 (item.name || item.desc || item.RoomName || '').toLowerCase().includes(filter.toLowerCase())
             );
-            listContainer.appendChild(createList(items, type));
+            listContainer.appendChild(createList(items));
 
             const searchInput = document.getElementById('search-input');
             searchInput.addEventListener('input', e => {
@@ -297,7 +296,7 @@ function renderRightPanel() {
         return;
     }
     
-    const item = findItemInDatabase(type, id);
+    const item = findItemInDatabase(id);
     if (!item) {
         dom.rightPanelTitle.textContent = 'ERROR';
         dom.rightPanelContent.innerHTML = `<p class="placeholder">Data not found for ${type}:${id}</p>`;
@@ -315,18 +314,18 @@ function renderRightPanel() {
     } else {
         const infoSection = document.createElement('div');
         infoSection.className = 'analysis-section';
-        infoSection.innerHTML = `<h3 class="analysis-title">DETAILS</h3><div class="analysis-content"><pre>${getFormattedInfoString(type, id)}</pre></div>`;
+        infoSection.innerHTML = `<h3 class="analysis-title">DETAILS</h3><div class="analysis-content"><pre>${getFormattedInfoString(id)}</pre></div>`;
         dom.rightPanelContent.appendChild(infoSection);
     }
     
-    const relatedNodes = getRelatedNodes(type, id);
+    const relatedNodes = getRelatedNodes(id);
     if (relatedNodes.length > 0) {
         const relatedSection = document.createElement('div');
         relatedSection.className = 'analysis-section';
         const listHtml = relatedNodes.map(node => {
-            const relatedItem = findItemInDatabase(node.type, node.id);
+            const relatedItem = findItemInDatabase(node.id);
             if (!relatedItem) return '';
-            return `<div class="data-list-item linked-data-item" data-type="${node.type}" data-id="${node.id}">
+            return `<div class="data-list-item linked-data-item" data-id="${node.id}">
                         <span class="data-list-item-name">${relatedItem.name || relatedItem.RoomName || 'Unknown'}</span>
                         <span class="data-list-item-details">${node.relation}</span>
                     </div>`;
@@ -335,9 +334,7 @@ function renderRightPanel() {
         dom.rightPanelContent.appendChild(relatedSection);
         relatedSection.querySelectorAll('.linked-data-item').forEach(el => {
             el.addEventListener('click', e => {
-                const newType = e.currentTarget.dataset.type;
-                const newId = e.currentTarget.dataset.id;
-                handleCommand(`info ${newId}`);
+                handleCommand(`info ${e.currentTarget.dataset.id}`);
             });
         });
     }
@@ -347,15 +344,15 @@ function renderRightPanel() {
 // ==================================================================
 // 4. 핵심 실행 함수
 // ==================================================================
-async function executeAnalyze(type, id) {
-    if (!type || !id) return;
-    
-    const item = findItemInDatabase(type, id);
-    if (!item) {
+async function executeAnalyze(id) {
+    const result = findItemByUniversalId(id);
+    if (!result || !result.item) {
         await _print(`[ERROR] Data node not found: ${id}`, 'color-critical');
         return;
     }
-    
+
+    const { item, type } = result;
+
     await _print(`[SYSTEM] Accessing data node [${type}:${id}]...`, 'color-info');
     await _print(`[SYSTEM] Analysis complete. Rendering details for: ${item.name || item.RoomName || item.desc}`, 'color-success');
     
@@ -363,7 +360,7 @@ async function executeAnalyze(type, id) {
     if (type === 'gate') {
         activeGateId = id;
     } else if (type === 'room') {
-        const room = findItemInDatabase('room', id);
+        const room = findItemInDatabase(id);
         if (room && room.GID) {
             activeGateId = room.GID;
         }
@@ -433,17 +430,17 @@ async function handleCommand(command) {
         case 'analyze': 
             if (!targetId) { await _print("Usage: analyze <type>", "color-warning"); break; }
             await _print(`[SYSTEM] Querying database for [${targetId.toUpperCase()}]...`, 'color-info');
-            setState({ centerView: { mode: 'list', type: targetId, filter:'' }, analysisTarget:{type: null, id:null} }); 
+            
+            if (targetId === 'rooms' && state.activeGateId && state.analysisTarget.type === 'gate' && state.analysisTarget.id === state.activeGateId) {
+                setState({ centerView: { mode: 'list', type: targetId, filter:'' }}); 
+            } else {
+                setState({ centerView: { mode: 'list', type: targetId, filter:'' }, analysisTarget:{type: null, id:null} }); 
+            }
             break;
 
         case 'info':
             if (!targetId) { await _print("Usage: info <ID>", "color-warning"); break; }
-            const result = findItemByUniversalId(targetId);
-            if (result) {
-                await executeAnalyze(result.type, targetId);
-            } else {
-                await _print(`[ERROR] Data node not found for ID: ${targetId}`, 'color-critical');
-            }
+            await executeAnalyze(targetId);
             break;
 
         case 'whereis':
@@ -452,8 +449,8 @@ async function handleCommand(command) {
             if (locations.length > 0) {
                 await _print(`[SYSTEM] Location query for [${targetId}]...`, 'color-info');
                 for (const loc of locations) {
-                    const roomDetail = database.details.find(d => d.RoomID === loc.RoomID);
-                    const roomName = roomDetail ? roomDetail.RoomName : 'Unknown Room';
+                    const room = findItemInDatabase(loc.RoomID);
+                    const roomName = room ? room.RoomName : 'Unknown Room';
                     await _print(` > Found at: ${loc.RoomID} (${roomName})`, 'color-success');
                 }
             } else {
@@ -485,44 +482,47 @@ async function handleCommand(command) {
 
 /**
  * Finds an item and its type from any database table based on its ID.
- * Uses prefix-based recognition for most IDs, with a fallback for room IDs.
+ * This is the single source of truth for finding items.
  * @param {string} id The universal ID to search for.
  * @returns {{item: object, type: string}|null}
  */
 function findItemByUniversalId(id) {
-    let dbKey, type;
-    const prefix = id.split('-')[0];
+    if (!id) return null;
 
-    switch (prefix) {
-        case 'G':
-            dbKey = 'gates'; type = 'gate'; break;
-        case 'M':
-            dbKey = 'monsters'; type = 'monster'; break;
-        case 'B':
-            dbKey = 'monsters'; type = 'boss'; break;
-        case 'I':
-        case 'R':
-        case 'E':
-        case 'S':
-            dbKey = 'items'; type = 'item'; break;
-        case 'EV':
-            dbKey = 'events_traps'; type = 'event'; break;
-        case 'T':
-            dbKey = 'events_traps'; type = 'trap'; break;
-        default:
-            // Fallback for IDs without a recognized prefix (likely room IDs)
-            const roomItem = database.rooms.find(d => d.id === id);
-            if (roomItem) {
-                return { item: findItemInDatabase('room', id), type: 'room' };
-            }
-            return null; // Not a room and no recognized prefix
+    let dbKey, type;
+    let item = null;
+
+    if (id.startsWith('B-')) {
+        dbKey = 'monsters'; type = 'boss';
+    } else if (id.startsWith('M-')) {
+        dbKey = 'monsters'; type = 'monster';
+    } else if (id.startsWith('G-')) {
+        dbKey = 'gates'; type = 'gate';
+    } else if (id.startsWith('I-') || id.startsWith('R-') || id.startsWith('E-') || id.startsWith('S-')) {
+        dbKey = 'items'; type = 'item';
+    } else if (id.startsWith('EV-')) {
+        dbKey = 'events_traps'; type = 'event';
+    } else if (id.startsWith('T-')) {
+        dbKey = 'events_traps'; type = 'trap';
+    } else {
+        const roomBase = database.rooms.find(d => d.id === id);
+        if (roomBase) {
+            const roomDetail = database.details.find(d => d.RoomID === id);
+            return { item: { ...roomBase, ...roomDetail }, type: 'room' };
+        }
+        return null;
     }
 
-    const item = database[dbKey]?.find(d => (d.ID || d.id) === id);
+    item = database[dbKey]?.find(d => d.ID === id || d.id === id);
+
     return item ? { item, type } : null;
 }
 
-function createListItem(name, details, id, type) {
+function findItemInDatabase(id) {
+    return findItemByUniversalId(id)?.item || null;
+}
+
+function createListItem(name, details, id) {
     const itemEl = document.createElement('div');
     itemEl.className = 'data-list-item';
     itemEl.dataset.id = id;
@@ -536,7 +536,7 @@ function createListItem(name, details, id, type) {
     return itemEl;
 }
 
-function createList(items, type) {
+function createList(items) {
     const container = document.createElement('div');
     if (items.length === 0) {
         container.innerHTML = `<p class="placeholder">No data found in this cluster.</p>`;
@@ -546,21 +546,9 @@ function createList(items, type) {
     items.forEach(item => {
         const id = item.ID || item.id || item.RoomID;
         const name = item.name || item.desc || (item.RoomName || 'Unknown Room');
-        
-        let itemType;
-        if (type === 'events_traps') {
-            itemType = item.category.toLowerCase();
-        } else if (type === 'rooms') {
-            itemType = 'room';
-        } else {
-            // For monsters, items, gates, etc., derive from prefix if possible
-            const universalResult = findItemByUniversalId(id);
-            itemType = universalResult ? universalResult.type : type.slice(0, -1);
-        }
-        
         const details = item.rank ? `Rank: ${item.rank} | ID: ${id}` : `ID: ${id}`;
         
-        const itemEl = createListItem(name, details, id, itemType);
+        const itemEl = createListItem(name, details, id);
         
         if (state.analysisTarget.id === id) {
             itemEl.classList.add('active');
@@ -593,38 +581,28 @@ function renderGateDashboard(gate) {
 }
 function getPluralType(singularType) {
     const typeMap = {
-        'gate': 'gates',
-        'monster': 'monsters',
-        'boss': 'monsters',
-        'item': 'items',
-        'event': 'events_traps',
-        'trap': 'events_traps',
-        'room': 'rooms',
+        'gate': 'gates', 'monster': 'monsters', 'boss': 'monsters', 'item': 'items',
+        'event': 'events_traps', 'trap': 'events_traps', 'room': 'rooms',
     };
     return typeMap[singularType] || `${singularType}s`;
 }
-function findItemInDatabase(type, id) {
-    const normType = (type || '').toLowerCase().replace(/s$/, '');
-    switch (normType) {
-        case 'gate': return database.gates.find(d => d.id === id);
-        case 'monster': case 'boss': return database.monsters.find(d => d.ID === id);
-        case 'item': return database.items.find(d => d.ID === id);
-        case 'event': case 'trap': return database.events_traps.find(d => d.ID === id);
-        case 'room': 
-             const roomBase = database.rooms.find(d => d.id === id);
-             const roomDetail = database.details.find(d => d.RoomID === id);
-             return roomBase ? { ...roomBase, ...roomDetail } : null;
-        default: return null;
-    }
-}
-function getFormattedInfoString(type, id) {
-    const item = findItemInDatabase(type, id);
-    if (!item) return `Data not found for ${type} ${id}.`;
-    const normType = (type || '').toLowerCase().replace(/s$/, '');
-    switch(normType) {
-        case 'item': return `--- ITEM INFO: ${item.name} ---\nID: ${item.ID} | Rank: ${item.rank}\nCategory: ${item.category}\nDesc: ${item.desc}`;
-        case 'monster': case 'boss': return `--- ENTITY INFO: ${item.name} ---\nID: ${item.ID} | Cat: ${item.category.toUpperCase()} | Rank: ${item.rank}\nHabitat: ${item.habit} | Weakness: ${item.weak}\nDesc: ${item.desc}`;
-        case 'event': case 'trap': return `--- EVENT/TRAP INFO: ${item.name} ---\nID: ${item.ID} | Cat: ${item.category.toUpperCase()}\nDesc: ${item.desc}`;
+
+// MODIFICATION: The problematic normalization logic has been removed.
+function getFormattedInfoString(id) {
+    const result = findItemByUniversalId(id);
+    if (!result) return `Data not found for ${id}.`;
+    
+    const { item, type } = result;
+
+    switch(type) { // Use the direct type from the universal finder
+        case 'item': 
+            return `--- ITEM INFO: ${item.name} ---\nID: ${item.ID} | Rank: ${item.rank}\nCategory: ${item.category}\nDesc: ${item.desc}`;
+        case 'monster': 
+        case 'boss': 
+            return `--- ENTITY INFO: ${item.name} ---\nID: ${item.ID} | Cat: ${item.category.toUpperCase()} | Rank: ${item.rank}\nHabitat: ${item.habit} | Weakness: ${item.weak}\nDesc: ${item.desc}`;
+        case 'event': 
+        case 'trap': 
+            return `--- EVENT/TRAP INFO: ${item.name} ---\nID: ${item.ID} | Cat: ${item.category.toUpperCase()}\nDesc: ${item.desc}`;
         case 'room':
             let info = `--- ROOM INFO: ${item.RoomName} ---\nID: ${item.id} | Type: ${item.type}\nDesc: ${item.dec}`;
             const elements = database.elements.filter(e => e.RoomID === id);
@@ -634,36 +612,37 @@ function getFormattedInfoString(type, id) {
             }
             return info;
     }
-    return `Unknown info type: ${type}`;
+    return `Unknown info type: ${type}`; // Fallback
 }
-function getRelatedNodes(type, id) {
+
+function getRelatedNodes(id) {
     const related = [];
     const add = (type, id, relation) => { if (id && type && !related.some(r => r.type === type && r.id === id)) related.push({type, id, relation}); };
-    const normType = (type || '').toLowerCase();
     
-    // Find universal type for the given ID
-    const universalResult = findItemByUniversalId(id) || (findItemInDatabase('room', id) ? {type: 'room'} : null);
-    const itemType = universalResult ? universalResult.type : normType;
+    const result = findItemByUniversalId(id);
+    if (!result) return [];
+    
+    const itemType = result.type;
 
     switch(itemType) {
         case 'monster': case 'boss':
-            database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase('room', el.RoomID); if (room) { add('room', room.id, 'Appears In'); add('gate', room.GID, 'Located In'); } });
+            database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase(el.RoomID); if (room) { add('room', room.id, 'Appears In'); add('gate', room.GID, 'Located In'); } });
             break;
         case 'item':
-            database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase('room', el.RoomID); if(room) { add('room', room.id, 'Found In'); database.elements.filter(e => e.RoomID === room.id && (e.type === 'monster' || e.type === 'boss')).forEach(m => add(m.type, m.refId, 'Dropped By')); } });
+            database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase(el.RoomID); if(room) { add('room', room.id, 'Found In'); database.elements.filter(e => e.RoomID === room.id && (e.type === 'monster' || e.type === 'boss')).forEach(m => { const monsterResult = findItemByUniversalId(m.refId); if(monsterResult) add(monsterResult.type, m.refId, 'Guarded By'); }); } });
             break;
         case 'room':
-            const room = findItemInDatabase('room', id);
-            if(room) { add('gate', room.GID, 'Part of'); database.elements.filter(e => e.RoomID === id).forEach(el => { if (el.refId) { const relUniversal = findItemByUniversalId(el.refId); if(relUniversal) add(relUniversal.type, el.refId, 'Contains'); } }); database.connectors.filter(c => c.FromID === id).forEach(c => add('room', c.ToID, 'Connects To')); database.connectors.filter(c => c.ToID === id).forEach(c => add('room', c.FromID, 'Connected From')); }
+            const room = findItemInDatabase(id);
+            if(room) { add('gate', room.GID, 'Part of'); database.elements.filter(e => e.RoomID === id).forEach(el => { if (el.refId) { const relResult = findItemByUniversalId(el.refId); if(relResult) add(relResult.type, el.refId, 'Contains'); } }); database.connectors.filter(c => c.FromID === id).forEach(c => add('room', c.ToID, 'Connects To')); database.connectors.filter(c => c.ToID === id).forEach(c => add('room', c.FromID, 'Connected From')); }
             break;
         case 'gate':
             const rooms = database.rooms.filter(r => r.GID === id);
             rooms.forEach(r => add('room', r.id, 'Contains'));
             const mainBoss = database.elements.find(el => el.type === 'boss' && rooms.some(r => r.id === el.RoomID));
-            if(mainBoss) { const bossUniversal = findItemByUniversalId(mainBoss.refId); if(bossUniversal) add(bossUniversal.type, mainBoss.refId, 'Primary Target'); }
+            if(mainBoss) { const bossResult = findItemByUniversalId(mainBoss.refId); if(bossResult) add(bossResult.type, mainBoss.refId, 'Primary Target'); }
             break;
         case 'event': case 'trap':
-             database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase('room', el.RoomID); if (room) { add('room', room.id, 'Occurs In'); } });
+             database.elements.filter(e => e.refId === id).forEach(el => { const room = findItemInDatabase(el.RoomID); if (room) { add('room', room.id, 'Occurs In'); } });
             break;
     }
     return related;
@@ -673,12 +652,12 @@ function _print(message, colorClass = 'color-info', speed = TYPING_SPEED) { retu
 function processLogQueue() { if (logQueue.length === 0) { isTyping = false; return; } isTyping = true; const { message, colorClass, speed, resolve } = logQueue.shift(); const line = document.createElement('div'); line.classList.add('log-message', colorClass); dom.systemOutput.appendChild(line); dom.systemOutput.scrollTop = dom.systemOutput.scrollHeight; let charIndex = 0; const type = () => { if (charIndex < message.length) { line.textContent += message.charAt(charIndex); dom.systemOutput.scrollTop = dom.systemOutput.scrollHeight; charIndex++; setTimeout(type, speed); } else { resolve(); processLogQueue(); } }; type(); }
 function _randomDelay(min = 50, max = 200) { return new Promise(resolve => setTimeout(resolve, Math.random() * (max - min) + min)); }
 function buildBlueprintData(gateId) { const rooms = database.rooms.filter(r => r.GID === gateId); const connectors = database.connectors.filter(c => c.GID === gateId).map(c => ({ from: c.FromID, to: c.ToID })); const details = {}; rooms.forEach(room => { const roomDetail = database.details.find(d => d.RoomID === room.id); const roomElements = database.elements.filter(e => e.RoomID === room.id); if (roomDetail) { details[room.id] = { name: roomDetail.RoomName, type: roomDetail.type, description: roomDetail.dec, info: roomElements }; } }); return { rooms, connectors, details }; }
-async function showMapModal(gateId) { _printImmediate(`> map ${gateId}`, 'color-hyean'); const gate = findItemInDatabase('gate', gateId); if (!gate) { await _print(`[ERROR] No blueprint data found for ${gateId}.`, 'color-critical'); return; } const currentBlueprintData = buildBlueprintData(gateId); if (!currentBlueprintData || currentBlueprintData.rooms.length === 0) { await _print(`[ERROR] No blueprint data found for ${gate.name}.`, 'color-critical'); return; } dom.mapModalTitle.textContent = `${gate.name} Blueprint`; dom.mapModal.classList.add('visible'); await new Promise(resolve => setTimeout(resolve, 50)); generate2DMap(currentBlueprintData); generate3DMap(currentBlueprintData); generateFloorControls(currentBlueprintData); const initialFloors = [...new Set(currentBlueprintData.rooms.map(r => r.floor))].sort((a,b)=>b-a); currentFloor = initialFloors.length > 0 ? initialFloors[0] : 1; filterFloor(currentFloor); activateMapView('2D'); selectRoom(null); onWindowResize3D(); }
+async function showMapModal(gateId) { _printImmediate(`> map ${gateId}`, 'color-hyean'); const gate = findItemInDatabase(gateId); if (!gate) { await _print(`[ERROR] No blueprint data found for ${gateId}.`, 'color-critical'); return; } const currentBlueprintData = buildBlueprintData(gateId); if (!currentBlueprintData || currentBlueprintData.rooms.length === 0) { await _print(`[ERROR] No blueprint data found for ${gate.name}.`, 'color-critical'); return; } dom.mapModalTitle.textContent = `${gate.name} Blueprint`; dom.mapModal.classList.add('visible'); await new Promise(resolve => setTimeout(resolve, 50)); generate2DMap(currentBlueprintData); generate3DMap(currentBlueprintData); generateFloorControls(currentBlueprintData); const initialFloors = [...new Set(currentBlueprintData.rooms.map(r => r.floor))].sort((a,b)=>b-a); currentFloor = initialFloors.length > 0 ? initialFloors[0] : 1; filterFloor(currentFloor); activateMapView('2D'); selectRoom(null); onWindowResize3D(); }
 function activateMapView(mode) { if (mode === '2D') { dom.blueprintSvg.classList.add('active-map-view'); dom.map3DCanvas.classList.remove('active-map-view'); dom.view2DBtn.classList.add('active'); dom.view3DBtn.classList.remove('active'); dom.floorControls.style.display = 'flex'; filterFloor(currentFloor); } else { dom.map3DCanvas.classList.add('active-map-view'); dom.blueprintSvg.classList.remove('active-map-view'); dom.view3DBtn.classList.add('active'); dom.view2DBtn.classList.remove('active'); dom.floorControls.style.display = 'none'; onWindowResize3D(); roomObjects3D.forEach(mesh => mesh.visible = true); const active2DRoomId = document.querySelector('#blueprint-svg .room.active')?.id.replace('svg-', ''); selectRoom(active2DRoomId); } }
 function selectRoom(roomId) { document.querySelectorAll('#blueprint-svg .room.active').forEach(r => r.classList.remove('active')); if(roomId) { const targetSvg = document.getElementById(`svg-${roomId}`); if(targetSvg) targetSvg.classList.add('active'); } if(activeRoom3D) activeRoom3D.material = materialDefault.clone(); activeRoom3D = null; if(roomId) { const target3D = roomObjects3D.find(obj => obj.userData.id === roomId); if(target3D) { target3D.material = materialSelected.clone(); activeRoom3D = target3D; } } updateRoomInfoPanel(roomId); }
-function updateRoomInfoPanel(roomId) { const roomDetail = roomId ? findItemInDatabase('room', roomId) : null; if (roomDetail) { dom.roomAnalysisInfo.innerHTML = dom.roomInfoTemplate.innerHTML; document.getElementById('room-name-bp').textContent = roomDetail.RoomName; document.getElementById('room-type-bp').textContent = roomDetail.type; document.getElementById('room-description-bp').textContent = roomDetail.dec; const detailsList = document.getElementById('room-details-bp'); const detailsTitle = document.getElementById('room-details-title-bp'); detailsList.innerHTML = ''; const roomElements = database.elements.filter(e => e.RoomID === roomId); if (roomElements.length > 0) { detailsTitle.style.display = 'block'; roomElements.forEach(item => { const li = document.createElement('li'); li.innerHTML = `<span class="info-icon">${item.type[0].toUpperCase()}</span> ${item.desc} ${item.quantity > 1 ? `x${item.quantity}`: ''}`; detailsList.appendChild(li); }); } else { detailsTitle.style.display = 'none'; } } else { dom.roomAnalysisInfo.innerHTML = `<div class="placeholder">[ 시스템 ] // 공간을 선택하여<br>상세 정보를 확인하십시오.</div>`; } }
-function generateFloorControls(blueprintData){ dom.floorControls.innerHTML = ''; const floors = [...new Set((blueprintData.rooms || []).map(r => r.floor))].sort((a,b) => b-a); floors.forEach(floorNum => { const btn = document.createElement('button'); btn.textContent = floorNum === 0 ? 'B1F' : `${floorNum}F`; btn.dataset.floor = floorNum; btn.addEventListener('click', () => filterFloor(floorNum)); dom.floorControls.appendChild(btn); }); if (floors.length > 0) { currentFloor = floors[0]; } }
-function filterFloor(floorNum){ currentFloor = floorNum; dom.blueprintSvg.querySelectorAll('[data-floor], [data-from-floor]').forEach(el => { const elFloor = parseInt(el.dataset.floor); const fromFloor = parseInt(el.dataset.fromFloor); const toFloor = parseInt(el.dataset.toFloor); let isVisible = false; if (!isNaN(elFloor)) { isVisible = elFloor === floorNum; } else if (!isNaN(fromFloor)) { isVisible = fromFloor === floorNum || toFloor === floorNum; } el.style.display = isVisible ? 'block' : 'none'; }); dom.floorControls.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.floor) === floorNum)); const activeRoom = document.querySelector('#blueprint-svg .room.active'); if(activeRoom) { const roomData = findItemInDatabase('room', activeRoom.id.replace('svg-', '')); if(roomData && roomData.floor !== floorNum) { selectRoom(null); } } }
+function updateRoomInfoPanel(roomId) { const roomDetail = roomId ? findItemInDatabase(roomId) : null; if (roomDetail) { dom.roomAnalysisInfo.innerHTML = dom.roomInfoTemplate.innerHTML; document.getElementById('room-name-bp').textContent = roomDetail.RoomName; document.getElementById('room-type-bp').textContent = roomDetail.type; document.getElementById('room-description-bp').textContent = roomDetail.dec; const detailsList = document.getElementById('room-details-bp'); const detailsTitle = document.getElementById('room-details-title-bp'); detailsList.innerHTML = ''; const roomElements = database.elements.filter(e => e.RoomID === roomId); if (roomElements.length > 0) { detailsTitle.style.display = 'block'; roomElements.forEach(item => { const li = document.createElement('li'); li.innerHTML = `<span class="info-icon">${item.type[0].toUpperCase()}</span> ${item.desc} ${item.quantity > 1 ? `x${item.quantity}`: ''}`; detailsList.appendChild(li); }); } else { detailsTitle.style.display = 'none'; } } else { dom.roomAnalysisInfo.innerHTML = `<div class="placeholder">[ 시스템 ] // 공간을 선택하여<br>상세 정보를 확인하십시오.</div>`; } }
+function generateFloorControls(blueprintData) { dom.floorControls.innerHTML = ''; const floors = [...new Set((blueprintData.rooms || []).map(r => r.floor))].sort((a,b) => b-a); floors.forEach(floorNum => { const btn = document.createElement('button'); if (floorNum > 0) { btn.textContent = `${floorNum}F`; } else if (floorNum === 0) { btn.textContent = 'B1F'; } else { btn.textContent = `B${-floorNum + 1}F`; } btn.dataset.floor = floorNum; btn.addEventListener('click', () => filterFloor(floorNum)); dom.floorControls.appendChild(btn); }); if (floors.length > 0) { currentFloor = floors[0]; } }
+function filterFloor(floorNum){ currentFloor = floorNum; dom.blueprintSvg.querySelectorAll('[data-floor], [data-from-floor]').forEach(el => { const elFloor = parseInt(el.dataset.floor); const fromFloor = parseInt(el.dataset.fromFloor); const toFloor = parseInt(el.dataset.toFloor); let isVisible = false; if (!isNaN(elFloor)) { isVisible = elFloor === floorNum; } else if (!isNaN(fromFloor)) { isVisible = fromFloor === floorNum || toFloor === floorNum; } el.style.display = isVisible ? 'block' : 'none'; }); dom.floorControls.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.floor) === floorNum)); const activeRoom = document.querySelector('#blueprint-svg .room.active'); if(activeRoom) { const roomData = findItemInDatabase(activeRoom.id.replace('svg-', '')); if(roomData && roomData.floor !== floorNum) { selectRoom(null); } } }
 function generate2DMap(blueprintData) { dom.blueprintSvg.innerHTML = ''; const { rooms, connectors } = blueprintData; if(!rooms || rooms.length === 0) return; const gConnectors = document.createElementNS("http://www.w3.org/2000/svg", 'g'); connectors.forEach(c => { const fromRoom = rooms.find(r => r.id === c.from); const toRoom = rooms.find(r => r.id === c.to); if (!fromRoom || !toRoom) return; const g = document.createElementNS("http://www.w3.org/2000/svg", 'g'); g.dataset.fromFloor = fromRoom.floor; g.dataset.toFloor = toRoom.floor; const line = document.createElementNS("http://www.w3.org/2000/svg", 'line'); line.setAttribute('class', 'connector'); const fromCenter = { x: fromRoom.x + fromRoom.w / 2, y: fromRoom.y + fromRoom.h / 2 }; const toCenter = { x: toRoom.x + toRoom.w / 2, y: toRoom.y + toRoom.h / 2 }; line.setAttribute('x1', fromCenter.x); line.setAttribute('y1', fromCenter.y); line.setAttribute('x2', toCenter.x); line.setAttribute('y2', toCenter.y); g.appendChild(line); if (fromRoom.floor !== toRoom.floor) { const icon = document.createElementNS("http://www.w3.org/2000/svg", 'text'); icon.setAttribute('class', 'floor-connector-icon'); icon.setAttribute('x', (fromCenter.x + toCenter.x) / 2); icon.setAttribute('y', (fromCenter.y + toCenter.y) / 2 + 6); icon.textContent = '⇕'; g.appendChild(icon); } gConnectors.appendChild(g); }); dom.blueprintSvg.appendChild(gConnectors); const gRooms = document.createElementNS("http://www.w3.org/2000/svg", 'g'); rooms.forEach(r => { const g = document.createElementNS("http://www.w3.org/2000/svg", 'g'); g.dataset.floor = r.floor; g.addEventListener('click', () => selectRoom(r.id)); const rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect'); rect.id = `svg-${r.id}`; rect.setAttribute('class', 'room'); rect.setAttribute('x', r.x); rect.setAttribute('y', r.y); rect.setAttribute('width', r.w); rect.setAttribute('height', r.h); const label = document.createElementNS("http://www.w3.org/2000/svg", 'text'); label.setAttribute('class', 'room-label'); label.setAttribute('x', r.x + r.w / 2); label.setAttribute('y', r.y + r.h / 2 + 5); label.textContent = r.name; g.appendChild(rect); g.appendChild(label); gRooms.appendChild(g); }); dom.blueprintSvg.appendChild(gRooms); const bbox = dom.blueprintSvg.getBBox(); const padding = 50; if (bbox.width > 0 && bbox.height > 0) { dom.blueprintSvg.setAttribute('viewBox', `${bbox.x - padding} ${bbox.y - padding} ${bbox.width + padding*2} ${bbox.height + padding*2}`); } }
 function init3D() { scene = new THREE.Scene(); raycaster = new THREE.Raycaster(); pointer = new THREE.Vector2(); camera = new THREE.PerspectiveCamera(50, 1, 0.1, 5000); renderer = new THREE.WebGLRenderer({ canvas: dom.map3DCanvas, antialias: true, alpha: true }); renderer.setClearColor(0x000000, 0); controls = new OrbitControls(camera, renderer.domElement); controls.enableDamping = true; scene.add(new THREE.AmbientLight(0xffffff, 0.7)); const dirLight = new THREE.DirectionalLight(0xffffff, 1); dirLight.position.set(50, 100, 75); scene.add(dirLight); dom.map3DCanvas.addEventListener('click', (event) => { const rect = dom.map3DCanvas.getBoundingClientRect(); pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1; pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1; raycaster.setFromCamera(pointer, camera); const intersects = raycaster.intersectObjects(roomObjects3D); if (intersects.length > 0) { selectRoom(intersects[0].object.userData.id); } }); function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); } animate(); }
 function onWindowResize3D(){ const wrapper = dom.map3DCanvas.parentElement; if(!wrapper || wrapper.clientWidth === 0) return; camera.aspect = wrapper.clientWidth / wrapper.clientHeight; camera.updateProjectionMatrix(); renderer.setSize(wrapper.clientWidth, wrapper.clientHeight); }
