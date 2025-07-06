@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>맵뷰어</title>
+    <style>
+        :root {
+            --color-bg-deep: #0a0f18; --color-bg-main: #1c2536; --color-bg-light: #2a3a50;
+            --color-text-main: #e8e6e3; --color-text-muted: #8d99ae; --color-accent-primary: #00a8e8;
+            --color-accent-secondary: #f0c808; --color-accent-danger: #e53d00; --color-accent-info: #7cb518;
+        }
+        @import url('https://fonts.googleapis.com/css2?family=Fira+Code&family=Orbitron:wght@700&family=Noto+Sans+KR:wght@400;700&display=swap');
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif; background-color: var(--color-bg-deep); color: var(--color-text-main);
+            display: flex; height: 100vh; padding: 1.5rem; gap: 1.5rem;
+            background-image: radial-gradient(circle at top left, rgba(0, 168, 232, 0.05), transparent 35%),
+                              radial-gradient(circle at bottom right, rgba(240, 200, 8, 0.03), transparent 30%);
+            overflow: hidden;
+        }
+        .panel {
+            background: linear-gradient(145deg, var(--color-bg-main), #18202e); border-radius: 12px;
+            border: 1px solid var(--color-bg-light); box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            display: flex; flex-direction: column; height: 100%;
+        }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; text-transform: uppercase; }
+        
+        /* Left Panel: Info */
+        .info-panel { width: 25%; padding: 1.5rem; overflow-y: auto; }
+        .info-panel h1 { font-size: 1.5rem; color: var(--color-accent-primary); margin-bottom: 2rem; }
+        .info-panel .placeholder { color: var(--color-text-muted); text-align: center; margin-top: 40%; font-size: 1rem; }
+        #room-name { font-size: 1.5rem; color: var(--color-text-main); margin-bottom: 0.5rem; }
+        #room-type { font-size: 0.9rem; color: var(--color-text-muted); margin-bottom: 1.5rem; font-style: italic; }
+        #room-description { line-height: 1.7; margin-bottom: 2rem; border-left: 3px solid var(--color-bg-light); padding-left: 1rem;}
+        #room-details-title { margin-bottom: 1rem; color: var(--color-accent-secondary); }
+        #room-details { list-style: none; padding-left: 0; }
+        #room-details li { background: rgba(0,0,0,0.2); padding: 0.75rem 1rem; border-radius: 6px; margin-bottom: 0.5rem; display: flex; align-items: center; border-left: 4px solid transparent; transition: background-color 0.2s; }
+        #room-details li.type-monster { border-left-color: var(--color-accent-danger); }
+        #room-details li.type-gimmick { border-left-color: var(--color-accent-secondary); }
+        #room-details li.type-item { border-left-color: var(--color-accent-info); }
+        .info-icon { margin-right: 0.75rem; font-size: 1.1rem; width: 20px; text-align: center; }
+
+        /* Center Panel: Viewer */
+        .viewer-panel { flex-grow: 1; padding: 1rem; }
+        .viewer-header { display: flex; justify-content: space-between; align-items: center; padding: 0 0.5rem 1rem 0.5rem; }
+        .viewer-header h2 { margin: 0; font-size: 1.2rem; }
+        .view-controls { display: flex; align-items: center; gap: 0.5rem; }
+        .view-controls button { padding: 0.5rem 1rem; font-size: 0.9rem; margin: 0; border-radius: 6px; cursor: pointer; transition: all 0.2s ease; }
+        .view-controls button:not(.active) { background: transparent; border-color: var(--color-bg-light); color: var(--color-text-muted); }
+        .view-controls button.active { background-color: var(--color-accent-primary); color: var(--color-bg-deep); border-color: var(--color-accent-primary); box-shadow: 0 0 10px var(--color-accent-primary); }
+        #floor-controls { position: absolute; top: 15px; left: 15px; z-index: 10; display: flex; flex-direction: column; gap: 8px; background: rgba(28, 37, 54, 0.8); backdrop-filter: blur(5px); padding: 8px; border-radius: 8px; border: 1px solid var(--color-bg-light); transition: opacity 0.3s; }
+        #floor-controls button { width: 45px; height: 45px; padding: 0; margin: 0; font-size: 1rem; }
+        
+        .map-wrapper { width: 100%; height: calc(100% - 50px); position: relative; border-radius: 8px; overflow: hidden; background: var(--color-bg-deep); box-shadow: inset 0 0 20px rgba(0,0,0,0.7); }
+        #map-canvas, #blueprint-svg { display: block; width: 100%; height: 100%; position: absolute; top: 0; left: 0; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        #map-canvas.visible, #blueprint-svg.visible { opacity: 1; pointer-events: all; }
+        
+        /* Data Panel */
+        .data-panel { width: 25%; padding: 1.5rem; }
+        textarea { width: 100%; flex-grow: 1; background-color: var(--color-bg-deep); color: var(--color-text-main); border: 1px solid var(--color-bg-light); border-radius: 6px; padding: 0.75rem; font-family: 'Fira Code', monospace; font-size: 0.9rem; resize: none; line-height: 1.6; }
+        button#generate-btn { width: 100%; margin-top: 1rem; }
+        
+        /* SVG & 3D Styles */
+        .room { fill: rgba(65, 90, 119, 0.3); stroke: var(--color-bg-light); stroke-width: 2; cursor: pointer; transition: all 0.2s ease; }
+        .room:hover { fill: rgba(65, 90, 119, 0.6); }
+        .room.active { fill: rgba(63, 193, 201, 0.4); stroke: var(--color-accent-primary); stroke-width: 3; }
+        .room-label { fill: var(--color-text-muted); font-size: 14px; text-anchor: middle; pointer-events: none; }
+        .connector { stroke: var(--color-text-muted); stroke-width: 2; transition: opacity 0.3s; }
+        .vertical-connector-icon { fill: var(--color-accent-secondary); font-size: 18px; text-anchor: middle; pointer-events: none; transition: opacity 0.3s;}
+    </style>
+</head>
+<body>
+
+    <div class="panel info-panel">
+        <h1>Gate Briefing</h1>
+        <div id="info-content"><div class="placeholder">맵 위의 공간을 선택하여<br>상세 정보를 확인하십시오.</div></div>
+        <div id="info-template" style="display: none;">
+            <h2 id="room-name"></h2><p id="room-type"></p><p id="room-description"></p>
+            <h3 id="room-details-title" style="display:none;">Key Elements</h3><ul id="room-details"></ul>
+        </div>
+    </div>
+
+    <div class="panel viewer-panel">
+        <div class="viewer-header">
+            <h2>TACTICAL MAP</h2>
+            <div class="view-controls">
+                <button id="view-2d-btn" class="active">2D</button>
+                <button id="view-3d-btn">3D</button>
+            </div>
+        </div>
+        <div class="map-wrapper">
+            <div id="floor-controls" class="view-controls"></div>
+            <svg id="blueprint-svg" class="visible" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet"></svg>
+            <canvas id="map-canvas"></canvas>
+        </div>
+    </div>
+
+    <div class="panel data-panel">
+        <h1>Blueprint Data</h1>
+        <textarea id="map-data-input">{
+  "rooms": [
+    { "id": "deck", "label": "중앙 갑판", "floor": 1, "x": 180, "y": 180, "w": 200, "h": 240 },
+    { "id": "bow", "label": "선수", "floor": 1, "x": 50, "y": 250, "w": 130, "h": 100 },
+    { "id": "wheelhouse", "label": "조타실", "floor": 2, "x": 180, "y": 100, "w": 200, "h": 60 },
+    { "id": "quarters", "label": "선장실", "floor": 1, "x": 400, "y": 240, "w": 180, "h": 90 },
+    { "id": "hold", "label": "지하 선창", "floor": 0, "x": 200, "y": 250, "w": 160, "h": 100 }
+  ],
+  "connectors": [
+    { "from": "bow", "to": "deck" }, { "from": "deck", "to": "hold" },
+    { "from": "deck", "to": "wheelhouse" }, { "from": "deck", "to": "quarters" }
+  ],
+  "details": {
+    "bow": { "name": "선수 갑판", "type": "1F / 시작 구역", "description": "게이트의 시작 지점. 비바람과 냉기가 몰아친다.", "info": ["S:플레이어 시작 위치"]},
+    "deck": { "name": "중앙 갑판", "type": "1F / 주요 전투 구역", "description": "배의 가장 넓은 공간.", "info": ["M:얼어붙은 갑판원 x3", "G:화톳불", "T:지하 선창으로 추락"]},
+    "hold": { "name": "지하 선창", "type": "B1 / 아이템 구역", "description": "갑판의 함정으로 진입하는 어두운 공간.", "info": ["I:저주받은 금화 (핵심)", "M:탐욕의 망령 x5"]},
+    "wheelhouse": { "name": "조타실", "type": "2F / 정보 구역", "description": "보스 공략 힌트가 있는 곳.", "info": ["H:선장의 항해일지"]},
+    "quarters": { "name": "선장실", "type": "1F / 최종 보스 구역", "description": "게이트의 주인이 기다리는 곳.", "info": ["B:보스 - 서리이빨 에드워드"]}
+  }
+}
+        </textarea>
+        <button id="generate-btn">GENERATE / RELOAD</button>
+    </div>
+
+    <script type="importmap">{"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+
+        // --- COMMON ELEMENTS & STATE ---
+        const dataInput = document.getElementById('map-data-input');
+        const generateBtn = document.getElementById('generate-btn');
+        const view2DBtn = document.getElementById('view-2d-btn');
+        const view3DBtn = document.getElementById('view-3d-btn');
+        const floorControls = document.getElementById('floor-controls');
+        const infoContent = document.getElementById('info-content');
+        const infoTemplate = document.getElementById('info-template');
+        let mapData = {};
+        let currentFloor = 1; // Default starting floor for 2D view
+
+        // --- 2D SVG ---
+        const svg = document.getElementById('blueprint-svg');
+        const svgNS = "http://www.w3.org/2000/svg";
+        let activeRoom2D = null;
+        let svgElements = [];
+        let currentViewBox = { x: 0, y: 0, width: 800, height: 600 };
+        let isPanning = false;
+        let startPanX, startPanY;
+        const ZOOM_FACTOR = 1.1; // For mouse wheel
+
+        // --- 3D WebGL ---
+        const canvas = document.getElementById('map-canvas');
+        let scene, camera, renderer, controls, raycaster, pointer, roomObjects = [];
+        let selectedObject3D = null;
+        const materialDefault = new THREE.MeshStandardMaterial({ color: 0x415a77, transparent: true, opacity: 0.7, metalness: 0.2, roughness: 0.8 });
+        const materialSelected = new THREE.MeshStandardMaterial({ color: 0x3fc1c9, emissive: 0x3fc1c9, emissiveIntensity: 0.6, metalness: 0.3, roughness: 0.5 });
+        
+        const infoTypeMap = {
+            'M': { icon: '💀', className: 'type-monster', label: 'Monster' }, 'G': { icon: '⚙️', className: 'type-gimmick', label: 'Gimmick' },
+            'I': { icon: '💎', className: 'type-item', label: 'Item' }, 'T': { icon: '❗', className: 'type-trap', label: 'Trap' },
+            'H': { icon: 'ℹ️', className: 'type-hint', label: 'Hint' }, 'S': { icon: '🚩', className: 'type-start', label: 'Start Point' },
+            'B': { icon: '👑', className: 'type-boss', label: 'Boss' }
+        };
+
+        function selectRoom(roomId) {
+            // Deselect previous 2D room
+            if (activeRoom2D) {
+                activeRoom2D.classList.remove('active');
+            }
+            // Deselect previous 3D room
+            if (selectedObject3D) {
+                selectedObject3D.material = materialDefault;
+            }
+
+            if (roomId) {
+                // Select 2D room
+                const target2DRect = document.getElementById(`2d-${roomId}`);
+                if (target2DRect) {
+                    // Only apply 'active' class if it's currently visible in 2D (on currentFloor)
+                    // and we are in 2D view
+                    if (target2DRect.parentElement.dataset.floor == currentFloor && svg.classList.contains('visible')) {
+                         target2DRect.classList.add('active');
+                         activeRoom2D = target2DRect;
+                    } else {
+                         activeRoom2D = null; // Don't keep selected if hidden by floor filter or not in 2D view
+                    }
+                } else {
+                    activeRoom2D = null;
+                }
+
+                // Select 3D room
+                const target3DObject = roomObjects.find(obj => obj.userData.id === roomId);
+                if (target3DObject) {
+                    target3DObject.material = materialSelected;
+                    selectedObject3D = target3DObject;
+                } else {
+                    selectedObject3D = null;
+                }
+                updateInfoPanel(roomId);
+            } else {
+                // When roomId is null, explicitly clear selected rooms and info panel
+                activeRoom2D = null;
+                selectedObject3D = null;
+                updateInfoPanel(null);
+            }
+        }
+        
+        function updateInfoPanel(roomId) {
+            const data = roomId ? mapData.details[roomId] : null;
+            if (data) {
+                infoContent.innerHTML = infoTemplate.innerHTML;
+                document.getElementById('room-name').textContent = data.name || '정보 없음';
+                document.getElementById('room-type').textContent = data.type || '';
+                document.getElementById('room-description').textContent = data.description || '';
+                const detailsList = document.getElementById('room-details');
+                const detailsTitle = document.getElementById('room-details-title');
+                detailsList.innerHTML = '';
+                if (data.info && data.info.length > 0) {
+                    detailsTitle.style.display = 'block';
+                    data.info.forEach(item => {
+                        const li = document.createElement('li');
+                        const [typeKey, ...textParts] = item.split(':');
+                        const text = textParts.join(':').trim();
+                        const typeInfo = infoTypeMap[typeKey] || { icon: '•', className: ''};
+                        li.className = typeInfo.className;
+                        li.innerHTML = `<span class="info-icon" title="${typeInfo.label}">${typeInfo.icon}</span> ${text}`;
+                        detailsList.appendChild(li);
+                    });
+                } else {
+                    detailsTitle.style.display = 'none';
+                }
+            } else {
+                infoContent.innerHTML = `<div class="placeholder">맵 위의 공간을 선택하여<br>상세 정보를 확인하십시오.</div>`;
+            }
+        }
+
+        function generateAll() {
+            try {
+                mapData = JSON.parse(dataInput.value);
+                generate2DMap();
+                generate3DMap();
+                generateFloorControls();
+                // After generation, ensure the default floor is displayed in 2D
+                filterFloor(currentFloor);
+                selectRoom(null); // Clear selection on full reload
+            } catch (error) { alert("유효한 JSON 형식의 맵 데이터를 입력해주세요."); console.error(error); }
+        }
+        
+        function getRoomCenter(room) { return { x: room.x + room.w / 2, y: room.y + room.h / 2 }; }
+
+        function generate2DMap() {
+            svg.innerHTML = ''; activeRoom2D = null; svgElements = [];
+
+            // Calculate initial viewBox to fit all rooms with padding
+            let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+            (mapData.rooms || []).forEach(r => {
+                minX = Math.min(minX, r.x);
+                minY = Math.min(minY, r.y);
+                maxX = Math.max(maxX, r.x + r.w);
+                maxY = Math.max(maxY, r.y + r.h);
+            });
+
+            const padding = 50; // Add some padding around the content
+            currentViewBox.x = minX - padding;
+            currentViewBox.y = minY - padding;
+            currentViewBox.width = (maxX - minX) + 2 * padding;
+            currentViewBox.height = (maxY - minY) + 2 * padding;
+            svg.setAttribute('viewBox', `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`);
+
+            // Add Pan and Zoom Event Listeners to SVG
+            svg.removeEventListener('mousedown', handleMouseDown);
+            svg.removeEventListener('mousemove', handleMouseMove);
+            svg.removeEventListener('mouseup', handleMouseUp);
+            svg.removeEventListener('mouseleave', handleMouseUp);
+            svg.removeEventListener('wheel', handleWheel);
+
+            svg.addEventListener('mousedown', handleMouseDown);
+            svg.addEventListener('mousemove', handleMouseMove);
+            svg.addEventListener('mouseup', handleMouseUp);
+            svg.addEventListener('mouseleave', handleMouseUp);
+            svg.addEventListener('wheel', handleWheel);
+
+
+            (mapData.connectors || []).forEach(c => {
+                const fromRoom = mapData.rooms.find(r => r.id === c.from); const toRoom = mapData.rooms.find(r => r.id === c.to);
+                if (!fromRoom || !toRoom) return;
+                const g = document.createElementNS(svgNS, 'g');
+                g.dataset.fromFloor = fromRoom.floor; g.dataset.toFloor = toRoom.floor;
+                const line = document.createElementNS(svgNS, 'line');
+                line.setAttribute('class', 'connector');
+                const fromCenter = getRoomCenter(fromRoom); const toCenter = getRoomCenter(toRoom);
+                line.setAttribute('x1', fromCenter.x); line.setAttribute('y1', fromCenter.y);
+                line.setAttribute('x2', toCenter.x); line.setAttribute('y2', toCenter.y);
+                g.appendChild(line);
+                if (fromRoom.floor !== toRoom.floor) {
+                    const icon = document.createElementNS(svgNS, 'text');
+                    icon.setAttribute('class', 'vertical-connector-icon');
+                    icon.setAttribute('x', (fromCenter.x + toCenter.x) / 2); icon.setAttribute('y', (fromCenter.y + toCenter.y) / 2 + 6);
+                    icon.textContent = '⇕'; g.appendChild(icon);
+                }
+                svg.appendChild(g); svgElements.push(g);
+            });
+            (mapData.rooms || []).forEach(r => {
+                const g = document.createElementNS(svgNS, 'g');
+                g.setAttribute('data-floor', r.floor); g.setAttribute('id', `group-2d-${r.id}`);
+                const rect = document.createElementNS(svgNS, 'rect');
+                rect.setAttribute('id', `2d-${r.id}`); rect.setAttribute('class', 'room');
+                rect.setAttribute('x', r.x); rect.setAttribute('y', r.y);
+                rect.setAttribute('width', r.w); rect.setAttribute('height', r.h);
+                g.appendChild(rect);
+                const label = document.createElementNS(svgNS, 'text');
+                label.setAttribute('class', 'room-label');
+                const center = getRoomCenter(r);
+                label.setAttribute('x', center.x); label.setAttribute('y', center.y);
+                label.textContent = r.label; g.appendChild(label);
+                g.addEventListener('click', () => selectRoom(r.id));
+                svg.appendChild(g); svgElements.push(g);
+            });
+        }
+
+        function handleMouseDown(event) {
+            // Only pan with left mouse button to avoid conflicts with text selection
+            if (event.button === 0) {
+                isPanning = true;
+                startPanX = event.clientX;
+                startPanY = event.clientY;
+                svg.style.cursor = 'grabbing';
+                event.preventDefault(); // Prevent default drag behavior
+            }
+        }
+
+        function handleMouseMove(event) {
+            if (!isPanning) return;
+            const dx = (event.clientX - startPanX) / svg.clientWidth * currentViewBox.width;
+            const dy = (event.clientY - startPanY) / svg.clientHeight * currentViewBox.height;
+
+            currentViewBox.x -= dx;
+            currentViewBox.y -= dy;
+
+            svg.setAttribute('viewBox', `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`);
+
+            startPanX = event.clientX;
+            startPanY = event.clientY;
+        }
+
+        function handleMouseUp() {
+            isPanning = false;
+            svg.style.cursor = 'grab';
+        }
+
+        function handleWheel(event) {
+            event.preventDefault(); // Prevent page scrolling
+
+            const svgRect = svg.getBoundingClientRect();
+            const mouseX = event.clientX - svgRect.left;
+            const mouseY = event.clientY - svgRect.top;
+
+            // Convert mouse coordinates to SVG coordinates
+            const svgX = currentViewBox.x + (mouseX / svgRect.width) * currentViewBox.width;
+            const svgY = currentViewBox.y + (mouseY / svgRect.height) * currentViewBox.height;
+
+            const scale = event.deltaY > 0 ? ZOOM_FACTOR : 1 / ZOOM_FACTOR; // deltaY > 0 is scroll down (zoom out)
+
+            currentViewBox.width *= scale;
+            currentViewBox.height *= scale;
+
+            // Adjust x and y to zoom around the mouse pointer
+            currentViewBox.x = svgX - (svgX - currentViewBox.x) * scale;
+            currentViewBox.y = svgY - (svgY - currentViewBox.y) * scale;
+
+            svg.setAttribute('viewBox', `${currentViewBox.x} ${currentViewBox.y} ${currentViewBox.width} ${currentViewBox.height}`);
+        }
+        
+        function init3D() {
+            scene = new THREE.Scene(); raycaster = new THREE.Raycaster(); pointer = new THREE.Vector2();
+            camera = new THREE.PerspectiveCamera(50, 1, 0.1, 1000);
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true, alpha: true });
+            controls = new OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05; // Smoother movement
+            controls.screenSpacePanning = true; // Pan in screen space
+            
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6); scene.add(ambientLight);
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(10, 20, 15); scene.add(directionalLight);
+            window.addEventListener('resize', onWindowResize);
+
+            // MODIFIED: 3D Canvas Click Listener
+            canvas.addEventListener('click', (event) => {
+                const rect = canvas.getBoundingClientRect();
+                pointer.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+                pointer.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+                raycaster.setFromCamera(pointer, camera);
+                const intersects = raycaster.intersectObjects(roomObjects);
+
+                if (intersects.length > 0) {
+                    // Clicked on a room, select it
+                    selectRoom(intersects[0].object.userData.id);
+                } 
+                // else: Clicked on empty space. Do nothing to selectedRoom or info panel.
+                // The previous selection (if any) and its info will persist.
+            });
+
+            function animate() { requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera); }
+            animate();
+        }
+
+        function onWindowResize(){
+            const wrapper = canvas.parentElement; if(!wrapper || wrapper.clientWidth === 0) return;
+            camera.aspect = wrapper.clientWidth / wrapper.clientHeight;
+            camera.updateProjectionMatrix(); renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+        }
+
+        function generate3DMap() {
+            if(!scene) return;
+            while(scene.children.length > 2){ scene.remove(scene.children[2]); } // Keep lights
+            roomObjects = []; selectedObject3D = null; const roomMeshes = {};
+
+            let minX3D = Infinity, maxX3D = -Infinity;
+            let minY3D = Infinity, maxY3D = -Infinity; // Z-axis in Three.js corresponds to Y in 2D layout
+            let minZ3D = Infinity, maxZ3D = -Infinity; // Y-axis in Three.js corresponds to floor level
+
+            (mapData.rooms || []).forEach(r => {
+                const geometry = new THREE.BoxGeometry(r.w/10, 2, r.h/10); // Scale dimensions for 3D
+                const roomMesh = new THREE.Mesh(geometry, materialDefault.clone());
+                
+                // Adjust coordinates: map (x,y) to Three.js (x,z), and floor to Three.js (y)
+                // Center the entire map around (0,0,0) in 3D space for better controls
+                const meshX = r.x + r.w/2;
+                const meshY = r.floor * 10; // Floor separation in 3D
+                const meshZ = r.y + r.h/2; 
+                
+                roomMesh.position.set(meshX/10, meshY, meshZ/10); // Scale down for visualization
+
+                roomMesh.userData = { id: r.id, floor: r.floor };
+                scene.add(roomMesh); roomObjects.push(roomMesh); roomMeshes[r.id] = roomMesh;
+
+                minX3D = Math.min(minX3D, roomMesh.position.x - r.w/20);
+                maxX3D = Math.max(maxX3D, roomMesh.position.x + r.w/20);
+                minY3D = Math.min(minY3D, roomMesh.position.z - r.h/20); // Z in 3D
+                maxY3D = Math.max(maxY3D, roomMesh.position.z + r.h/20); // Z in 3D
+                minZ3D = Math.min(minZ3D, roomMesh.position.y); // Y in 3D
+                maxZ3D = Math.max(maxZ3D, roomMesh.position.y); // Y in 3D
+            });
+
+            // Set initial camera position and controls target based on overall map bounds
+            if (roomObjects.length > 0) {
+                const center3D = new THREE.Vector3(
+                    (minX3D + maxX3D) / 2,
+                    (minZ3D + maxZ3D) / 2, // Center of floor levels (Y in 3D)
+                    (minY3D + maxY3D) / 2  // Center of Z (corresponds to Y in 2D)
+                );
+                
+                controls.target.copy(center3D);
+                
+                const mapWidth = maxX3D - minX3D;
+                const mapDepth = maxY3D - minY3D;
+                const mapHeight = maxZ3D - minZ3D; // Height across floors
+                
+                const maxDim = Math.max(mapWidth, mapDepth, mapHeight);
+                const distance = maxDim * 1.5; // Adjust multiplier for desired view distance
+
+                camera.position.set(center3D.x + distance * 0.5, center3D.y + distance * 0.8, center3D.z + distance * 1.0);
+                camera.lookAt(center3D);
+                controls.update();
+            }
+
+            (mapData.connectors || []).forEach(c => {
+                 const fromMesh = roomMeshes[c.from]; const toMesh = roomMeshes[c.to];
+                 if (!fromMesh || !toMesh) return;
+                 const points = [fromMesh.position, toMesh.position];
+                 const geometry = new THREE.BufferGeometry().setFromPoints(points);
+                 const material = new THREE.LineBasicMaterial({ color: 0xa9a9b1, transparent: true, opacity: 0.7 });
+                 const line = new THREE.Line(geometry, material); scene.add(line);
+            });
+        }
+        
+        function generateFloorControls(){
+            floorControls.innerHTML = '';
+            const floors = [...new Set((mapData.rooms || []).map(r => r.floor))].sort((a,b) => b-a);
+            floors.forEach(floorNum => {
+                const btn = document.createElement('button');
+                btn.textContent = floorNum === 0 ? 'B1' : `${floorNum}F`;
+                btn.dataset.floor = floorNum;
+                btn.addEventListener('click', () => filterFloor(floorNum));
+                floorControls.appendChild(btn);
+            });
+            if (floors.length > 0) { 
+                // Set initial currentFloor to the highest floor for logical default (e.g., 1F or 2F)
+                currentFloor = floors[0]; 
+            }
+        }
+
+        function filterFloor(floorNum){
+            currentFloor = floorNum;
+            
+            // Filter 2D SVG elements based on currentFloor
+            svgElements.forEach(el => {
+                if (el.dataset.floor) { // It's a room group
+                    el.style.display = el.dataset.floor == floorNum ? 'block' : 'none';
+                } else if (el.dataset.fromFloor) { // It's a connector group
+                    const fromFloor = parseInt(el.dataset.fromFloor);
+                    const toFloor = parseInt(el.dataset.toFloor);
+                    let isVisible = false;
+                    if (fromFloor === toFloor) { // Same floor connector: show only if on currentFloor
+                        isVisible = (fromFloor === floorNum);
+                    } else { // Inter-floor connector: show if either end is on the currentFloor
+                        isVisible = (fromFloor === floorNum || toFloor === floorNum);
+                    }
+                    el.style.display = isVisible ? 'block' : 'none';
+                }
+            });
+            
+            // Update floor control button active state
+            floorControls.querySelectorAll('button').forEach(btn => {
+                btn.classList.toggle('active', parseInt(btn.dataset.floor) === floorNum);
+            });
+
+            // If a room was selected and it's now hidden by the 2D filter, deselect it
+            let currentSelectedRoomId = activeRoom2D ? activeRoom2D.id.replace('2d-', '') : (selectedObject3D ? selectedObject3D.userData.id : null);
+            if (currentSelectedRoomId) {
+                const selectedRoomData = mapData.rooms.find(r => r.id === currentSelectedRoomId);
+                // Deselect only if in 2D view and the selected room is NOT on the current 2D floor
+                if (svg.classList.contains('visible') && selectedRoomData && selectedRoomData.floor !== floorNum) {
+                    selectRoom(null); // Deselect if not on current 2D floor
+                } else {
+                    // Re-select to ensure active class is set correctly (e.g., if switching floors with same room ID)
+                    selectRoom(currentSelectedRoomId);
+                }
+            }
+        }
+
+        view2DBtn.addEventListener('click', () => {
+            view2DBtn.classList.add('active'); view3DBtn.classList.remove('active');
+            floorControls.style.display = 'flex'; // Show floor controls for 2D
+            svg.classList.add('visible'); canvas.classList.remove('visible');
+            filterFloor(currentFloor); // Apply floor filter to 2D view
+            
+            // Re-select currently active room in 2D context
+            selectRoom(activeRoom2D ? activeRoom2D.id.replace('2d-', '') : null); 
+        });
+
+        view3DBtn.addEventListener('click', () => {
+            view3DBtn.classList.add('active'); view2DBtn.classList.remove('active');
+            floorControls.style.display = 'none'; // Hide floor controls for 3D
+            canvas.classList.add('visible'); svg.classList.remove('visible');
+            onWindowResize(); // Ensure 3D canvas resizes correctly
+
+            // Make all 3D rooms visible when switching to 3D view
+            roomObjects.forEach(mesh => {
+                mesh.visible = true;
+            });
+            
+            // Re-select currently active room in 3D context
+            selectRoom(selectedObject3D ? selectedObject3D.userData.id : null); 
+        });
+
+        generateBtn.addEventListener('click', generateAll);
+        
+        init3D();
+        generateAll(); // Initial generation on load
+    </script>
+</body>
+</html>

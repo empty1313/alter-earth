@@ -1,0 +1,27 @@
+1. 몬스터
+- index : 테이블 내부 index
+- ID : 일반 몬스일경우, M-ETC001 등 | 보스 몬스터일 경우, B-(등장 게이트ID)-(중간보스일경우 SUB/a메인보스일경우 MAIN)
+- name [string] : 몬스터 이름 
+- category [Enum] : monster, boss 2가지
+- rank [string] : SABCDE 체계를 따름
+- habit [string] : 서식지. 단어로. (특정 게이트나, 환경 등)
+- weak [string] : 약점은 키워드로([물], [빛], [물리타격] 등등)
+- desc [string] : 설명 
+
+2. 아이템
+- index : 테이블 내부 index
+- ID : 일반 아이템일 경우 I-(001부터 시작) | 재료템일 경우 R-(001부터) | 장비 아이템일 경우 E-(001부터) | 특수아이템 S-(001부터)
+- name [string] : 아이템 이름
+- category [Enum] : item 고정
+- rank [string] : SABCDE 체계를 따름
+- desc [string] : 설명 
+
+3. 이벤트/함정
+- index : 테이블 내부 index
+- ID : 이벤트 EV-(001부터) | 함정 T-(001부터) 
+- name [string] : 이벤트 이름
+- category [Enum] : Event / Trap
+- desc [string] : 설명 
+
+- 일반아이템 I / 재료템 R / 장비아이템 E / 특수아이템 S / 이벤트 EV / 함정 T 
+- 게이트는 G / 몬스터는 M / 보스는 B
