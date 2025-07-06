@@ -166,8 +166,21 @@ function setState(newState, callback) {
     }
 
     if (JSON.stringify(oldState.analysisTarget) !== JSON.stringify(state.analysisTarget)) {
-        renderRightPanel();
-        if(state.centerView.mode === 'list') {
+        renderRightPanel();      
+        if (state.centerView.mode === 'list') {
+            if (oldState.analysisTarget && oldState.analysisTarget.id) {
+                const oldElement = document.getElementById(`list-item-${oldState.analysisTarget.id}`);
+                if (oldElement) {
+                    oldElement.classList.remove('active');
+                }
+            }
+            if (state.analysisTarget && state.analysisTarget.id) {
+                const newElement = document.getElementById(`list-item-${state.analysisTarget.id}`);
+                if (newElement) {
+                    newElement.classList.add('active');
+                }
+            }
+        } else {
             needsCenterPanelUpdate = true;
         }
     }
