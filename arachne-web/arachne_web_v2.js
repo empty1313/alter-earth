@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         sidebarMode: 'active',
         activeGateId: null,
         inspectorState: { view: 'none' }, 
+        currentUser: null,
     };
 
     // --- 터미널 히스토리 ---
@@ -51,20 +52,29 @@ document.addEventListener('DOMContentLoaded', () => {
         view3DBtn: document.getElementById('view-3d-btn'),
         floorControls: document.getElementById('floor-controls'),
     };
+    
+    // --- 터미널 로깅 함수 ---
+    function logToTerminal(message, context = "SYSTEM") {
+        const timestamp = new Date().toLocaleTimeString('en-GB');
+        const entry = document.createElement('div');
+        const sanitizedMessage = message.replace(/</g, "<").replace(/>/g, ">");
+        entry.innerHTML = `<span class="feed-timestamp">[${timestamp}]</span> <span class="feed-info">[${context}]</span> > ${sanitizedMessage}`;
+        dom.terminalOutput.appendChild(entry);
+        dom.terminalOutput.scrollTop = dom.terminalOutput.scrollHeight;
+    }
 
     // --- 데이터 로딩 ---
     async function loadAllData() {
-        // agents.csv도 로드 목록에 추가
         const files = ['gates', 'rooms', 'connectors', 'details', 'monster', 'item', 'event', 'elements', 'agents'];
         try {
             await Promise.all(files.map(async (file) => {
                 const res = await fetch(`../database/${file}.csv`);
-                if (!res.ok) throw new Error(`Failed to load ${file}.csv}`);
+                if (!res.ok) throw new Error(`Failed to load ${file}.csv`);
                 const text = await res.text();
                 db[file] = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true }).data;
             }));
         } catch (error) {
-            logToTerminal(`FATAL ERROR: ${error.message}`);
+            logToTerminal(`FATAL ERROR: ${error.message}`, "CRITICAL");
             console.error(error);
         }
     }
@@ -83,7 +93,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 로그인 관련 함수 ---
     function setupLogin() {
-        document.body.classList.add('logged-out');
         dom.securityCodeInput.focus();
         dom.securityCodeInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -105,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const agent = db.agents.find(a => a.code === numericCode);
 
         if (agent) {
+            state.currentUser = agent;
             dom.loginErrorMessage.textContent = "";
             dom.securityCodeInput.disabled = true;
             
@@ -162,13 +172,14 @@ document.addEventListener('DOMContentLoaded', () => {
         state.activeGateId = gateId;
 
         const gate = db.gates.find(g => g.id === gateId);
+        logToTerminal(`Loading gate data: ${gate.name} [${gateId}]`, 'GATE');
         dom.gateInfoHeader.textContent = `${gate.name} [Rank ${gate.rank}]`;
         dom.promptContext.textContent = gateId;
         document.querySelectorAll('.gate-item').forEach(item => item.classList.toggle('active', item.dataset.id === gateId));
 
         currentBlueprintData = buildBlueprintData(gateId);
         if (!currentBlueprintData || currentBlueprintData.rooms.length === 0) {
-            logToTerminal(`[ERROR] No blueprint data found for ${gate.name}.`);
+            logToTerminal(`No blueprint data found for ${gate.name}.`, "ERROR");
             dom.blueprintSvg.innerHTML = '';
             if(scene) while(scene.children.length > 2) { scene.remove(scene.children[2]); }
             return;
@@ -181,8 +192,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const initialFloors = [...new Set(currentBlueprintData.rooms.map(r => r.floor))].sort((a, b) => b - a);
         currentMapFloor = initialFloors.length > 0 ? initialFloors[0] : 1;
         
-        filterFloor(currentMapFloor);
-        activateMapView('2D');
+        filterFloor(currentMapFloor, true); 
+        activateMapView('2D', true);
         selectRoom(null);
         onWindowResize3D();
         updateInspector({ view: 'none' });
@@ -199,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } else if (view === 'room') {
             const roomDetail = db.details.find(d => d.RoomID === id);
             if(roomDetail) {
+                logToTerminal(`Inspecting room: ${roomDetail.RoomName}`, 'INSPECTOR');
                 html += `<div class="inspector-header"><h4>${roomDetail.RoomName}</h4><span class="subtitle">${roomDetail.type}</span></div>`;
                 html += `<p>${roomDetail.dec}</p>`;
                 
@@ -231,6 +243,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const monsterDetail = db.monster.find(m => m.ID === id);
                     const elementInstance = db.elements.find(el => el.RoomID === parentId && el.refId === id);
                     if (monsterDetail) {
+                        logToTerminal(`Inspecting entity: ${monsterDetail.name}`, 'INSPECTOR');
                         detailHtml += `<div class="inspector-header"><h4>${monsterDetail.name}</h4>${fromSubtitle}</div>`;
                         detailHtml += `<ul>`;
                         const rankClass = `rank-${String(monsterDetail.rank).toLowerCase()}`;
@@ -245,6 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'item': {
                     const itemDetail = db.item.find(i => i.ID === id);
                     if (itemDetail) {
+                        logToTerminal(`Inspecting item: ${itemDetail.name}`, 'INSPECTOR');
                         detailHtml += `<div class="inspector-header"><h4>${itemDetail.name}</h4>${fromSubtitle}</div>`;
                         detailHtml += `<ul>`;
                         for(const [key, value] of Object.entries(itemDetail)) {
@@ -264,6 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 case 'event': {
                     const eventDetail = db.event.find(e => e.ID === id);
                      if (eventDetail) {
+                        logToTerminal(`Inspecting event: ${eventDetail.name}`, 'INSPECTOR');
                         detailHtml += `<div class="inspector-header"><h4>${eventDetail.name}</h4>${fromSubtitle}</div>`;
                         detailHtml += `<ul>`;
                         for(const [key, value] of Object.entries(eventDetail)) {
@@ -285,99 +300,46 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.inspectorContent.innerHTML = html;
         selectRoom(view === 'room' ? id : parentId); 
     }
-
-    // --- 최단 경로 탐색 (BFS) ---
-    function findShortestPath(startId, endId) {
-        if (!state.activeGateId) return null;
-        const rooms = db.rooms.filter(r => r.GID === state.activeGateId);
-        const connectors = db.connectors.filter(c => c.GID === state.activeGateId);
-
-        const adj = {};
-        rooms.forEach(r => adj[r.id] = []);
-        connectors.forEach(c => {
-            adj[c.FromID].push(c.ToID);
-            adj[c.ToID].push(c.FromID);
-        });
-
-        const queue = [[startId]];
-        const visited = new Set([startId]);
-
-        while (queue.length > 0) {
-            const path = queue.shift();
-            const node = path[path.length - 1];
-            if (node === endId) return path;
-            for (const neighbor of (adj[node] || [])) {
-                if (!visited.has(neighbor)) {
-                    visited.add(neighbor);
-                    const newPath = [...path, neighbor];
-                    queue.push(newPath);
-                }
-            }
-        }
-        return null;
-    }
     
-    // --- 경로 하이라이트 ---
-    function highlightPath(path) {
-        dom.blueprintSvg.querySelectorAll('.path-highlight').forEach(el => el.classList.remove('path-highlight'));
-        if (!path) return;
-        
-        for (let i = 0; i < path.length - 1; i++) {
-            const from = path[i];
-            const to = path[i + 1];
-            const line1 = dom.blueprintSvg.querySelector(`.connector[data-from="${from}"][data-to="${to}"]`);
-            const line2 = dom.blueprintSvg.querySelector(`.connector[data-from="${to}"][data-to="${from}"]`);
-            if (line1) line1.classList.add('path-highlight');
-            if (line2) line2.classList.add('path-highlight');
-        }
-    }
-
     // --- 터미널 ---
-    function logToTerminal(message) {
-        dom.terminalOutput.innerHTML += `${message}\n`;
-        dom.terminalOutput.scrollTop = dom.terminalOutput.scrollHeight;
-    }
-
     function handleCommand(command) {
         if (!command) return;
         
-        logToTerminal(`<span style="color:var(--accent-hyean);">${dom.promptContext.textContent}></span> ${command}`);
-        
+        const commandLog = `<span style="color:var(--accent-hyean);">${dom.promptContext.textContent}></span> ${command}`;
+        const entry = document.createElement('div');
+        entry.innerHTML = commandLog;
+        dom.terminalOutput.appendChild(entry);
+
         if (command !== commandHistory[0]) {
             commandHistory.unshift(command);
-            if (commandHistory.length > 50) {
-                commandHistory.pop();
-            }
+            if (commandHistory.length > 50) commandHistory.pop();
         }
         historyIndex = -1;
 
         const args = command.trim().split(' ');
         const cmd = args[0].toLowerCase();
         
+        // [수정] 명령어 간소화
         switch(cmd) {
             case 'help':
                 const helpText = `
---- ARACHNE OS Command List ---
+<pre>--- ARACHNE OS Command List ---
 
   help
     Displays this help message.
 
   scan <room_id>
-    Analyzes a specific room and shows its details in the inspector.
+    Analyzes a specific room and shows its details.
     Usage: scan entrance_hall
 
-  path <from_room_id> <to_room_id>
-    Finds and displays the shortest path between two rooms on the map.
-    Usage: path entrance_hall boss_chamber
+  find <search_term>
+    Searches all gates in the Data Hub.
+    Usage: find 남산
 
   clear
     Clears all output from the terminal screen.
-  
-  find <search_term>
-    Searches all gates in the Data Hub (switches to Hub mode).
-    Usage: find 남산
-`;
-                logToTerminal(helpText);
+</pre>`;
+                dom.terminalOutput.innerHTML += helpText;
                 break;
             case 'clear':
                 dom.terminalOutput.innerHTML = '';
@@ -386,33 +348,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 dom.modeHubBtn.click();
                 dom.gateSearchInput.value = args.slice(1).join(' ');
                 dom.gateSearchInput.dispatchEvent(new Event('input'));
+                logToTerminal(`Searching for '${args.slice(1).join(' ')}' in Hub...`, 'CMD');
                 break;
             case 'scan':
                 if (args[1] && state.activeGateId && db.details.find(d => d.RoomID === args[1])) {
                     updateInspector({ view: 'room', id: args[1] });
                 } else {
-                    logToTerminal("Error: Invalid room ID or no gate selected.");
+                    logToTerminal("Invalid room ID or no gate selected.", "ERROR");
                 }
                 break;
-            case 'path':
-                if (args.length < 3) {
-                    logToTerminal("Usage: path <from_room_id> <to_room_id>");
-                    break;
-                }
-                const path = findShortestPath(args[1], args[2]);
-                if (path) {
-                    highlightPath(path);
-                    logToTerminal(`[SUCCESS] Path found: ${path.join(' -> ')}`);
-                } else {
-                    highlightPath(null);
-                    logToTerminal(`[ERROR] No path found between ${args[1]} and ${args[2]}.`);
-                }
-                break;
-            default: logToTerminal(`[ERROR] Command not found: ${cmd}`);
+            default: logToTerminal(`Command not found: ${cmd}`, "ERROR");
         }
+        dom.terminalOutput.scrollTop = dom.terminalOutput.scrollHeight;
     }
     
-    // --- MAP FUNCTIONS ---
+    // --- MAP FUNCTIONS (원본과 동일) ---
     function buildBlueprintData(gateId) {
         const rooms = db.rooms.filter(r => r.GID === gateId);
         const connectors = db.connectors.filter(c => c.GID === gateId).map(c => ({ from: c.FromID, to: c.ToID }));
@@ -538,7 +488,10 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     
-    function filterFloor(floorNum){
+    function filterFloor(floorNum, silent = false){
+        if (!silent) {
+            logToTerminal(`Switching map view to floor ${floorNum}`, 'MAP');
+        }
         currentMapFloor = floorNum;
         dom.blueprintSvg.querySelectorAll('[data-floor], [data-from-floor]').forEach(el => {
             const elFloor = parseInt(el.dataset.floor);
@@ -550,17 +503,19 @@ document.addEventListener('DOMContentLoaded', () => {
             el.style.display = isVisible ? '' : 'none';
         });
         dom.floorControls.querySelectorAll('button').forEach(btn => btn.classList.toggle('active', parseInt(btn.dataset.floor) === floorNum));
-        highlightPath(null);
     }
 
-    function activateMapView(mode) {
+    function activateMapView(mode, silent = false) {
+        if (!silent) {
+            logToTerminal(`Activating ${mode} view`, 'VIEW');
+        }
         if (mode === '2D') {
             dom.blueprintSvg.classList.add('active-map-view');
             dom.map3DCanvas.classList.remove('active-map-view');
             dom.view2DBtn.classList.add('active');
             dom.view3DBtn.classList.remove('active');
             dom.floorControls.style.display = 'flex';
-            filterFloor(currentMapFloor);
+            filterFloor(currentMapFloor, true);
         } else {
             dom.map3DCanvas.classList.add('active-map-view');
             dom.blueprintSvg.classList.remove('active-map-view');
@@ -569,7 +524,6 @@ document.addEventListener('DOMContentLoaded', () => {
             dom.floorControls.style.display = 'none';
             onWindowResize3D();
         }
-        highlightPath(null);
     }
 
     function selectRoom(roomId) {
@@ -631,46 +585,57 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
     }
     
-    // --- LIVE THREAT FEED (기능 개선) ---
+    // --- LIVE THREAT FEED (수정 완료) ---
     function startThreatFeed() {
-        const agentNames = ["Echo-4", "Nova Prime", "Hex-Viper"];
+        const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+        const agentNames = db.agents.map(a => a.name).filter(Boolean);
 
-        setInterval(() => {
-            if (!db.gates || !db.gates.length) return;
+        function generate() {
+            if (!db.gates || !db.gates.length) {
+                 setTimeout(generate, 5000); // 데이터 로딩 전이면 5초 후 재시도
+                 return;
+            }
 
-            const eventTypes = ['threat_detected', 'gate_fluctuation', 'agent_report', 'system_check'];
-            const eventType = eventTypes[Math.floor(Math.random() * eventTypes.length)];
+            const eventTypes = [
+                { type: 'threat_detected', weight: 5 }, { type: 'gate_fluctuation', weight: 10 },
+                { type: 'agent_report', weight: 8 }, { type: 'system_check', weight: 15 }
+            ];
+            
+            const totalWeight = eventTypes.reduce((sum, t) => sum + t.weight, 0);
+            let random = Math.random() * totalWeight;
+            let eventType = 'system_check';
+            for (const t of eventTypes) {
+                if (random < t.weight) { eventType = t.type; break; }
+                random -= t.weight;
+            }
             
             let message = '';
-            let gateId = null;
             let cssClass = 'feed-system';
 
             switch(eventType) {
                 case 'threat_detected':
-                    const randomThreat = db.monster[Math.floor(Math.random() * db.monster.length)];
+                    const randomThreat = db.monster[rand(0, db.monster.length - 1)];
                     const threatLocation = db.elements.find(e => e.refId === randomThreat.ID);
                     if (threatLocation) {
                         const gate = db.gates.find(g => g.id === db.rooms.find(r => r.id === threatLocation.RoomID)?.GID);
                         if (gate) {
-                            gateId = gate.id;
-                            message = `Rank ${randomThreat.rank} signature detected in ${gate.name}.`;
+                            message = `[${gate.id}] Rank ${randomThreat.rank} signature detected.`;
                             cssClass = 'feed-critical';
                         }
                     }
                     break;
                 case 'gate_fluctuation':
-                    const randomGate = db.gates[Math.floor(Math.random() * db.gates.length)];
-                    gateId = randomGate.id;
-                    message = `Minor mana fluctuation in ${randomGate.name}.`;
+                    const randomGate = db.gates[rand(0, db.gates.length-1)];
+                    const fluctuation = (rand(1, 50) / 100).toFixed(2);
+                    message = `[${randomGate.id}] Minor mana fluctuation detected: ±${fluctuation}%.`;
                     cssClass = 'feed-warning';
                     break;
                 case 'agent_report':
                      const activeGates = db.gates.filter(g => g.isActive);
                      if (activeGates.length > 0) {
-                        const randomActiveGate = activeGates[Math.floor(Math.random() * activeGates.length)];
-                        const randomAgent = agentNames[Math.floor(Math.random() * agentNames.length)];
-                        gateId = randomActiveGate.id;
-                        message = `AGENT ${randomAgent} reports situation stable at ${randomActiveGate.name}.`;
+                        const randomActiveGate = activeGates[rand(0, activeGates.length-1)];
+                        const randomAgent = agentNames[rand(0, agentNames.length-1)];
+                        message = `[${randomActiveGate.id}] AGENT ${randomAgent} reports situation stable.`;
                         cssClass = 'feed-info';
                      }
                     break;
@@ -680,24 +645,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
             }
 
-            if (!message) return;
+            if (!message) { // 메시지 생성 실패 시 재귀 호출로 바로 다음 생성 시도
+                setTimeout(generate, 100);
+                return;
+            };
 
             const now = new Date();
             const timestamp = `[${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}]`;
             
             const feedItem = document.createElement('div');
             feedItem.className = 'feed-item';
-            if (gateId) {
-                feedItem.dataset.gateId = gateId;
-            }
-
+            // 클릭 관련 속성 및 이벤트 리스너 제거
             feedItem.innerHTML = `<span class="feed-timestamp">${timestamp}</span> <span class="${cssClass}">${message}</span>`;
             dom.threatFeed.prepend(feedItem);
             if (dom.threatFeed.children.length > 30) {
                 dom.threatFeed.lastChild.remove();
             }
 
-        }, 4500);
+            setTimeout(generate, rand(1500, 5000));
+        }
+        setTimeout(generate, 1000); // 최초 실행
     }
 
     // --- 이벤트 핸들러 ---
@@ -754,13 +721,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
         });
-
-        dom.threatFeed.addEventListener('click', e => {
-            const feedItem = e.target.closest('.feed-item');
-            if (feedItem && feedItem.dataset.gateId) {
-                loadGate(feedItem.dataset.gateId);
-            }
-        });
         
         dom.view2DBtn.addEventListener('click', () => activateMapView('2D'));
         dom.view3DBtn.addEventListener('click', () => activateMapView('3D'));
@@ -770,16 +730,35 @@ document.addEventListener('DOMContentLoaded', () => {
     async function initializeMainApp(agent) {
         dom.agentName.textContent = `AGENT: ${agent.name}`;
         
+        // 데이터 로딩이 끝난 후 앱 기능 초기화
+        await loadAllData();
+
         renderGateList();
         init3D();
         setupEventListeners();
         startThreatFeed();
-        logToTerminal(`ARACHNE OPS v3.0 [SECURE ACCESS] Initialized. Welcome, Agent ${agent.name}.`);
+        
+        // [수정] 로그인 시 터미널에 환영 메시지 및 help 안내 출력
+        logToTerminal(`Welcome, Agent ${agent.name}. Type 'help' to see available commands.`, "AUTH");
+
+        if (db.gates && db.gates.length > 0) {
+            const activeGate = db.gates.find(g => g.isActive);
+            loadGate(activeGate ? activeGate.id : db.gates[0].id);
+        }
     }
 
     async function main() {
         document.body.classList.add('logged-out');
-        await loadAllData();
+        // 로그인 전에 에이전트 정보만 먼저 로드합니다.
+        try {
+            const res = await fetch(`../database/agents.csv`);
+            if (!res.ok) throw new Error(`Failed to load agents.csv`);
+            const text = await res.text();
+            db['agents'] = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true }).data;
+        } catch(e) {
+            dom.loginErrorMessage.textContent = "FATAL ERROR: AGENT DB CONNECTION FAILED";
+            return;
+        }
         setupLogin();
     }
 
