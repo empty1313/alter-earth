@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M.A.R.S. v2.6 | Hunter Association</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Orbitron:wght@700;900&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="mars_style.css">
+</head>
+<body>
+    <!-- 1. 로그인 오버레이 -->
+    <div class="login-overlay" id="login-overlay">
+        <div class="login-box">
+            <h1 class="login-brand">M.A.R.S. // v2.6</h1>
+            <p class="login-prompt">Awaiting Access Code</p>
+            <input type="password" id="login-code-input" autocomplete="new-password">
+            <p class="login-error" id="login-error"></p>
+        </div>
+    </div>
+
+    <!-- 2. 기존 앱 컨테이너 (초기 숨김) -->
+    <div class="page-container" id="app-container" style="display: none;">
+        <!-- 메인 헤더 (시스템 브랜딩) -->
+        <header class="main-header">
+            <div class="logo">
+                <h1>M.A.R.S. // MONSTER ANALYSIS & RESPONSE SYSTEM</h1>
+            </div>
+            <div class="system-status">
+                <span id="user-info">USER: PENDING...</span>
+                <span>CONNECTION: SECURE</span>
+                <span>STATUS: NOMINAL</span>
+            </div>
+        </header>
+
+        <!-- 워크벤치 -->
+        <div class="workbench-container">
+            <!-- 좌측 패널 (쿼리 및 결과) -->
+            <aside class="left-panel">
+                <div class="panel-header">
+                    <i class="fas fa-search"></i>
+                    <h2>개체 검색</h2>
+                </div>
+                <div class="query-builder">
+                    <div class="query-group">
+                        <label for="query-search">통합 검색 (이름, ID, 서식지)</label>
+                        <input type="text" id="query-search" placeholder="Keyword...">
+                    </div>
+                    <div class="query-group">
+                        <label for="query-rank">위험 등급</label>
+                        <select id="query-rank">
+                            <option value="all">ALL RANKS</option><option value="S">S</option><option value="A">A</option>
+                            <option value="B">B</option><option value="C">C</option><option value="D">D</option><option value="E">E</option>
+                        </select>
+                    </div>
+                    <div class="query-group">
+                        <label for="query-category">개체 유형</label>
+                        <select id="query-category">
+                            <option value="all">ALL CATEGORIES</option><option value="monster">MONSTER</option><option value="boss">BOSS</option>
+                        </select>
+                    </div>
+                    <button id="execute-query-btn">
+                        <i class="fas fa-play"></i> EXECUTE QUERY
+                    </button>
+                </div>
+                <div class="panel-divider"></div>
+                <div class="results-header">
+                    <h3>QUERY RESULTS</h3>
+                    <span id="results-count"></span>
+                </div>
+                <div id="results-list" class="results-list">
+                    <div class="placeholder">Awaiting query...</div>
+                </div>
+            </aside>
+
+            <!-- 중앙 패널 (핵심 분석) -->
+            <main class="center-panel">
+                <div id="detail-panel">
+                     <div class="placeholder-center">
+                        <i class="fas fa-file-alt"></i>
+                        <h2>개체 분석 보고서</h2>
+                        <p>좌측 목록에서 분석할 개체를 선택하십시오.</p>
+                    </div>
+                </div>
+            </main>
+
+            <!-- 우측 패널 (시스템 로그 전용) -->
+            <aside class="right-panel">
+                <div class="panel-header">
+                    <i class="fas fa-history"></i>
+                    <h2>시스템 로그</h2>
+                </div>
+                <div class="panel-content" id="system-log-content">
+                </div>
+            </aside>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="mars_script.js"></script>
+</body>
+</html>

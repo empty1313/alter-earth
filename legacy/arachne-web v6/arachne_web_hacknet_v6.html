@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ARACHNE WEB</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="arachne_web_hacknet_v6.css">
+</head>
+<body>
+    <!-- 1. 로그인 화면 (초기에는 이것만 보임) -->
+    <div id="login-screen">
+        <div class="login-box">
+            <h1 class="header-brand">ARACHNE.OS</h1>
+            <p>Awaiting Security Credential</p>
+            <input type="password" id="security-code-input" placeholder="[ ENTER NUMERIC SECURITY CODE ]" autocomplete="new-password">
+            <p id="login-error-message" class="error-message"></p>
+        </div>
+    </div>
+
+    <!-- 2. 기존 핵넷 인터페이스 (초기에는 숨겨져 있음) -->
+    <div class="hacknet-container" style="display: none;">
+        <!-- 1. 헤더 (상단 바) -->
+        <header id="header" class="panel">
+            <div class="header-left">
+                <span class="header-brand">ARACHNE.OS v7.1</span>
+            </div>
+            <div class="header-center" id="header-connection-status">
+                <span class="header-label">SYSTEM STANDBY</span>
+            </div>
+            <div class="header-right">
+                <span id="agent-info" class="header-label">AGENT: [PENDING]</span>
+                <div id="online-status" class="header-label offline">
+                    <span>STATUS: OFFLINE</span>
+                    <span class="status-indicator"></span>
+                </div>
+            </div>
+        </header>
+
+        <!-- 2. 왼쪽 패널 (활성 게이트 목록 및 허브 링크) -->
+        <aside id="left-panel" class="panel">
+            <div class="panel-header left-panel-header">
+                <h2 id="left-panel-title">ACTIVE GATE LIST</h2>
+                <div class="hub-link" id="hub-link-btn">
+                    <i class="fas fa-sitemap"></i> DATA HUB
+                </div>
+            </div>
+            <div id="left-panel-content" class="panel-content">
+                <!-- JS에 의해 채워짐 -->
+            </div>
+        </aside>
+
+        <!-- 3. 중앙 패널 (탐색 허브: 목록) -->
+        <main id="center-panel" class="panel">
+            <!-- JS에 의해 동적으로 채워짐 -->
+        </main>
+
+        <!-- 4. 오른쪽 패널 (정보 분석기: 상세 정보 및 대시보드) -->
+        <aside id="right-panel" class="panel">
+             <div class="panel-header">
+                <h2 id="right-panel-title">DATA ANALYSIS</h2>
+            </div>
+            <div id="right-panel-content" class="panel-content">
+                 <!-- JS에 의해 동적으로 채워짐 -->
+            </div>
+        </aside>
+
+        <!-- 5. 하단 패널 (터미널) -->
+        <footer id="bottom-panel" class="panel">
+             <div class="panel-header">
+                <h2>TERMINAL</h2>
+                <span class="header-note">Type 'help' for commands</span>
+            </div>
+            <div class="panel-content">
+                <pre id="system-output"></pre>
+                <div class="terminal-prompt">
+                    <span id="prompt-ip">HOME</span><span class="prompt-char">></span>
+                    <input type="text" id="terminal-input" spellcheck="false" autocomplete="off">
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- 맵 뷰어를 위한 모달 -->
+    <div id="map-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="map-modal-title">Gate Blueprint Viewer</h2>
+                <span class="close-button">×</span>
+            </div>
+            <div class="modal-body">
+                 <div class="gate-blueprint-grid-area">
+                    <div class="map-viewer-panel">
+                        <div class="map-view-controls">
+                            <button id="view-2d-btn" class="active">2D</button>
+                            <button id="view-3d-btn">3D</button>
+                        </div>
+                        <div class="map-wrapper">
+                            <div id="floor-controls" class="view-controls"></div>
+                            <svg id="blueprint-svg" class="active-map-view" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid meet"></svg>
+                            <canvas id="map-canvas"></canvas>
+                        </div>
+                    </div>
+                    <div class="room-detail-panel">
+                         <div class="panel-header">
+                            <h3>[ 공간 분석 ]</h3>
+                        </div>
+                        <div class="panel-content" id="room-analysis-info">
+                            <div class="placeholder">[ 시스템 ] // 공간을 선택하여<br>상세 정보를 확인하십시오.</div>
+                            <div id="room-info-template" style="display: none;">
+                                <h4 id="room-name-bp"></h4>
+                                <p id="room-type-bp"></p>
+                                <p id="room-description-bp"></p>
+                                <h5 id="room-details-title-bp" style="display:none;">핵심 요소</h5>
+                                <ul id="room-details-bp"></ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 스크립트 로드 -->
+    <script type="importmap">{"imports": {"three": "https://unpkg.com/three@0.160.0/build/three.module.js", "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"}}</script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script type="module" src="arachne_web_hacknet_v6.js"></script>
+</body>
+</html>
