@@ -1,6 +1,8 @@
+// M.A.R.S. v2.7 - Integrated Protocol & Scenario Analysis
 document.addEventListener('DOMContentLoaded', () => {
     // --- 글로벌 DB 및 상태 ---
-    let db = { monsters: [], items: [], agents: [] };
+    // [v2.7 수정] gates, rooms, scenarios DB 추가
+    let db = { monsters: [], items: [], agents: [], protocols: [], scenarios: [], gates: [], rooms: [] };
     let state = {
         activeMonsterId: null,
         queryFilters: { search: '', rank: 'all', category: 'all' },
@@ -30,7 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const timestamp = new Date().toLocaleTimeString('en-GB');
         const logContainer = document.createElement('div');
         logContainer.className = 'log-entry';
-        logContainer.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="log-message type-${type}">${message}</span>`;
+        logContainer.innerHTML = `<span class="log-timestamp">[${timestamp}]</span> <span class="log-message type-${type.toLowerCase()}">${message}</span>`;
         dom.systemLogContent.prepend(logContainer);
     };
 
@@ -73,21 +75,32 @@ document.addEventListener('DOMContentLoaded', () => {
         renderResultsList(initialMonsters);
     }
 
-    // --- 데이터 로딩 (몬스터, 아이템) ---
+    // --- [v2.7 수정] 데이터 로딩 확장 ---
     async function loadData() {
-        logSystemMessage("M.A.R.S. v2.6 Initializing...");
+        logSystemMessage("M.A.R.S. v2.7 Initializing...");
         try {
-            const [monsterRes, itemRes] = await Promise.all([
-                fetch('../database/monster.csv'), fetch('../database/item.csv')
-            ]);
+            const files_to_load = {
+                monsters: '../database/monster.csv',
+                items: '../database/item.csv',
+                protocols: '../database/protocols.csv',
+                scenarios: '../database/scenarios.csv',
+                gates: '../database/gates.csv',
+                rooms: '../database/rooms.csv'
+            };
+
+            const responses = await Promise.all(Object.values(files_to_load).map(url => fetch(url)));
             logSystemMessage("Fetching data streams... OK");
 
-            db.monsters = Papa.parse(await monsterRes.text(), { header: true, skipEmptyLines: true, dynamicTyping: true }).data;
-            db.items = Papa.parse(await itemRes.text(), { header: true, skipEmptyLines: true, dynamicTyping: true }).data;
+            let i = 0;
+            for (const key in files_to_load) {
+                const text = await responses[i].text();
+                db[key] = Papa.parse(text, { header: true, skipEmptyLines: true, dynamicTyping: true }).data;
+                i++;
+            }
             
-            logSystemMessage(`Database synchronized. ${db.monsters.length} monster entities loaded.`, 'SUCCESS');
+            logSystemMessage(`Database synchronized. ${db.monsters.length} entities, ${db.protocols.length} protocols, ${db.scenarios.length} scenarios loaded.`, 'SUCCESS');
         } catch (error) {
-            logSystemMessage("FATAL: DB CONNECTION FAILED", 'CRITICAL');
+            logSystemMessage(`FATAL: DB CONNECTION FAILED - ${error.message}`, 'CRITICAL');
         }
     }
 
@@ -126,17 +139,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    const generateSOP = (monster) => {
-        let sopHtml = '<ol class="protocol-list">';
-        sopHtml += `<li class="protocol-step"><h4>단계 1: 교전 수칙 (Engagement Protocol)</h4><p>개체 조우 시 최소 50m 이상의 안전거리를 확보. 원거리에서 개체의 현재 상태(부상, 분노 등)를 파악하고, 주변 환경에 이용 가능한 엄폐물이 있는지 확인하시오.</p></li>`;
-        let combatDesc = `개체의 위험 등급(Rank ${monster.rank})을 고려하여, 검증된 기본 진형으로 교전을 시작하시오.`;
-        if (monster.weak) { combatDesc += ` 해당 개체는 <strong>${monster.weak}</strong> 속성에 구조적 취약점이 보고되었으므로, 관련 속성 공격을 통해 전황을 유리하게 이끌 수 있습니다.`; }
-        sopHtml += `<li class="protocol-step"><h4>단계 2: 전투 수행 (Combat Procedure)</h4><p>${combatDesc}</p>`;
-        if (['S', 'A', 'B'].includes(monster.rank)) { sopHtml += `<div class="if-condition"><p><span class="condition-tag">IF:</span> 개체가 특수 패턴(예: 광역기 시전, 강화 등)의 전조를 보일 경우,</p><p><span class="condition-tag">THEN:</span> 즉시 지정된 '차단' 또는 '회피' 기동을 수행하고, 서포터는 파티원의 상태를 최우선으로 확인하시오.</p></div>`; }
-        sopHtml += `</li>`;
-        sopHtml += `<li class="protocol-step"><h4>단계 3: 작전 종료 후 절차 (Post-Action Procedure)</h4><p>개체 무력화 확인 후, 사체 훼손을 최소화하여 지정된 샘플(마정석, 특수 부위 등)을 확보하고 즉시 협회 연구소로 이송할 것. 2차 위협 가능성에 대비하여 주변 경계를 유지하시오.</p></li>`;
-        sopHtml += '</ol>';
-        return sopHtml;
+    // --- [v2.7 수정] DB 기반 프로토콜 생성 함수 ---
+    const generateProtocolFromDB = (monsterId) => {
+        const protocols = db.protocols
+            .filter(p => p.MonsterID === monsterId)
+            .sort((a, b) => a.Step - b.Step);
+
+        if (protocols.length === 0) {
+            return '<p>등록된 특수 프로토콜 없음. 표준 교전 수칙을 따르시오.</p>';
+        }
+
+        let html = '<ol class="protocol-list">';
+        protocols.forEach(p => {
+            let linkedScenarioHtml = '';
+            // linked_scenario 필드가 있고, 해당 시나리오가 DB에 존재하면 정보 블록 생성
+            if (p.linked_scenario && db.scenarios) {
+                const scenario = db.scenarios.find(s => s.id === p.linked_scenario);
+                if (scenario) {
+                    const gate = db.gates.find(g => g.id === scenario.GID);
+                    const room = db.rooms.find(r => r.id === scenario.scope_id && r.GID === scenario.GID);
+
+                    linkedScenarioHtml = `
+                        <div class="linked-scenario-block">
+                            <div class="block-title"><i class="fas fa-link"></i>연관 기믹 정보</div>
+                            <p><strong>발생 위치:</strong> ${gate ? gate.name : scenario.GID} - ${room ? room.name : scenario.scope_id}</p>
+                            <p><strong>기믹 ID:</strong> ${scenario.id}</p>
+                            <p><strong>기믹 설명:</strong> ${scenario.description}</p>
+                        </div>
+                    `;
+                }
+            }
+
+            html += `
+                <li class="protocol-step">
+                    <div class="protocol-header">
+                        <span class="protocol-step-num">STEP ${p.Step}</span>
+                        <h4 class="protocol-phase">${p.Phase}</h4>
+                    </div>
+                    <p class="protocol-desc">${p.desc}</p>
+                    ${linkedScenarioHtml}
+                </li>
+            `;
+        });
+        html += '</ol>';
+        return html;
     };
 
     const renderDetailPanel = (monsterId) => {
@@ -158,14 +204,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="report-section"><h3>I. 기본 정보 (Basic Information)</h3><table class="report-table">
                     <tr><th>위험 등급</th><td><span class="rank-tag rank-${monster.rank.toLowerCase()}">Rank ${monster.rank}</span></td></tr>
                     <tr><th>개체 유형</th><td>${monster.category}</td></tr>
-                    <tr><th>주요 서식지</th><td>${monster.habit} (특정 게이트 내 환경)</td></tr>
+                    <tr><th>주요 서식지</th><td>${monster.habit}</td></tr>
                 </table></div>
                 <div class="report-section"><h3>II. 전투 분석 (Combat Analysis)</h3><table class="report-table">
                     <tr><th>확인된 약점</th><td><span class="weakness-tag">${monster.weak}</span></td></tr>
                 </table></div>
                 <div class="report-section"><h3>III. 개체 설명 (Description)</h3><p>${monster.desc}</p></div>
             </div>
-            <div id="protocol-content" class="detail-tab-content">${generateSOP(monster)}</div>`;
+            <div id="protocol-content" class="detail-tab-content">
+                ${generateProtocolFromDB(monster.ID)}
+            </div>
+        `;
         
         dom.detailPanel.querySelectorAll('.detail-tab-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {

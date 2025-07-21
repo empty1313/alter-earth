@@ -1,33 +1,40 @@
-﻿index,RoomID,type,refId,quantity,desc
-1,entrance_hall,start,,,플레이어 시작 위치
-2,guard_room,monster,M-ETC001,3,고블린 경비병
-3,storage_b1,item,R-001,1,낡은 마나 수정
-4,storage_b1,monster,M-ETC002,2,탐욕의 그림자
-5,office_1f,trap,T-001,1,바닥 붕괴 함정
-6,research_lab_1f,event,EV-001,1,오염 물질 정화
-7,research_lab_1f,item,S-001,1,파편화된 연구일지
-8,boss_chamber,boss,B-G001-MAIN,1,타락한 연구원
-9,coastal_rift,start,,,플레이어 시작 지점
-10,coral_maze,monster,M-ETC003,1,맹독 산호 게
-11,coral_maze,event,EV-002,1,미로 탐색
-12,coral_maze,trap,T-002,1,강력한 해류
-13,leviathan_lair,monster,M-ETC004,1,심해 아귀
-14,leviathan_lair,hint,S-002,1,리바이어던의 그림자 (보스 힌트)
-15,pressure_chamber_1,event,EV-003,1,압력 조절 퍼즐
-16,pressure_chamber_1,item,R-002,1,부식된 고대 장치 조각
-17,ancient_temple_outer,monster,M-ETC005,3,해룡 사제
-18,ancient_temple_outer,trap,T-003,1,붕괴된 바닥
-19,ancient_temple_inner,event,EV-004,1,마나 문양 해독 퍼즐
-20,ancient_temple_inner,item,S-003,1,사원의 비문
-21,boss_altar,boss,B-G002-MAIN,1,심연의 군주 아틀라스
-22,boss_altar,item,S-004,1,심연의 눈물 (핵심 보상)
-23,distortion_zone,start,,,플레이어 시작 지점
-24,shattered_reality,event,EV-005,1,현실 조작 퍼즐
-25,dimensional_corridor,trap,T-004,1,공간 왜곡 함정
-26,echo_chamber,item,S-005,1,시간의 잔재
-27,echo_chamber,event,EV-006,1,소리 패턴 퍼즐
-28,nexus_core,boss,B-G003-SUB,1,수호자 - 시간의 틈새
-29,nexus_core,item,S-005,1,차원 안정화 장치 (핵심)
-30,temporal_loop_a,trap,T-005,1,시간 루프 함정
-31,temporal_loop_b,trap,T-006,1,시간 루프 함정
-32,final_conjunction,boss,B-G003-MAIN,1,차원파괴자
+index,RoomID,type,refId,quantity,desc
+1,entrance_hall,monster,M-ETC001,5,벽과 바닥에 흩어져 있음
+2,platform_tracks,monster,M-ETC002,10,어둠 속에서 무리 지어 순찰함
+3,platform_tracks,event,EV-001,1,"구역 끝, 낡은 배전반에 위치"
+4,terminus_platform,boss,B-G001-MAIN,1,플랫폼 중앙에 위치
+5,terminus_platform,item,R-001,1,보스 처치 시 드랍
+6,misty_path,monster,M-ETC003,8,꽃 주변을 맴돌며 날아다님
+7,tangled_maze,monster,M-ETC004,5,미로를 순찰함
+8,tangled_maze,trap,T-002,10,풀숲 바닥에 숨겨져 있음
+9,tangled_maze,event,EV-002,1,미로의 특정 막다른 길에 위치
+10,dewy_greenhouse,boss,B-G002-MAIN,1,온실 중앙에 고정되어 있음
+11,dewy_greenhouse,item,R-002,1,보스 파괴 시 드랍
+12,shimmering_entrance,monster,M-ETC005,4,통로 곳곳을 순찰함
+13,resonating_plaza,monster,M-ETC005,6,광장을 배회함
+14,resonating_plaza,monster,M-ETC006,3,수정 기둥 뒤에 숨어있음
+15,deep_cavern_path,trap,T-003,20,바닥에 흩어져 있음
+16,predators_nest,boss,B-G003-MAIN,1,둥지 중앙에 위치
+17,predators_nest,event,EV-003,3,둥지 벽에 박혀있는 거대 수정
+18,predators_nest,item,R-003,1,보스 처치 시 드랍
+19,sunken_temple_gate,monster,M-ETC007,5,흐릿한 물 속에서 배회
+20,flooded_courtyard,monster,M-ETC007,10,바닥의 진흙 속에 숨어있음
+21,flooded_courtyard,trap,T-004,4,바닥의 특정 지점에서 발생
+22,bell_tower_base,monster,M-ETC008,2,종탑 입구를 지키고 서 있음
+23,winding_stairs,monster,M-ETC007,8,계단 벽면에서 기습
+24,watchmans_chamber,monster,M-ETC008,1,방 중앙을 지키는 정예 개체
+25,belfry,boss,B-G004-MAIN,1,비탄의 종 아래에 위치
+26,belfry,event,EV-004,1,방 중앙에 매달려 있는 거대한 종
+27,belfry,item,R-004,1,보스 처치 시 드랍
+28,ash_slope_entrance,monster,M-ETC009,2,길목을 막고 서 있음
+29,ash_slope_entrance,monster,M-ETC013,4,잿더미 속에 숨어 기습을 노림
+30,unstable_field,monster,M-ETC010,6,상공을 선회하며 불씨 투하
+31,unstable_field,trap,T-005,25,바닥 곳곳에서 무작위로 발동
+32,lava_spider_nest,monster,M-ETC011,30,둥지 전체에 퍼져있음
+33,lava_spider_nest,trap,T-006,50,바닥 전체가 거미줄 함정
+34,lava_river,monster,M-ETC010,4,상공에서 지상을 견제
+35,lava_river,monster,M-ETC011,20,강둑을 따라 떼를 지어 이동
+36,throne_antechamber,monster,M-ETC009,3,방 중앙을 지키는 정예 개체
+37,throne_antechamber,monster,M-ETC012,2,후방에서 파수병을 지원
+38,tyrants_throne_room,boss,B-G005-MAIN,1,흑요석 옥좌에 앉아있음
+39,tyrants_throne_room,item,R-005,1,보스 처치 시 드랍

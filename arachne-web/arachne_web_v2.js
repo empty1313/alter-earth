@@ -1,3 +1,4 @@
+// 최종본: v3.1 - Standalone Arachne Web with Full Scenario Integration
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
@@ -22,15 +23,14 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMapFloor = 1;
     const materialDefault = new THREE.MeshStandardMaterial({ color: 0x7d8590, transparent: true, opacity: 0.7 });
     const materialSelected = new THREE.MeshStandardMaterial({ color: 0xEC407A, emissive: 0xEC407A, emissiveIntensity: 0.5 });
+    const materialStart = new THREE.MeshStandardMaterial({ color: 0x238636, emissive: 0x238636, emissiveIntensity: 0.2 });
 
     // --- DOM 요소 캐싱 ---
     const dom = {
-        // Login Elements
         loginScreen: document.getElementById('login-screen'),
         securityCodeInput: document.getElementById('security-code-input'),
         loginErrorMessage: document.getElementById('login-error-message'),
         agentName: document.getElementById('agent-name'),
-        // Main App Elements
         opsContainer: document.querySelector('.ops-container'),
         sidebar: document.getElementById('ops-sidebar'),
         sidebarToggleBtn: document.getElementById('sidebar-toggle-btn'),
@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- 데이터 로딩 ---
     async function loadAllData() {
-        const files = ['gates', 'rooms', 'connectors', 'details', 'monster', 'item', 'event', 'elements', 'agents'];
+        const files = ['gates', 'rooms', 'connectors', 'details', 'monster', 'item', 'event', 'elements', 'agents', 'protocols', 'scenarios'];
         try {
             await Promise.all(files.map(async (file) => {
                 const res = await fetch(`../database/${file}.csv`);
@@ -82,49 +82,50 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 헬퍼 함수 ---
     function getElementIcon(type) {
         switch(type) {
-            case 'boss': return { icon: 'fa-crown', colorClass: 'icon-boss' };
-            case 'monster': return { icon: 'fa-skull-crossbones', colorClass: 'icon-threat' };
-            case 'item': return { icon: 'fa-gem', colorClass: 'icon-item' };
+            case 'boss': return 'fa-crown';
+            case 'monster': return 'fa-skull-crossbones';
+            case 'item': return 'fa-gem';
             case 'trap':
-            case 'event': return { icon: 'fa-bolt', colorClass: 'icon-anomaly' };
-            default: return { icon: 'fa-question-circle', colorClass: 'icon-default' };
+            case 'event': return 'fa-bolt';
+            case 'room': return 'fa-cube';
+            default: return 'fa-question-circle';
         }
     }
+    
+    function getEntityRank(entityData, entityType) {
+        if (entityData && entityData.rank) {
+            return String(entityData.rank).toUpperCase();
+        }
+        if (entityType === 'trap' || entityType === 'event') {
+            return 'NONE';
+        }
+        return 'E';
+    }
+
 
     // --- 로그인 관련 함수 ---
     function setupLogin() {
         dom.securityCodeInput.focus();
         dom.securityCodeInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                handleLoginAttempt();
-            }
+            if (e.key === 'Enter') handleLoginAttempt();
         });
     }
 
     function handleLoginAttempt() {
-        const inputCode = dom.securityCodeInput.value;
-        const numericCode = parseInt(inputCode, 10);
-
+        const numericCode = parseInt(dom.securityCodeInput.value, 10);
         if (isNaN(numericCode)) {
             dom.loginErrorMessage.textContent = "INVALID FORMAT: NUMERIC CODE REQUIRED";
             dom.securityCodeInput.value = '';
             return;
         }
-
         const agent = db.agents.find(a => a.code === numericCode);
-
         if (agent) {
             state.currentUser = agent;
             dom.loginErrorMessage.textContent = "";
             dom.securityCodeInput.disabled = true;
-            
             document.body.classList.remove('logged-out');
             document.body.classList.add('logged-in');
-
-            setTimeout(() => {
-                initializeMainApp(agent);
-            }, 500);
-            
+            setTimeout(() => initializeMainApp(agent), 500);
         } else {
             dom.loginErrorMessage.textContent = "ACCESS DENIED: INVALID SECURITY CODE";
             dom.securityCodeInput.value = '';
@@ -139,7 +140,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (state.sidebarMode === 'active') {
             gatesToShow = gatesToShow.filter(g => g.isActive === true);
         }
-
         if (searchTerm && state.sidebarMode === 'hub') {
             gatesToShow = gatesToShow.filter(g =>
                 (g.name && g.name.toLowerCase().includes(searchTerm)) ||
@@ -148,22 +148,14 @@ document.addEventListener('DOMContentLoaded', () => {
             );
         }
 
-        dom.gateListContent.innerHTML = '';
-        gatesToShow.forEach(gate => {
-            const item = document.createElement('div');
-            item.className = 'gate-item';
-            item.dataset.id = gate.id;
-            
-            if (gate.isActive) {
-                item.classList.add('is-active-gate');
-            }
-            if (gate.id === state.activeGateId) {
-                item.classList.add('active');
-            }
-            
-            item.innerHTML = `<div class="gate-name">${gate.name}</div><div class="gate-details">Rank ${gate.rank} | ${gate.location}</div>`;
-            dom.gateListContent.appendChild(item);
-        });
+        dom.gateListContent.innerHTML = gatesToShow.map(gate => {
+            const isActiveClass = gate.isActive ? 'is-active-gate' : '';
+            const activeClass = gate.id === state.activeGateId ? 'active' : '';
+            return `<div class="gate-item ${isActiveClass} ${activeClass}" data-id="${gate.id}">
+                        <div class="gate-name">${gate.name}</div>
+                        <div class="gate-details">Rank ${gate.rank} | ${gate.location}</div>
+                    </div>`;
+        }).join('');
     }
 
     // --- 게이트 선택 ---
@@ -175,7 +167,7 @@ document.addEventListener('DOMContentLoaded', () => {
         logToTerminal(`Loading gate data: ${gate.name} [${gateId}]`, 'GATE');
         dom.gateInfoHeader.textContent = `${gate.name} [Rank ${gate.rank}]`;
         dom.promptContext.textContent = gateId;
-        document.querySelectorAll('.gate-item').forEach(item => item.classList.toggle('active', item.dataset.id === gateId));
+        renderGateList();
 
         currentBlueprintData = buildBlueprintData(gateId);
         if (!currentBlueprintData || currentBlueprintData.rooms.length === 0) {
@@ -193,13 +185,12 @@ document.addEventListener('DOMContentLoaded', () => {
         currentMapFloor = initialFloors.length > 0 ? initialFloors[0] : 1;
         
         filterFloor(currentMapFloor, true); 
-        activateMapView('2D', true);
+        activateMapView('3D', true);
         selectRoom(null);
         onWindowResize3D();
         updateInspector({ view: 'none' });
     }
 
-    // --- 인스펙터 관리 ---
     function updateInspector(newState) {
         state.inspectorState = newState;
         const { view, id, parentId } = state.inspectorState;
@@ -207,96 +198,121 @@ document.addEventListener('DOMContentLoaded', () => {
         let html = '';
         if (view === 'none') {
             html = `<div class="placeholder">Select a gate from the list, or a room on the map.</div>`;
-        } else if (view === 'room') {
+            dom.inspectorContent.innerHTML = html;
+            return;
+        }
+
+        html = `<div class="inspector-wrapper corner-bracket"><div>`;
+
+        if (['monster', 'boss', 'item', 'trap', 'event'].includes(view)) {
+             html += `<button class="inspector-back-btn" data-view="room" data-id="${parentId}"><i class="fas fa-arrow-left"></i> Back to Room Analysis</button>`;
+        }
+        
+        let headerHtml = '', primaryStatsHtml = '', containedElementsHtml = '', scenariosHtml = '', descriptionHtml = '';
+
+        if (view === 'room') {
             const roomDetail = db.details.find(d => d.RoomID === id);
             if(roomDetail) {
                 logToTerminal(`Inspecting room: ${roomDetail.RoomName}`, 'INSPECTOR');
-                html += `<div class="inspector-header"><h4>${roomDetail.RoomName}</h4><span class="subtitle">${roomDetail.type}</span></div>`;
-                html += `<p>${roomDetail.dec}</p>`;
+                headerHtml = `<div class="inspector-header">
+                                <div class="icon"><i class="fas ${getElementIcon('room')}"></i></div>
+                                <div class="title-block"><h4>${roomDetail.RoomName}</h4><span class="subtitle">${roomDetail.type}</span></div>
+                              </div>`;
+                descriptionHtml = `<div class="inspector-section"><h5>// ROOM DESCRIPTION</h5><div class="description-section">${roomDetail.dec}</div></div>`;
                 
                 const elementsInRoom = (db.elements || []).filter(e => e.RoomID === id);
-                if(elementsInRoom.length > 0) {
-                    html += `<hr style="margin: 15px 0;"><div class="info-section"><h5>Contained Elements</h5>`;
+                if (elementsInRoom.length > 0) {
+                     containedElementsHtml += `<div class="inspector-section"><h5>// CONTAINED ELEMENTS</h5><div class="contained-elements-list">`;
                     elementsInRoom.forEach(el => {
-                        const { icon, colorClass } = getElementIcon(el.type);
-                        html += `<div class="inspector-item" data-type="${el.type}" data-id="${el.refId}" data-parent-id="${id}">
-                                    <i class="fas ${icon} ${colorClass}"></i>
-                                    <span>${el.desc}</span>
-                                 </div>`;
+                        let entityData;
+                        switch (el.type) {
+                            case 'monster': case 'boss': entityData = db.monster.find(m => m.ID === el.refId); break;
+                            case 'item': entityData = db.item.find(i => i.ID === el.refId); break;
+                            case 'trap': case 'event': entityData = db.event.find(e => e.ID === el.refId); break;
+                            default: entityData = null;
+                        }
+                        if (!entityData) {
+                            entityData = { name: el.refId + " (⚠️)", rank: 'NONE' };
+                        }
+                        
+                        const rank = getEntityRank(entityData, el.type);
+                        const rankClass = `rank-${rank.toLowerCase()}`;
+                        let displayName = entityData.name;
+                        if (el.quantity > 1) displayName += ` x${el.quantity}`;
+
+                        containedElementsHtml += `
+                        <div class="inspector-item ${rankClass}" data-type="${el.type}" data-id="${el.refId}" data-parent-id="${id}">
+                            <div class="inspector-item-header">
+                                <i class="item-icon fas ${getElementIcon(el.type)}"></i>
+                                <span>${displayName}</span>
+                            </div>
+                            <div class="inspector-item-details">
+                                <div class="details-content">${el.desc || 'No additional description.'}</div>
+                                <a href="#" class="details-analyze-btn">Analyze Details...</a>
+                            </div>
+                        </div>`;
                     });
-                    html += `</div>`;
+                     containedElementsHtml += `</div></div>`;
                 }
-            } else {
-                 html = `<div class="placeholder">Details for room ${id} not found.</div>`;
-            }
-        } else if (['monster', 'boss', 'item', 'trap', 'event'].includes(view)) {
-            const backButton = `<button class="inspector-back-btn" data-view="room" data-id="${parentId}"><i class="fas fa-arrow-left"></i> Back to Room</button>`;
-            const parentRoom = db.details.find(d => d.RoomID === parentId);
-            const fromSubtitle = `<span class="subtitle">From: ${parentRoom ? parentRoom.RoomName : parentId}</span>`;
-            
-            html += backButton;
-            let detailHtml = '';
-
-            switch(view) {
-                case 'monster':
-                case 'boss': {
-                    const monsterDetail = db.monster.find(m => m.ID === id);
-                    const elementInstance = db.elements.find(el => el.RoomID === parentId && el.refId === id);
-                    if (monsterDetail) {
-                        logToTerminal(`Inspecting entity: ${monsterDetail.name}`, 'INSPECTOR');
-                        detailHtml += `<div class="inspector-header"><h4>${monsterDetail.name}</h4>${fromSubtitle}</div>`;
-                        detailHtml += `<ul>`;
-                        const rankClass = `rank-${String(monsterDetail.rank).toLowerCase()}`;
-                        detailHtml += `<li><strong>Rank:</strong> <span class="rank-tag ${rankClass}">${monsterDetail.rank}</span></li>`;
-                        if (elementInstance && elementInstance.quantity > 1) {
-                             detailHtml += `<li><strong>Quantity:</strong> ${elementInstance.quantity}</li>`;
+                
+                const scenariosInRoom = (db.scenarios || []).filter(s => s.scope === 'ROOM' && s.scope_id === id);
+                if (scenariosInRoom.length > 0) {
+                    scenariosHtml += `<div class="inspector-section"><h5>// ACTIVE GIMMICKS / EVENTS</h5><div class="scenarios-list">`;
+                    scenariosInRoom.forEach(scn => {
+                        // [v3.1 수정] 링크 기능 제거, 단순 텍스트로 표시
+                        let descHtml = scn.description;
+                        if (scn.linked_entities) {
+                             const linkedIds = scn.linked_entities.split(',').map(s => s.trim());
+                             linkedIds.forEach(linkedId => {
+                                 descHtml = descHtml.replace(new RegExp(`'${linkedId}'`, 'g'), `'<span class="linked-entity-link">${linkedId}</span>'`);
+                             });
                         }
-                        detailHtml += `</ul>`;
-                    }
-                    break;
-                }
-                case 'item': {
-                    const itemDetail = db.item.find(i => i.ID === id);
-                    if (itemDetail) {
-                        logToTerminal(`Inspecting item: ${itemDetail.name}`, 'INSPECTOR');
-                        detailHtml += `<div class="inspector-header"><h4>${itemDetail.name}</h4>${fromSubtitle}</div>`;
-                        detailHtml += `<ul>`;
-                        for(const [key, value] of Object.entries(itemDetail)) {
-                            if (['index', 'ID', 'name'].includes(key) || !value) continue;
-                            if (key === 'rank') {
-                                const rankClass = `rank-${String(value).toLowerCase()}`;
-                                detailHtml += `<li><strong>Rank:</strong> <span class="rank-tag ${rankClass}">${value}</span></li>`;
-                            } else {
-                                detailHtml += `<li><strong>${key}:</strong> ${value}</li>`;
-                            }
-                        }
-                        detailHtml += `</ul>`;
-                    }
-                    break;
-                }
-                case 'trap':
-                case 'event': {
-                    const eventDetail = db.event.find(e => e.ID === id);
-                     if (eventDetail) {
-                        logToTerminal(`Inspecting event: ${eventDetail.name}`, 'INSPECTOR');
-                        detailHtml += `<div class="inspector-header"><h4>${eventDetail.name}</h4>${fromSubtitle}</div>`;
-                        detailHtml += `<ul>`;
-                        for(const [key, value] of Object.entries(eventDetail)) {
-                            if (['index', 'ID', 'name'].includes(key) || !value) continue;
-                            detailHtml += `<li><strong>${key}:</strong> ${value}</li>`;
-                        }
-                        detailHtml += `</ul>`;
-                    }
-                    break;
+                        scenariosHtml += `<div class="scenario-item"><p><span class="category">[${scn.category}]</span> ${descHtml}</p></div>`;
+                    });
+                    scenariosHtml += `</div></div>`;
                 }
             }
+        } else { // 상세 뷰
+            let entityData, entityType = view;
+            switch (view) {
+                case 'monster': case 'boss': entityData = db.monster.find(m => m.ID === id); break;
+                case 'item': entityData = db.item.find(i => i.ID === id); break;
+                case 'trap': case 'event': entityData = db.event.find(e => e.ID === id); break;
+            }
 
-            if (detailHtml) {
-                html += detailHtml;
-            } else {
-                html += `<div class="placeholder">Details for element ${id} not found.</div>`;
+            if(entityData) {
+                const parentRoom = db.details.find(d => d.RoomID === parentId);
+                logToTerminal(`Analyzing entity: ${entityData.name}`, 'INSPECTOR');
+                headerHtml = `<div class="inspector-header">
+                                <div class="icon"><i class="fas ${getElementIcon(view)}"></i></div>
+                                <div class="title-block"><h4>${entityData.name}</h4><span class="subtitle">From: ${parentRoom ? parentRoom.RoomName : parentId}</span></div>
+                              </div>`;
+                
+                const rank = getEntityRank(entityData, entityType);
+                primaryStatsHtml += `<div class="primary-stats">`;
+                if (rank !== 'NONE') {
+                    primaryStatsHtml += `<div class="stat-item"><div class="rank-hexagon ${'rank-'+rank.toLowerCase()}">${rank}</div></div>`;
+                }
+                const elInstance = db.elements.find(e => e.refId === id && e.RoomID === parentId);
+                if (elInstance && elInstance.quantity > 1) primaryStatsHtml += `<div class="stat-item"><i class="fas fa-users"></i><span class="value">${elInstance.quantity}</span></div>`;
+
+                if (entityType === 'monster' || entityType === 'boss') {
+                    if (entityData.weak) primaryStatsHtml += `<div class="stat-item"><i class="fas fa-shield-halved"></i><span class="value">${entityData.weak}</span></div>`;
+                    if (entityData.habit) primaryStatsHtml += `<div class="stat-item"><i class="fas fa-crosshairs"></i><span class="value">${entityData.habit}</span></div>`;
+                } else if (entityData.category) {
+                    primaryStatsHtml += `<div class="stat-item"><i class="fas fa-tag"></i><span class="value">${entityData.category}</span></div>`;
+                }
+                primaryStatsHtml += `</div>`;
+
+                if(entityData.desc) {
+                    descriptionHtml = `<div class="inspector-section"><h5>// TACTICAL MEMO</h5><div class="description-section">${entityData.desc}</div></div>`;
+                }
             }
         }
+        
+        html += headerHtml + primaryStatsHtml + descriptionHtml + containedElementsHtml + scenariosHtml;
+        html += `</div></div>`;
+
         dom.inspectorContent.innerHTML = html;
         selectRoom(view === 'room' ? id : parentId); 
     }
@@ -319,7 +335,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const args = command.trim().split(' ');
         const cmd = args[0].toLowerCase();
         
-        // [수정] 명령어 간소화
         switch(cmd) {
             case 'help':
                 const helpText = `
@@ -362,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
         dom.terminalOutput.scrollTop = dom.terminalOutput.scrollHeight;
     }
     
-    // --- MAP FUNCTIONS (원본과 동일) ---
+    // --- MAP FUNCTIONS ---
     function buildBlueprintData(gateId) {
         const rooms = db.rooms.filter(r => r.GID === gateId);
         const connectors = db.connectors.filter(c => c.GID === gateId).map(c => ({ from: c.FromID, to: c.ToID }));
@@ -386,14 +401,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const line = document.createElementNS("http://www.w3.org/2000/svg", 'line');
             line.setAttribute('class', 'connector');
-            line.dataset.from = fromRoom.id;
-            line.dataset.to = toRoom.id;
             const fromCenter = { x: fromRoom.x + fromRoom.w / 2, y: fromRoom.y + fromRoom.h / 2 };
             const toCenter = { x: toRoom.x + toRoom.w / 2, y: toRoom.y + toRoom.h / 2 };
-            line.setAttribute('x1', fromCenter.x);
-            line.setAttribute('y1', fromCenter.y);
-            line.setAttribute('x2', toCenter.x);
-            line.setAttribute('y2', toCenter.y);
+            line.setAttribute('x1', fromCenter.x); line.setAttribute('y1', fromCenter.y);
+            line.setAttribute('x2', toCenter.x); line.setAttribute('y2', toCenter.y);
             g.appendChild(line);
 
             if (fromRoom.floor !== toRoom.floor) {
@@ -416,19 +427,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const rect = document.createElementNS("http://www.w3.org/2000/svg", 'rect');
             rect.id = `room-${r.id}`;
-            rect.setAttribute('class', 'room');
-            rect.setAttribute('x', r.x);
-            rect.setAttribute('y', r.y);
-            rect.setAttribute('width', r.w);
-            rect.setAttribute('height', r.h);
+            const roomClass = r.IsStart ? 'room start-room' : 'room';
+            rect.setAttribute('class', roomClass);
+            rect.setAttribute('x', r.x); rect.setAttribute('y', r.y);
+            rect.setAttribute('width', r.w); rect.setAttribute('height', r.h);
             
             const label = document.createElementNS("http://www.w3.org/2000/svg", 'text');
             label.setAttribute('class', 'room-label');
-            label.setAttribute('x', r.x + r.w / 2);
-            label.setAttribute('y', r.y + r.h / 2 + 5);
+            label.setAttribute('x', r.x + r.w / 2); label.setAttribute('y', r.y + r.h / 2 + 5);
             label.textContent = r.name;
-            g.appendChild(rect);
-            g.appendChild(label);
+            g.appendChild(rect); g.appendChild(label);
             gRooms.appendChild(g);
         });
         dom.blueprintSvg.appendChild(gRooms);
@@ -452,7 +460,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const scale = 10;
         rooms.forEach(r => {
             const geometry = new THREE.BoxGeometry(r.w/scale, 2, r.h/scale);
-            const roomMesh = new THREE.Mesh(geometry, materialDefault.clone());
+            const material = r.IsStart ? materialStart.clone() : materialDefault.clone();
+            const roomMesh = new THREE.Mesh(geometry, material);
             roomMesh.position.set(r.x/scale + r.w/(2*scale), r.floor * 5, r.y/scale + r.h/(2*scale));
             roomMesh.userData = { id: r.id, floor: r.floor };
             scene.add(roomMesh);
@@ -489,9 +498,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function filterFloor(floorNum, silent = false){
-        if (!silent) {
-            logToTerminal(`Switching map view to floor ${floorNum}`, 'MAP');
-        }
+        if (!silent) { logToTerminal(`Switching map view to floor ${floorNum}`, 'MAP'); }
         currentMapFloor = floorNum;
         dom.blueprintSvg.querySelectorAll('[data-floor], [data-from-floor]').forEach(el => {
             const elFloor = parseInt(el.dataset.floor);
@@ -506,9 +513,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function activateMapView(mode, silent = false) {
-        if (!silent) {
-            logToTerminal(`Activating ${mode} view`, 'VIEW');
-        }
+        if (!silent) { logToTerminal(`Activating ${mode} view`, 'VIEW'); }
         if (mode === '2D') {
             dom.blueprintSvg.classList.add('active-map-view');
             dom.map3DCanvas.classList.remove('active-map-view');
@@ -533,14 +538,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if(targetSvg) targetSvg.classList.add('active');
         }
 
-        if(activeRoom3D) activeRoom3D.material = materialDefault.clone();
+        roomObjects3D.forEach(mesh => {
+            const roomData = db.rooms.find(r => r.id === mesh.userData.id);
+            if (roomData && roomData.IsStart) { mesh.material = materialStart.clone(); }
+            else { mesh.material = materialDefault.clone(); }
+        });
+        
         activeRoom3D = null;
         if(roomId) {
             const target3D = roomObjects3D.find(obj => obj.userData.id === roomId);
-            if(target3D) {
-                target3D.material = materialSelected.clone();
-                activeRoom3D = target3D;
-            }
+            if(target3D) { target3D.material = materialSelected.clone(); activeRoom3D = target3D; }
         }
     }
     
@@ -585,14 +592,14 @@ document.addEventListener('DOMContentLoaded', () => {
         renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
     }
     
-    // --- LIVE THREAT FEED (수정 완료) ---
     function startThreatFeed() {
         const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
-        const agentNames = db.agents.map(a => a.name).filter(Boolean);
+        const agentNames = (db.agents || []).map(a => a.name).filter(Boolean);
+        if (agentNames.length === 0) agentNames.push("SYSTEM");
 
         function generate() {
             if (!db.gates || !db.gates.length) {
-                 setTimeout(generate, 5000); // 데이터 로딩 전이면 5초 후 재시도
+                 setTimeout(generate, 5000);
                  return;
             }
 
@@ -614,13 +621,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
             switch(eventType) {
                 case 'threat_detected':
-                    const randomThreat = db.monster[rand(0, db.monster.length - 1)];
-                    const threatLocation = db.elements.find(e => e.refId === randomThreat.ID);
-                    if (threatLocation) {
-                        const gate = db.gates.find(g => g.id === db.rooms.find(r => r.id === threatLocation.RoomID)?.GID);
-                        if (gate) {
-                            message = `[${gate.id}] Rank ${randomThreat.rank} signature detected.`;
-                            cssClass = 'feed-critical';
+                    if (db.monster && db.monster.length > 0) {
+                        const randomThreat = db.monster[rand(0, db.monster.length - 1)];
+                        const threatLocation = (db.elements || []).find(e => e.refId === randomThreat.ID);
+                        if (threatLocation) {
+                            const room = (db.rooms || []).find(r => r.id === threatLocation.RoomID);
+                            if (room) {
+                                const gate = db.gates.find(g => g.id === room.GID);
+                                if (gate) {
+                                    message = `[${gate.id}] Rank ${randomThreat.rank} signature detected.`;
+                                    cssClass = 'feed-critical';
+                                }
+                            }
                         }
                     }
                     break;
@@ -645,7 +657,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     break;
             }
 
-            if (!message) { // 메시지 생성 실패 시 재귀 호출로 바로 다음 생성 시도
+            if (!message) { 
                 setTimeout(generate, 100);
                 return;
             };
@@ -655,7 +667,6 @@ document.addEventListener('DOMContentLoaded', () => {
             
             const feedItem = document.createElement('div');
             feedItem.className = 'feed-item';
-            // 클릭 관련 속성 및 이벤트 리스너 제거
             feedItem.innerHTML = `<span class="feed-timestamp">${timestamp}</span> <span class="${cssClass}">${message}</span>`;
             dom.threatFeed.prepend(feedItem);
             if (dom.threatFeed.children.length > 30) {
@@ -664,25 +675,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
             setTimeout(generate, rand(1500, 5000));
         }
-        setTimeout(generate, 1000); // 최초 실행
+        setTimeout(generate, 1000);
     }
 
     // --- 이벤트 핸들러 ---
     function setupEventListeners() {
         dom.sidebarToggleBtn.addEventListener('click', () => dom.sidebar.classList.toggle('collapsed'));
         
-        dom.modeHubBtn.addEventListener('click', () => {
-            state.sidebarMode = 'hub';
-            dom.modeHubBtn.classList.add('active');
-            dom.modeActiveBtn.classList.remove('active');
-            renderGateList();
-        });
-        dom.modeActiveBtn.addEventListener('click', () => {
-            state.sidebarMode = 'active';
-            dom.modeHubBtn.classList.remove('active');
-            dom.modeActiveBtn.classList.add('active');
-            renderGateList();
-        });
+        dom.modeHubBtn.addEventListener('click', () => { state.sidebarMode = 'hub'; dom.modeHubBtn.classList.add('active'); dom.modeActiveBtn.classList.remove('active'); renderGateList(); });
+        dom.modeActiveBtn.addEventListener('click', () => { state.sidebarMode = 'active'; dom.modeHubBtn.classList.remove('active'); dom.modeActiveBtn.classList.add('active'); renderGateList(); });
 
         dom.gateSearchInput.addEventListener('input', renderGateList);
         dom.gateListContent.addEventListener('click', e => {
@@ -691,35 +692,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         
         dom.inspectorContent.addEventListener('click', e => {
-            const item = e.target.closest('.inspector-item');
             const backBtn = e.target.closest('.inspector-back-btn');
-            if (item) {
-                updateInspector({ view: item.dataset.type, id: item.dataset.id, parentId: item.dataset.parentId });
-            } else if (backBtn) {
+            if (backBtn) {
                 updateInspector({ view: backBtn.dataset.view, id: backBtn.dataset.id });
+                return;
+            }
+            
+            const item = e.target.closest('.inspector-item');
+            if (item) {
+                if (e.target.closest('.details-analyze-btn')) {
+                    e.preventDefault();
+                    updateInspector({ view: item.dataset.type, id: item.dataset.id, parentId: item.dataset.parentId });
+                } 
+                else {
+                     const currentlyOpen = dom.inspectorContent.querySelector('.inspector-item.open');
+                    if (currentlyOpen && currentlyOpen !== item) {
+                        currentlyOpen.classList.remove('open');
+                    }
+                    item.classList.toggle('open');
+                }
             }
         });
         
         dom.terminalInput.addEventListener('keydown', e => {
-            if (e.key === 'Enter') {
-                handleCommand(dom.terminalInput.value);
-                dom.terminalInput.value = '';
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    dom.terminalInput.value = commandHistory[historyIndex];
-                }
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    dom.terminalInput.value = commandHistory[historyIndex];
-                } else {
-                    historyIndex = -1;
-                    dom.terminalInput.value = '';
-                }
-            }
+            if (e.key === 'Enter') { handleCommand(dom.terminalInput.value); dom.terminalInput.value = ''; } 
+            else if (e.key === 'ArrowUp') { e.preventDefault(); if (historyIndex < commandHistory.length - 1) { historyIndex++; dom.terminalInput.value = commandHistory[historyIndex]; } } 
+            else if (e.key === 'ArrowDown') { e.preventDefault(); if (historyIndex > 0) { historyIndex--; dom.terminalInput.value = commandHistory[historyIndex]; } else { historyIndex = -1; dom.terminalInput.value = ''; } }
         });
         
         dom.view2DBtn.addEventListener('click', () => activateMapView('2D'));
@@ -729,16 +727,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 초기화 ---
     async function initializeMainApp(agent) {
         dom.agentName.textContent = `AGENT: ${agent.name}`;
-        
-        // 데이터 로딩이 끝난 후 앱 기능 초기화
         await loadAllData();
-
         renderGateList();
         init3D();
         setupEventListeners();
         startThreatFeed();
         
-        // [수정] 로그인 시 터미널에 환영 메시지 및 help 안내 출력
         logToTerminal(`Welcome, Agent ${agent.name}. Type 'help' to see available commands.`, "AUTH");
 
         if (db.gates && db.gates.length > 0) {
@@ -749,14 +743,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function main() {
         document.body.classList.add('logged-out');
-        // 로그인 전에 에이전트 정보만 먼저 로드합니다.
         try {
             const res = await fetch(`../database/agents.csv`);
-            if (!res.ok) throw new Error(`Failed to load agents.csv`);
-            const text = await res.text();
-            db['agents'] = Papa.parse(text, { header: true, dynamicTyping: true, skipEmptyLines: true }).data;
+            if (!res.ok) throw new Error(`Failed to fetch agents.csv`);
+            db['agents'] = Papa.parse(await res.text(), { header: true, dynamicTyping: true, skipEmptyLines: true }).data;
         } catch(e) {
-            dom.loginErrorMessage.textContent = "FATAL ERROR: AGENT DB CONNECTION FAILED";
+            dom.loginErrorMessage.textContent = "FATAL: CANNOT LOAD AGENT PROFILES";
             return;
         }
         setupLogin();

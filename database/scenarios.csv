@@ -1,0 +1,16 @@
+index,id,GID,scope,scope_id,category,linked_entities,description
+1,SCN-001,G-001,ROOM,platform_tracks,Gimmick,,"'승강장' 구역에 진입하면, 시야를 가리고 지속적으로 집중력을 저해하는 '곰팡이 포자 구름'이 깔려 있다. 화염이나 바람 속성 공격으로 일시적인 정화가 가능하다."
+2,SCN-002,G-001,ROOM,terminus_platform,Gimmick,"B-G001-MAIN,T-001","보스 '종착역의 응어리'가 [오물 투척] 패턴을 사용하면, 착탄 지점에 '끈적이 바닥(T-001)' 함정이 생성된다."
+3,SCN-003,G-001,ROOM,terminus_platform,Condition,"B-G001-MAIN,M-ETC001","보스 '종착역의 응어리'가 일정량의 피해를 입으면, [자가 분열] 패턴을 통해 '곰팡이 슬라임(M-ETC001)' 2-3마리를 소환한다."
+4,SCN-004,G-002,GATE-WIDE,G-002,Atmosphere,,"게이트 전역에 '환각 꽃가루'가 퍼져있다. 헌터들은 지속적으로 약한 현기증 상태에 빠지며, 오래 노출될수록 환각 증상이 심해진다."
+5,SCN-005,G-002,ROOM,tangled_maze,Gimmick,EV-002,'뒤엉킨 미로 정원'의 길은 환각으로 인해 왜곡되어 있다. '정화의 샘물(EV-002)'을 찾아 마셔야만 일정 시간 동안 올바른 길을 인지할 수 있다.
+6,SCN-006,G-002,ROOM,dewy_greenhouse,Condition,B-G002-MAIN,'새벽의 여왕초'는 주기적으로 [수면 가루 살포]를 시전하여 온실 내 모든 헌터에게 수면 상태이상을 유발한다.
+7,SCN-007,G-002,ROOM,dewy_greenhouse,Condition,B-G002-MAIN,'새벽의 여왕초'는 무작위 대상의 발 밑에서 [뿌리 가시]를 솟아오르게 하여 공격한다.
+8,SCN-008,G-003,ROOM,resonating_plaza,Gimmick,M-ETC006,"'공명충(M-ETC006)'이 위협을 느끼면, 울음소리로 '수정 공명 파동'을 일으켜 방 전체에 주기적인 음파 피해를 입히고 다른 '수정 전갈'을 강화시킨다."
+9,SCN-009,G-003,ROOM,predators_nest,Condition,"B-G003-MAIN,EV-003","보스 '수정 동굴의 포식자'가 '파멸의 공명' 패턴을 시전하면, 헌터들은 '공명 핵수정(EV-003)' 3개를 모두 파괴해야만 강력한 광역 공격을 중단시킬 수 있다."
+10,SCN-010,G-004,GATE-WIDE,G-004,Condition,M-ETC007,M-ETC008
+11,SCN-011,G-004,ROOM,belfry,Condition,"B-G004-MAIN,EV-004","보스 '종지기'가 '비탄의 종(EV-004)'을 직접 타종하면, 피할 수 없는 강력한 음파 공격이 방 전체에 퍼져나간다. 타종을 저지하는 것이 공략의 핵심이다."
+12,SCN-012,G-005,GATE-WIDE,G-005,Atmosphere,,"게이트 전역에 '살인적인 열기'가 퍼져있다. 모든 헌터는 지속적으로 체력 피해를 입으며, 화염 저항이 낮으면 장비 내구도까지 소모된다."
+13,SCN-013,G-005,ROOM,throne_antechamber,Gimmick,"M-ETC009,M-ETC012","'재의 주술사(M-ETC012)'가 살아있는 동안, '흑요석 파수병(M-ETC009)'은 받는 피해가 크게 감소하고 서서히 체력을 회복한다."
+14,SCN-014,G-005,ROOM,lava_river,Gimmick,"M-ETC010,M-ETC011,T-005","'불씨 날개 드레이크'는 헌터들의 퇴로를 차단하고, '용암거미'는 헌터들을 '용암 분출구' 함정 근처로 몰아넣으려 시도한다."
+15,SCN-015,G-005,ROOM,tyrants_throne_room,Condition,"B-G005-MAIN,M-ETC011","보스 '화산의 군주'가 '용암의 부름'을 시전하면, 방 가장자리에서 '용암거미(M-ETC011)' 10마리가 소환된다."

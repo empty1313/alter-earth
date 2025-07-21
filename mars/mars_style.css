@@ -14,6 +14,8 @@
     --font-header: 'Orbitron', sans-serif;
     --font-mono: 'Roboto Mono', monospace;
     --color-error: #f44747;
+    --color-success: #8bc34a;
+    --color-warning: #fb8c00;
 }
 
 /* --- Global & Layout --- */
@@ -88,12 +90,10 @@ body {
     padding: 0 20px;
     flex-shrink: 0;
 }
-.main-header .logo { display: flex; align-items: center; gap: 15px; }
-.main-header .logo img { height: 25px; opacity: 0.8; }
 .main-header .logo h1 { font-family: var(--font-header); font-size: 1.1rem; color: var(--theme-color); letter-spacing: 1px; }
 .system-status { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); }
 .system-status span { margin-left: 20px; }
-.system-status span:before { content: '●'; margin-right: 8px; color: #43a047; }
+.system-status span:before { content: '●'; margin-right: 8px; color: var(--color-success); }
 
 /* --- Workbench Layout --- */
 .workbench-container {
@@ -134,7 +134,7 @@ body {
     cursor: pointer; transition: all 0.2s;
 }
 #execute-query-btn:hover { background-color: var(--theme-color-active); box-shadow: 0 0 15px var(--theme-color-glow); }
-#execute-query-btn.loading { background-color: #fb8c00; pointer-events: none; color: #000; }
+#execute-query-btn.loading { background-color: var(--color-warning); pointer-events: none; color: #000; }
 .results-header { display: flex; justify-content: space-between; align-items: center; padding: 0 15px; flex-shrink: 0; }
 .results-header h3 { font-size: 0.8rem; text-transform: uppercase; color: var(--text-secondary); }
 #results-count { font-family: var(--font-mono); font-size: 0.8rem; }
@@ -172,22 +172,51 @@ body {
 .weakness-tag { background-color: rgba(229, 57, 53, 0.2); color: #ef9a9a; padding: 4px 8px; border-radius: 4px; font-family: var(--font-mono); }
 .report-section p { color: var(--text-primary); line-height: 1.7; }
 
-/* Protocol Styles */
+/* [v2.7 신규] Protocol Styles */
 .protocol-list { list-style: none; padding-left: 0; }
-.protocol-step { border-left: 3px solid var(--theme-color); padding: 15px 20px; margin-bottom: 20px; background-color: rgba(0,0,0,0.1); }
-.protocol-step h4 { font-size: 1rem; font-weight: 700; color: var(--theme-color-active); margin-bottom: 10px; }
-.protocol-step p { line-height: 1.6; margin-bottom: 10px; }
-.if-condition { background-color: rgba(251, 140, 0, 0.1); border: 1px solid rgba(251, 140, 0, 0.3); padding: 10px; margin-top: 10px; border-radius: 4px; }
-.if-condition .condition-tag { font-family: var(--font-mono); font-weight: 700; color: #fb8c00; }
+.protocol-step { border-left: 3px solid var(--theme-color); padding: 20px; margin-bottom: 25px; background-color: rgba(0,0,0,0.15); border-radius: 0 4px 4px 0; }
+.protocol-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.protocol-step-num { background-color: var(--theme-color-active); color: var(--bg-main); padding: 3px 10px; border-radius: 4px; font-family: var(--font-mono); font-size: 0.8rem; font-weight: 700; }
+.protocol-phase { font-size: 1.1rem; font-weight: 700; color: var(--text-primary); }
+.protocol-desc { line-height: 1.7; color: var(--text-secondary); padding-left: 5px; }
+
+/* [v2.7 신규] Linked Scenario Block */
+.linked-scenario-block {
+    margin-top: 15px;
+    padding: 12px 15px;
+    background-color: var(--bg-inset);
+    border: 1px solid var(--border-color);
+    border-left: 3px solid var(--color-warning);
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+.linked-scenario-block .block-title {
+    font-weight: 700;
+    color: var(--color-warning);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.linked-scenario-block p {
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin: 0;
+    margin-bottom: 4px;
+}
+.linked-scenario-block strong {
+    color: var(--text-primary);
+}
+
 
 /* --- Right Panel: Log --- */
 #system-log-content { font-family: var(--font-mono); font-size: 0.8rem; padding: 15px; overflow-y: auto; height: 100%; }
 .log-entry { line-height: 1.8; }
 .log-timestamp { color: var(--text-secondary); margin-right: 10px; }
-.log-message.type-INFO { color: var(--text-primary); }
-.log-message.type-QUERY { color: #82b1ff; }
-.log-message.type-SUCCESS { color: #8bc34a; }
-.log-message.type-CRITICAL { color: #ff8a80; }
+.log-message.type-info { color: var(--text-primary); }
+.log-message.type-query { color: #82b1ff; }
+.log-message.type-success { color: var(--color-success); }
+.log-message.type-critical { color: var(--color-error); }
 
 
 /* --- Rank Tag Styles --- */

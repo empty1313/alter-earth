@@ -1,0 +1,42 @@
+﻿index,GID,id,name,floor,x,y,w,h,IsStart
+1,G-001,entrance_hall,입구 홀,1,100,200,150,100,TRUE
+2,G-001,guard_room,경비실,1,280,250,80,80,FALSE
+3,G-001,main_corridor,중앙 복도,1,250,100,200,50,FALSE
+4,G-001,storage_b1,지하 창고,0,300,300,100,100,FALSE
+5,G-001,office_1f,사무실,1,450,100,100,50,FALSE
+6,G-001,research_lab_1f,연구실,1,580,100,150,100,FALSE
+7,G-001,boss_chamber,보스 방,2,600,300,100,100,FALSE
+8,G-002,coastal_rift,해안 균열,1,100,200,150,100,TRUE
+9,G-002,abyssal_descent,심해 강하,0,180,350,100,150,FALSE
+10,G-002,coral_maze,산호 미로,-1,250,450,200,100,FALSE
+11,G-002,leviathan_lair,리바이어던 굴,-2,400,500,150,150,FALSE
+12,G-002,pressure_chamber_1,압력실 A,0,300,250,80,80,FALSE
+13,G-002,ancient_temple_outer,고대 사원 외곽,-1,450,300,150,100,FALSE
+14,G-002,ancient_temple_inner,고대 사원 내부,-2,600,350,100,100,FALSE
+15,G-002,boss_altar,보스 제단,-3,650,500,120,120,FALSE
+16,G-003,distortion_zone,왜곡 지대,1,100,200,150,100,TRUE
+17,G-003,shattered_reality,파편 현실,1,300,150,100,100,FALSE
+18,G-003,dimensional_corridor,차원 복도,2,250,50,80,200,FALSE
+19,G-003,echo_chamber,메아리 공간,1,450,200,120,80,FALSE
+20,G-003,nexus_core,넥서스 코어,0,200,350,150,150,FALSE
+21,G-003,temporal_loop_a,시간의 굴레 A,2,500,50,80,80,FALSE
+22,G-003,temporal_loop_b,시간의 굴레 B,2,500,200,80,80,FALSE
+23,G-003,final_conjunction,최종 결합점,3,350,400,200,100,FALSE
+24,G-004,transition_chamber,전이실,1,100,600,80,60,TRUE
+25,G-004,antechamber_of_regulations,규율의 전당,1,100,500,120,100,FALSE
+26,G-004,gear_path_corridor_alpha,톱니 길목 알파,1,240,500,150,60,FALSE
+27,G-004,logic_circuit_room,논리 회로실,1,240,420,100,60,FALSE
+28,G-004,gear_path_corridor_beta,톱니 길목 베타,1,410,500,150,60,FALSE
+29,G-004,main_maintenance_shaft,중앙 정비 통로,1,360,420,80,60,FALSE
+30,G-004,lift_to_floor_2,2층 승강기 홀,1,480,420,80,60,FALSE
+31,G-004,central_orrery_hub,중앙 천체실,2,480,320,150,150,FALSE
+32,G-004,planetary_path_mercury,수성의 길,2,310,380,100,80,FALSE
+33,G-004,planetary_path_venus,금성의 길,2,310,260,100,80,FALSE
+34,G-004,collapsed_shelving_maze,무너진 서가 미로,2,650,400,120,100,FALSE
+35,G-004,synchronization_control_room,동기화 제어실,2,200,320,80,80,FALSE
+36,G-004,lift_to_floor_3,3층 승강기 홀,2,650,280,80,60,FALSE
+37,G-004,the_silent_atrium,침묵의 아트리움,3,650,180,120,80,FALSE
+38,G-004,rust_clogged_passage,녹슨 통로,3,510,180,120,60,FALSE
+39,G-004,the_final_index,최후의 색인,3,370,180,120,80,FALSE
+40,G-004,archivists_antechamber,사서장의 전실,3,230,180,120,60,FALSE
+41,G-004,throne_of_corrosion,부식의 왕좌,3,100,180,100,100,FALSE

@@ -1,0 +1,42 @@
+﻿index,RoomID,type,refId,quantity,desc
+1,entrance_hall,start,,,플레이어 시작 위치
+2,guard_room,monster,M-ETC001,3,고블린 경비병
+3,storage_b1,item,R-001,1,낡은 마나 수정
+4,storage_b1,monster,M-ETC002,2,탐욕의 그림자
+5,office_1f,trap,T-001,1,바닥 붕괴 함정
+6,research_lab_1f,event,EV-001,1,오염 물질 정화
+7,research_lab_1f,item,S-001,1,파편화된 연구일지
+8,boss_chamber,boss,B-G001-MAIN,1,타락한 연구원
+9,coastal_rift,start,,,플레이어 시작 지점
+10,coral_maze,monster,M-ETC003,1,맹독 산호 게
+11,coral_maze,event,EV-002,1,미로 탐색
+12,coral_maze,trap,T-002,1,강력한 해류
+13,leviathan_lair,monster,M-ETC004,1,심해 아귀
+14,leviathan_lair,hint,S-002,1,리바이어던의 그림자 (보스 힌트)
+15,pressure_chamber_1,event,EV-003,1,압력 조절 퍼즐
+16,pressure_chamber_1,item,R-002,1,부식된 고대 장치 조각
+17,ancient_temple_outer,monster,M-ETC005,3,해룡 사제
+18,ancient_temple_outer,trap,T-003,1,붕괴된 바닥
+19,ancient_temple_inner,event,EV-004,1,마나 문양 해독 퍼즐
+20,ancient_temple_inner,item,S-003,1,사원의 비문
+21,boss_altar,boss,B-G002-MAIN,1,심연의 군주 아틀라스
+22,boss_altar,item,S-004,1,심연의 눈물 (핵심 보상)
+23,distortion_zone,start,,,플레이어 시작 지점
+24,shattered_reality,event,EV-005,1,현실 조작 퍼즐
+25,dimensional_corridor,trap,T-004,1,공간 왜곡 함정
+26,echo_chamber,item,S-005,1,시간의 잔재
+27,echo_chamber,event,EV-006,1,소리 패턴 퍼즐
+28,nexus_core,boss,B-G003-SUB,1,수호자 - 시간의 틈새
+29,nexus_core,item,S-005,1,차원 안정화 장치 (핵심)
+30,temporal_loop_a,trap,T-005,1,시간 루프 함정
+31,temporal_loop_b,trap,T-006,1,시간 루프 함정
+32,final_conjunction,boss,B-G003-MAIN,1,차원파괴자
+33,antechamber_of_regulations,monster,M-ETC006,4,순찰 중인 태엽톱니 파수병
+34,antechamber_of_regulations,monster,M-ETC007,8,벽과 천장을 기어다니는 색인기
+35,gear_path_corridor_beta,trap,T-007,5,파이프에서 새어 나오는 부식 증기
+36,logic_circuit_room,event,EV-005,1,논리 회로 퍼즐
+37,central_orrery_hub,monster,B-G004-SUB,1,중간 보스: 해체된 관리인
+38,collapsed_shelving_maze,monster,M-ETC006,6,잔해 속에 매복 중인 파수병
+39,archivists_antechamber,monster,M-ETC006,8,정예 태엽톱니 파수병
+40,throne_of_corrosion,monster,B-G004-MAIN,1,최종 보스: 부식된 사서장
+41,throne_of_corrosion,monster,M-ETC007,10,사서장이 주기적으로 소환하는 색인기들
