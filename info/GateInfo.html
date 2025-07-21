@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ALTER-EARTH | 세계관</title>
+    <!-- 기존 CSS 파일을 그대로 사용합니다 -->
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* =================================================== */
+        /* ### 8. GATE STATUS BOARD (기존과 동일) ### */
+        /* =================================================== */
+
+        /* --- 8.1 랭크 색상 변수 정의 --- */
+        :root {
+            /* MMORPG 표준 등급 색상 */
+            --rank-s: #EF5350; /* Mythic - Red */
+            --rank-a: #FF9F45; /* Legendary - Orange */
+            --rank-b: #AB47BC; /* Epic - Purple */
+            --rank-c: #29B6F6; /* Rare - Blue */
+            --rank-d: #66DE79; /* Uncommon - Green */
+            --rank-e: #A0AEC0; /* Common - Gray */
+        }
+        
+        /* --- 8.2 게이트 보드 컨테이너 --- */
+        .gate-status-board {
+            padding: 80px 0;
+            background-color: var(--bg-darkest);
+        }
+
+        .gate-board-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .gate-board-header h2 {
+            font-family: var(--font-orbitron);
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            color: var(--accent-color);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px rgba(var(--glow-primary-rgb), 0.7);
+            margin: 0;
+        }
+
+        .gate-board-header p {
+            font-family: var(--font-rajdhani);
+            color: var(--text-secondary);
+            font-size: 1rem;
+            letter-spacing: 1px;
+        }
+
+        /* --- 8.3 게이트 정보 리스트 --- */
+        .gate-entries-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+        }
+
+        /* --- 8.4 개별 게이트 항목 (가로형 모듈) --- */
+        .gate-entry {
+            display: flex;
+            background-color: var(--bg-medium);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+        }
+
+        .gate-entry:hover {
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        }
+
+        /* --- 8.5 좌측 랭크 박스 --- */
+        .gate-entry__rank-box {
+            flex: 0 0 100px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .rank-box__label {
+            font-family: var(--font-rajdhani);
+            font-weight: 700;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .rank-box__rank {
+            font-family: var(--font-orbitron);
+            font-weight: 900;
+            font-size: 3rem;
+            line-height: 1;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        /* --- 8.6 중앙 핵심 정보 --- */
+        .gate-entry__core-info {
+            flex: 1;
+            padding: 25px 30px;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+        
+        .core-info__title {
+            font-family: var(--font-rajdhani);
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--accent-color);
+            margin: 0 0 10px 0;
+        }
+
+        /* [수정됨] 단락의 최소 높이를 지정하여 레이아웃 안정성 확보 */
+        .core-info__desc {
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-secondary);
+            min-height: 100px; /* 묘사가 길어져도 다른 요소가 밀리지 않도록 최소 높이 설정 */
+        }
+
+        /* --- 8.7 우측 세부 정보 --- */
+        .gate-entry__details {
+            flex: 0 0 360px;
+            padding: 25px 30px;
+            background-color: rgba(0,0,0,0.2);
+            font-size: 0.9rem;
+        }
+        
+        .details__title {
+            font-family: var(--font-rajdhani);
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .details__list span {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            color: var(--text-secondary);
+        }
+
+        .details__list .icon {
+            width: 20px;
+            margin-right: 12px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+        
+        .details__list .boss-tag {
+            font-weight: 700;
+            font-family: var(--font-rajdhani);
+            color: #ffcdd2; /* 연한 붉은색으로 보스 강조 */
+        }
+        
+        .details__list .tag {
+            font-style: italic;
+            opacity: 0.7;
+            margin-left: 5px;
+        }
+
+
+        /* --- 8.8 랭크별 색상 적용 --- */
+        .gate-entry[data-rank="e"] .gate-entry__rank-box { background-color: var(--rank-e); }
+        .gate-entry[data-rank="e"]:hover { border-color: var(--rank-e); }
+        .gate-entry[data-rank="e"] .details__list .icon { color: var(--rank-e); }
+        
+        .gate-entry[data-rank="d"] .gate-entry__rank-box { background-color: var(--rank-d); }
+        .gate-entry[data-rank="d"]:hover { border-color: var(--rank-d); }
+        .gate-entry[data-rank="d"] .details__list .icon { color: var(--rank-d); }
+
+        .gate-entry[data-rank="c"] .gate-entry__rank-box { background-color: var(--rank-c); }
+        .gate-entry[data-rank="c"]:hover { border-color: var(--rank-c); }
+        .gate-entry[data-rank="c"] .details__list .icon { color: var(--rank-c); }
+
+        .gate-entry[data-rank="b"] .gate-entry__rank-box { background-color: var(--rank-b); }
+        .gate-entry[data-rank="b"]:hover { border-color: var(--rank-b); }
+        .gate-entry[data-rank="b"] .details__list .icon { color: var(--rank-b); }
+
+        .gate-entry[data-rank="a"] .gate-entry__rank-box { background-color: var(--rank-a); }
+        .gate-entry[data-rank="a"]:hover { border-color: var(--rank-a); }
+        .gate-entry[data-rank="a"] .details__list .icon { color: var(--rank-a); }
+
+        .gate-entry[data-rank="s"] .gate-entry__rank-box { background-color: var(--rank-s); }
+        .gate-entry[data-rank="s"]:hover { border-color: var(--rank-s); }
+        .gate-entry[data-rank="s"] .details__list .icon { color: var(--rank-s); }
+
+        /* --- 8.9 반응형 --- */
+        @media (max-width: 992px) {
+            .gate-entry { flex-direction: column; }
+            .gate-entry__rank-box { flex-direction: row; flex-basis: auto; justify-content: flex-start; align-items: baseline; gap: 15px; padding: 15px 20px; }
+            .rank-box__label { font-size: 1rem; }
+            .rank-box__rank { font-size: 2rem; }
+            .gate-entry__core-info, .gate-entry__details { border: none; }
+            .gate-entry__details { border-top: 1px solid var(--border-color); }
+            .core-info__desc { min-height: unset; }
+        }
+
+    </style>
+</head>
+<body>
+<div class="page-wrapper">
+    <!-- 헤더 등 기존 구조 (생략) -->
+
+    <section id="gates" class="gate-status-board">
+        <div class="pv-container">
+            <header class="gate-board-header" data-animate="animate-fade-in">
+                <h2>실시간 게이트 현황</h2>
+                <p>HUNTER ASSOCIATION | LIVE GATE STATUS | UPDATE: 2025-07-21 14:20 (UTC)</p>
+            </header>
+
+            <ul class="gate-entries-list">
+
+                <!-- B랭크 게이트: 재와 불꽃의 왕좌 -->
+                <li class="gate-entry" data-rank="s" data-animate="animate-fade-in" style="transition-delay: 0.1s;">
+                    <div class="gate-entry__rank-box">
+                        <span class="rank-box__label">RANK</span>
+                        <span class="rank-box__rank">?</span>
+                    </div>
+                    <div class="gate-entry__core-info">
+                        <h3 class="core-info__title">[G-005] 재와 불꽃의 왕좌</h3>
+                        <p class="core-info__desc">1차 탐사대 전원 교신 두절, 생존 가능성 전무. 생존자가 없어 내부 정보 극히 제한적. 탐사대의 마지막 통신 기록에 따르면, 상상을 초월하는 열기와 예측 불가능한 지각 변동이 주요 위협 요인으로 추정됨. 게이트 등급 논의중, 모든 접근을 잠정 통제함.</p>
+                    </div>
+                    <div class="gate-entry__details">
+                        <h4 class="details__title">예측 위험 요소</h4>
+                        <div class="details__list">
+                            <span><i class="icon fa-solid fa-question-circle"></i><strong class="boss-tag">[OBJECTIVE]</strong> 미확인 수장 개체</span>
+                            <span><i class="icon fa-solid fa-question-circle"></i>다수의 거미형 개체 목격 보고</span>
+                            <span><i class="icon fa-solid fa-question-circle"></i>원인 불명의 공중 위협 감지</span>
+                            <span><i class="icon fa-solid fa-fire-flame-curved"></i><strong>환경 변수:</strong> 치명적인 열기, 돌발성 지형 붕괴</span>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- C랭크 게이트: 수몰된 종탑 -->
+                <li class="gate-entry" data-rank="c" data-animate="animate-fade-in" style="transition-delay: 0.2s;">
+                    <div class="gate-entry__rank-box">
+                        <span class="rank-box__label">RANK</span>
+                        <span class="rank-box__rank">C</span>
+                    </div>
+                    <div class="gate-entry__core-info">
+                        <h3 class="core-info__title">[G-004] 수몰된 종탑</h3>
+                        <p class="core-info__desc">수몰된 사찰 부지가 변이한 수중형 던전. 대부분의 구역이 깊고 탁한 물에 잠겨 시야 확보가 극도로 제한됨. 핵심 오브젝트 '비탄의 종'이 주기적으로 울리며, 종소리에 따라 던전 전체의 수위가 급격하게 변화함. 특히 수직 이동 구간에서의 익사 위험이 높음.</p>
+                    </div>
+                    <div class="gate-entry__details">
+                        <h4 class="details__title">작전 환경 분석</h4>
+                        <div class="details__list">
+                            <span><i class="icon fa-solid fa-skull-crossbones"></i><strong class="boss-tag">[BOSS]</strong> 종지기</span>
+                            <span><i class="icon fa-solid fa-ghost"></i>수몰된 망령 <em class="tag">(Intangible)</em></span>
+                            <span><i class="icon fa-solid fa-shield-halved"></i>녹슨 종의 파수꾼 <em class="tag">(Guardian)</em></span>
+                            <span><i class="icon fa-solid fa-water"></i><strong>환경 변수:</strong> 수중 환경, 주기적 수위 변화</span>
+                        </div>
+                    </div>
+                </li>
+                
+                <!-- D랭크 게이트: 공명하는 수정 동굴 -->
+                <li class="gate-entry" data-rank="d" data-animate="animate-fade-in" style="transition-delay: 0.3s;">
+                    <div class="gate-entry__rank-box">
+                        <span class="rank-box__label">RANK</span>
+                        <span class="rank-box__rank">D</span>
+                    </div>
+                    <div class="gate-entry__core-info">
+                        <h3 class="core-info__title">[G-003] 공명하는 수정 동굴</h3>
+                        <p class="core-info__desc">거대 수정들로 가득 찬 석회 동굴 지형. 수정 자체의 발광으로 인해 저조도의 시야는 확보되나, 공간 전체에 유해한 '공명 파동'이 지속적으로 흐름. 이 파동은 장시간 노출 시 정신적 피로 누적 및 정밀 장비의 오작동을 유발할 수 있음. 바닥 전체에 날카로운 수정 파편이 깔려있어 이동에 주의 요구.</p>
+                    </div>
+                    <div class="gate-entry__details">
+                        <h4 class="details__title">작전 환경 분석</h4>
+                        <div class="details__list">
+                             <span><i class="icon fa-solid fa-skull-crossbones"></i><strong class="boss-tag">[BOSS]</strong> 수정 동굴의 포식자</span>
+                             <span><i class="icon fa-solid fa-bug"></i>공명충 <em class="tag">(Priority Target)</em></span>
+                             <span><i class="icon fa-solid fa-gem"></i>수정 전갈 <em class="tag">(High Defense)</em></span>
+                             <span><i class="icon fa-solid fa-satellite-dish"></i><strong>환경 변수:</strong> 주기적 음파 피해</span>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- E랭크 게이트: 이슬 맺힌 정원 -->
+                <li class="gate-entry" data-rank="e" data-animate="animate-fade-in" style="transition-delay: 0.4s;">
+                    <div class="gate-entry__rank-box">
+                        <span class="rank-box__label">RANK</span>
+                        <span class="rank-box__rank">E</span>
+                    </div>
+                    <div class="gate-entry__core-info">
+                        <h3 class="core-info__title">[G-002] 이슬 맺힌 정원</h3>
+                        <p class="core-info__desc">겉보기엔 평화로운 수목원의 형태를 띈 생태형 던전. 공기 중에 퍼진 '환각 꽃가루'가 상시적으로 헌터의 감각을 교란시킴. 중앙의 '살아있는 미로 정원'은 경로가 수시로 변형되는 지형 기믹으로, 방향 감각 상실 및 고립 위험이 극도로 높음.</p>
+                    </div>
+                    <div class="gate-entry__details">
+                        <h4 class="details__title">작전 환경 분석</h4>
+                        <div class="details__list">
+                            <span><i class="icon fa-solid fa-skull-crossbones"></i><strong class="boss-tag">[BOSS]</strong> 새벽의 여왕초</span>
+                            <span><i class="icon fa-solid fa-dog"></i>가시덩굴 개 <em class="tag">(Tracker)</em></span>
+                            <span><i class="icon fa-solid fa-seedling"></i><strong>환경 변수:</strong> 환각 꽃가루 (지속 효과)</span>
+                        </div>
+                    </div>
+                </li>
+
+                <!-- E랭크 게이트: 폐역사의 그림자 -->
+                <li class="gate-entry" data-rank="e" data-animate="animate-fade-in" style="transition-delay: 0.5s;">
+                    <div class="gate-entry__rank-box">
+                        <span class="rank-box__label">RANK</span>
+                        <span class="rank-box__rank">E</span>
+                    </div>
+                    <div class="gate-entry__core-info">
+                        <h3 class="core-info__title">[G-001] 폐역사의 그림자</h3>
+                        <p class="core-info__desc">수십 년간 방치된 지하철역이 마력으로 뒤틀린 오염 구역. 빛 한 줄기 없는 절대 암흑. 곰팡이와 정체불명 오물의 악취가 전체 공간에 만연함. 바닥과 벽은 끈적한 점액질로 뒤덮여 있으며, 불규칙적인 소음이 지속적으로 발생하여 심리적 압박을 유발함.</p>
+                    </div>
+                    <div class="gate-entry__details">
+                        <h4 class="details__title">작전 환경 분석</h4>
+                        <div class="details__list">
+                            <span><i class="icon fa-solid fa-skull-crossbones"></i><strong class="boss-tag">[BOSS]</strong> 종착역의 응어리</span>
+                            <span><i class="icon fa-solid fa-bug"></i>무덤 쥐 <em class="tag">(Swarm)</em></span>
+                            <span><i class="icon fa-solid fa-bacterium"></i>곰팡이 슬라임 <em class="tag">(Debuff)</em></span>
+                            <span><i class="icon fa-solid fa-smog"></i><strong>환경 변수:</strong> 곰팡이 포자 (시야 방해)</span>
+                        </div>
+                    </div>
+                </li>
+
+            </ul>
+        </div>
+    </section>
+
+    <!-- 푸터 등 나머지 구조 (생략) -->
+</div> 
+<script src="script.js"></script>
+</body>
+</html>
