@@ -125,8 +125,19 @@ body.logged-in .ops-container { display: grid; }
 
 /* [v3.0 수정] Inspector 전체 스타일 */
 .inspector-panel { width: 350px; background-color: var(--bg-dark-2); border-left: 1px solid #000; display: flex; flex-direction: column; }
-#inspector-panel .panel-content { padding: 0; flex-grow: 1; display: flex; flex-direction: column; overflow: hidden; }
-#inspector-content { height: 100%; display: flex; flex-direction: column; overflow-y: auto; }
+/* inspector-content가 스크롤 되도록 overflow-y: auto로 변경하고, 자식 요소가 flex container를 채우도록 수정 */
+#inspector-panel .panel-content { 
+    padding: 0; 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: column; 
+    overflow-y: auto; /* overflow: hidden 에서 변경됨 */
+}
+#inspector-content { 
+    display: flex; 
+    flex-direction: column; 
+    /* height: 100% 및 중복 속성 제거하여 단순화 */
+}
 .inspector-wrapper { padding: 15px; position: relative; border: 1px solid transparent; flex-grow: 1; display: flex; flex-direction: column; }
 
 .corner-bracket::before, .corner-bracket::after,

@@ -148,21 +148,33 @@ body {
 .placeholder { padding: 20px; text-align: center; color: var(--text-secondary); }
 
 /* --- Center Panel: Detail View --- */
-.center-panel { padding: 0; }
+/* [수정] 중앙 패널 내부의 #detail-panel이 전체 공간을 차지하고 flex 컨테이너 역할을 하도록 설정 */
+.center-panel #detail-panel {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
 .placeholder-center { text-align: center; padding-top: 100px; color: var(--text-secondary); }
 .placeholder-center i { font-size: 4rem; margin-bottom: 20px; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-.detail-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); }
+.detail-header { padding: 20px 30px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; } /* [수정] flex-shrink 추가 */
 .report-header-main { display: flex; justify-content: space-between; align-items: baseline; }
 .report-header-main h2 { font-family: var(--font-header); font-size: 2rem; color: var(--theme-color-active); text-shadow: 0 0 10px var(--theme-color-glow); }
 .report-id { font-family: var(--font-mono); font-size: 1rem; color: var(--text-secondary); }
 
-.detail-tab-header { display: flex; padding: 0 30px; border-bottom: 1px solid var(--border-color); }
+.detail-tab-header { display: flex; padding: 0 30px; border-bottom: 1px solid var(--border-color); flex-shrink: 0; } /* [수정] flex-shrink 추가 */
 .detail-tab-btn { flex: 0 1 auto; padding: 12px 20px; background: transparent; border: none; color: var(--text-secondary); font-family: var(--font-main); font-size: 0.9rem; cursor: pointer; border-bottom: 2px solid transparent; }
 .detail-tab-btn.active { color: var(--theme-color-active); border-bottom-color: var(--theme-color-active); }
 
-.detail-tab-content { display: none; overflow-y: auto; padding: 30px; height: 100%; animation: fadeIn 0.5s; }
+/* [수정] 콘텐츠 영역이 남은 공간을 모두 채우고, 내부적으로 스크롤되도록 수정 */
+.detail-tab-content { 
+    display: none; 
+    overflow-y: auto; 
+    padding: 30px; 
+    animation: fadeIn 0.5s; 
+    flex-grow: 1; /* height: 100% 대신 flex-grow 사용 */
+}
 .detail-tab-content.active { display: block; }
 .report-section { margin-bottom: 30px; }
 .report-section h3 { font-size: 1.1rem; color: var(--theme-color); border-bottom: 1px solid var(--border-color); padding-bottom: 8px; margin-bottom: 15px; }
