@@ -1,4 +1,3 @@
-```markdown
 # 🌍 ALTER-EARTH (얼터-어스)
 
 **ALTER-EARTH**는 **GEMINI 2.5 PRO**를 활용하여 생성된 창작 TRPG(Tabletop Role-Playing Game) 세계관 프로젝트입니다. 
@@ -49,4 +48,3 @@
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
-```
