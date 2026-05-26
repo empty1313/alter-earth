@@ -48,3 +48,9 @@
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+
+<br/>
+
+## 추가 프로젝트
+
+- [KBO Simulator (크보 시뮬레이터)](https://github.com/empty1313/kbo-simulator) - 확률 기반 야구 시뮬레이터 시스템 기획 문서
